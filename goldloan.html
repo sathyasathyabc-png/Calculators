@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gold Loan Calculator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f6f8;
+      color: #222;
+    }
+
+    /* =================================
+       HEADER
+    ================================= */
+
+    .header {
+      background: linear-gradient(135deg, #9d6800, #e3b13d);
+      color: #fff;
+      padding: 18px 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    }
+
+    .header-inner {
+      max-width: 1250px;
+      margin: auto;
+
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #fff;
+      border-radius: 12px;
+
+      box-shadow: 0 3px 10px rgba(0,0,0,.2);
+    }
+
+    .logo-icon {
+      font-size: 35px;
+    }
+
+    .header-content h1 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .header-content p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      opacity: .92;
+    }
+
+    /* =================================
+       MAIN CONTAINER
+    ================================= */
+
+    .container {
+      width: 95%;
+      max-width: 1250px;
+      margin: 30px auto;
+    }
+
+    /* =================================
+       THREE COLUMN LAYOUT
+    ================================= */
+
+    .three-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+
+      box-shadow:
+        0 4px 15px rgba(0,0,0,.08);
+    }
+
+    .card h2 {
+      margin: 0 0 20px;
+      padding-bottom: 12px;
+
+      border-bottom: 2px solid #efd58b;
+
+      color: #996700;
+      font-size: 21px;
+    }
+
+    /* =================================
+       FORM
+    ================================= */
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+
+      border: 1px solid #ccc;
+      border-radius: 7px;
+
+      background: #fff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #c58b00;
+
+      box-shadow:
+        0 0 0 2px rgba(197,139,0,.1);
+    }
+
+    /* =================================
+       BUTTONS
+    ================================= */
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+
+      padding: 13px;
+
+      font-size: 15px;
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+    .calculate-btn {
+      flex: 1;
+
+      background: #c58b00;
+      color: #fff;
+    }
+
+    .calculate-btn:hover {
+      background: #a87400;
+    }
+
+    .reset-btn {
+      flex: 1;
+
+      background: #e7e7e7;
+      color: #333;
+    }
+
+    .reset-btn:hover {
+      background: #d8d8d8;
+    }
+
+    /* =================================
+       GOLD INFORMATION
+    ================================= */
+
+    .gold-info {
+      margin-top: 18px;
+      padding: 14px;
+
+      background: #fff8e5;
+      border: 1px solid #efd58b;
+      border-radius: 8px;
+
+      font-size: 14px;
+    }
+
+    .gold-info p {
+      margin: 7px 0;
+    }
+
+    /* =================================
+       SUMMARY
+    ================================= */
+
+    .emi-box {
+      margin-bottom: 10px;
+      padding: 5px 15px;
+
+      background: #fff8e5;
+      border: 1px solid #efd58b;
+      border-radius: 8px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 15px;
+
+      padding: 14px 0;
+
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-item:last-child {
+      border-bottom: 0;
+    }
+
+    .summary-label {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .summary-value {
+      color: #996700;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    /* =================================
+       AMORTIZATION BUTTON
+    ================================= */
+
+    .amortization-btn {
+      width: 100%;
+      margin-top: 20px;
+
+      background: #333;
+      color: #fff;
+    }
+
+    .amortization-btn:hover {
+      background: #111;
+    }
+
+    /* =================================
+       MODAL
+    ================================= */
+
+    .modal {
+      display: none;
+
+      position: fixed;
+      inset: 0;
+
+      z-index: 9999;
+
+      padding: 25px;
+
+      background: rgba(0,0,0,.65);
+    }
+
+    .modal.show {
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 1150px;
+      max-height: 92vh;
+
+      display: flex;
+      flex-direction: column;
+
+      background: #fff;
+
+      border-radius: 12px;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 15px 50px rgba(0,0,0,.35);
+    }
+
+    /* =================================
+       MODAL HEADER
+    ================================= */
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 17px 22px;
+
+      background: #c58b00;
+      color: #fff;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .close-btn {
+      padding: 0 5px;
+
+      background: transparent;
+      color: #fff;
+
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      background: transparent;
+      color: #ffe6a0;
+    }
+
+    /* =================================
+       MODAL BODY
+    ================================= */
+
+    .modal-body {
+      padding: 20px;
+      overflow: auto;
+    }
+
+    .table-wrapper {
+      width: 100%;
+
+      max-height: 60vh;
+
+      overflow-x: auto;
+      overflow-y: auto;
+
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    /* =================================
+       TABLE
+    ================================= */
+
+    table {
+      width: 100%;
+
+      min-width: 800px;
+
+      border-collapse: collapse;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+
+      padding: 13px 10px;
+
+      background: #c58b00;
+      color: #fff;
+
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 10px;
+
+      border-bottom: 1px solid #eee;
+
+      text-align: right;
+
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: center;
+    }
+
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    tr:hover {
+      background: #fff8e5;
+    }
+
+    .final-row {
+      background: #fff0c2 !important;
+      font-weight: 700;
+    }
+
+    /* =================================
+       MODAL FOOTER
+    ================================= */
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+
+      padding: 15px 20px;
+
+      border-top: 1px solid #ddd;
+    }
+
+    .modal-close {
+      padding: 10px 25px;
+
+      background: #333;
+      color: #fff;
+    }
+
+    .modal-close:hover {
+      background: #111;
+    }
+
+    /* =================================
+       FOOTER
+    ================================= */
+
+    .footer {
+      margin-top: 30px;
+
+      padding: 25px;
+
+      text-align: center;
+
+      color: #777;
+      font-size: 13px;
+    }
+
+    /* =================================
+       TABLET
+    ================================= */
+
+    @media (max-width: 950px) {
+
+      .three-columns {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .summary-card {
+        grid-column: span 2;
+      }
+
+    }
+
+    /* =================================
+       MOBILE
+    ================================= */
+
+    @media (max-width: 650px) {
+
+      .header {
+        padding: 15px;
+      }
+
+      .header-inner {
+        gap: 12px;
+      }
+
+      .logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 9px;
+      }
+
+      .logo-icon {
+        font-size: 27px;
+      }
+
+      .header-content h1 {
+        font-size: 21px;
+      }
+
+      .header-content p {
+        font-size: 12px;
+      }
+
+      .container {
+        width: 92%;
+        margin: 20px auto;
+      }
+
+      .three-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-card {
+        grid-column: span 1;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .modal {
+        padding: 8px;
+      }
+
+      .modal-content {
+        max-height: 96vh;
+      }
+
+      .modal-body {
+        padding: 10px;
+      }
+
+      .modal-header h2 {
+        font-size: 18px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =================================
+       HEADER
+  ================================= -->
+
+  <header class="header">
+
+    <div class="header-inner">
+
+      <div class="logo">
+        <div class="logo-icon"><img style="height:100%;width:100%" src="WCLogo.png"/></div>
+      </div>
+
+      <div class="header-content">
+
+        <h1>Gold Loan Calculator</h1>
+
+        <p>
+          Calculate EMI, interest and repayment schedule
+        </p>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =================================
+       MAIN
+  ================================= -->
+
+  <main class="container">
+
+    <div class="three-columns">
+
+      <!-- =================================
+           COLUMN 1 - GOLD DETAILS
+      ================================= -->
+
+      <section class="card">
+
+        <h2>Gold Details</h2>
+
+
+        <div class="form-group">
+
+          <label for="goldValue">
+            Gold Value (₹)
+          </label>
+
+          <input
+            type="number"
+            id="goldValue"
+            value="500000"
+            min="0"
+            step="1000"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="ltv">
+            Loan-to-Value (LTV %)
+          </label>
+
+          <input
+            type="number"
+            id="ltv"
+            value="75"
+            min="1"
+            max="100"
+            step="0.01"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="goldWeight">
+            Gold Weight (grams)
+          </label>
+
+          <input
+            type="number"
+            id="goldWeight"
+            value="50"
+            min="0"
+            step="0.01"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="goldRate">
+            Gold Rate / Gram (₹)
+          </label>
+
+          <input
+            type="number"
+            id="goldRate"
+            value="10000"
+            min="0"
+            step="100"
+          >
+
+        </div>
+
+
+        <div class="gold-info">
+
+          <p>
+            <strong>Maximum Loan:</strong>
+            <span id="maxLoan">₹0</span>
+          </p>
+
+          <p>
+            <strong>LTV:</strong>
+            <span id="displayLTV">0%</span>
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================
+           COLUMN 2 - LOAN DETAILS
+      ================================= -->
+
+      <section class="card">
+
+        <h2>Loan Details</h2>
+
+
+        <div class="form-group">
+
+          <label for="loanAmount">
+            Loan Amount (₹)
+          </label>
+
+          <input
+            type="number"
+            id="loanAmount"
+            value="375000"
+            min="0"
+            step="1000"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="interestRate">
+            Annual Interest Rate (%)
+          </label>
+
+          <input
+            type="number"
+            id="interestRate"
+            value="12"
+            min="0"
+            step="0.01"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="tenure">
+            Tenure (Months)
+          </label>
+
+          <input
+            type="number"
+            id="tenure"
+            value="24"
+            min="1"
+            max="360"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="repaymentType">
+            Repayment Type
+          </label>
+
+          <select id="repaymentType">
+
+            <option value="emi">
+              EMI
+            </option>
+
+            <option value="interest">
+              Interest Only
+            </option>
+
+            <option value="bullet">
+              Bullet Repayment
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="button-group">
+
+          <button
+            class="calculate-btn"
+            onclick="calculateLoan()"
+          >
+            Calculate
+          </button>
+
+
+          <button
+            class="reset-btn"
+            onclick="resetCalculator()"
+          >
+            Reset
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================
+           COLUMN 3 - SUMMARY
+      ================================= -->
+
+      <section class="card summary-card">
+
+        <h2>Loan Summary</h2>
+
+
+        <div class="emi-box">
+
+          <div class="summary-item">
+
+            <span class="summary-label">
+              Monthly EMI
+            </span>
+
+            <strong
+              class="summary-value"
+              id="resultEMI"
+            >
+              ₹0
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="summary-item">
+
+          <span class="summary-label">
+            Loan Amount
+          </span>
+
+          <strong
+            class="summary-value"
+            id="resultLoan"
+          >
+            ₹0
+          </strong>
+
+        </div>
+
+
+        <div class="summary-item">
+
+          <span class="summary-label">
+            Total Interest
+          </span>
+
+          <strong
+            class="summary-value"
+            id="resultInterest"
+          >
+            ₹0
+          </strong>
+
+        </div>
+
+
+        <div class="summary-item">
+
+          <span class="summary-label">
+            Total Repayment
+          </span>
+
+          <strong
+            class="summary-value"
+            id="resultTotal"
+          >
+            ₹0
+          </strong>
+
+        </div>
+
+
+        <div class="summary-item">
+
+          <span class="summary-label">
+            Interest / Loan
+          </span>
+
+          <strong
+            class="summary-value"
+            id="resultInterestPercent"
+          >
+            0%
+          </strong>
+
+        </div>
+
+
+        <div class="summary-item">
+
+          <span class="summary-label">
+            Tenure
+          </span>
+
+          <strong
+            class="summary-value"
+            id="resultTenure"
+          >
+            0 Months
+          </strong>
+
+        </div>
+
+
+        <button
+          class="amortization-btn"
+          onclick="openAmortization()"
+        >
+          📊 View Amortization Schedule
+        </button>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <!-- =================================
+       AMORTIZATION MODAL
+  ================================= -->
+
+  <div
+    class="modal"
+    id="amortizationModal"
+  >
+
+    <div class="modal-content">
+
+
+      <!-- MODAL HEADER -->
+
+      <div class="modal-header">
+
+        <h2>
+          Amortization Schedule
+        </h2>
+
+        <button
+          class="close-btn"
+          onclick="closeAmortization()"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+
+      </div>
+
+
+      <!-- MODAL BODY -->
+
+      <div class="modal-body">
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Month
+                </th>
+
+                <th>
+                  Opening Balance
+                </th>
+
+                <th>
+                  Payment
+                </th>
+
+                <th>
+                  Principal
+                </th>
+
+                <th>
+                  Interest
+                </th>
+
+                <th>
+                  Closing Balance
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody
+              id="amortizationBody"
+            >
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- MODAL FOOTER -->
+
+      <div class="modal-footer">
+
+        <button
+          class="modal-close"
+          onclick="closeAmortization()"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================
+       FOOTER
+  ================================= -->
+
+  <footer class="footer">
+
+    Gold Loan Calculator © 2026
+
+  </footer>
+
+
+  <script>
+
+    /* =================================
+       FORMAT CURRENCY
+    ================================= */
+
+    function formatCurrency(amount) {
+
+      return new Intl.NumberFormat(
+        "en-IN",
+        {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0
+        }
+      ).format(amount);
+
+    }
+
+
+    /* =================================
+       UPDATE MAXIMUM LOAN
+    ================================= */
+
+    function updateMaximumLoan() {
+
+      const goldValue =
+        parseFloat(
+          document.getElementById(
+            "goldValue"
+          ).value
+        ) || 0;
+
+
+      const ltv =
+        parseFloat(
+          document.getElementById(
+            "ltv"
+          ).value
+        ) || 0;
+
+
+      const maxLoan =
+        goldValue * ltv / 100;
+
+
+      document.getElementById(
+        "maxLoan"
+      ).textContent =
+        formatCurrency(maxLoan);
+
+
+      document.getElementById(
+        "displayLTV"
+      ).textContent =
+        ltv.toFixed(2) + "%";
+
+    }
+
+
+    /* =================================
+       UPDATE GOLD VALUE
+    ================================= */
+
+    function updateGoldValue() {
+
+      const weight =
+        parseFloat(
+          document.getElementById(
+            "goldWeight"
+          ).value
+        ) || 0;
+
+
+      const rate =
+        parseFloat(
+          document.getElementById(
+            "goldRate"
+          ).value
+        ) || 0;
+
+
+      const value =
+        weight * rate;
+
+
+      if (value > 0) {
+
+        document.getElementById(
+          "goldValue"
+        ).value =
+          Math.round(value);
+
+      }
+
+
+      updateMaximumLoan();
+
+    }
+
+
+    /* =================================
+       CALCULATE LOAN
+    ================================= */
+
+    function calculateLoan() {
+
+      updateMaximumLoan();
+
+
+      const goldValue =
+        parseFloat(
+          document.getElementById(
+            "goldValue"
+          ).value
+        ) || 0;
+
+
+      const ltv =
+        parseFloat(
+          document.getElementById(
+            "ltv"
+          ).value
+        ) || 0;
+
+
+      let loanAmount =
+        parseFloat(
+          document.getElementById(
+            "loanAmount"
+          ).value
+        ) || 0;
+
+
+      const interestRate =
+        parseFloat(
+          document.getElementById(
+            "interestRate"
+          ).value
+        ) || 0;
+
+
+      const months =
+        parseInt(
+          document.getElementById(
+            "tenure"
+          ).value
+        ) || 0;
+
+
+      const repaymentType =
+        document.getElementById(
+          "repaymentType"
+        ).value;
+
+
+      if (
+        goldValue <= 0 ||
+        loanAmount <= 0 ||
+        months <= 0
+      ) {
+
+        alert(
+          "Please enter valid loan details."
+        );
+
+        return;
+
+      }
+
+
+      const maximumLoan =
+        goldValue * ltv / 100;
+
+
+      if (
+        loanAmount > maximumLoan
+      ) {
+
+        loanAmount =
+          maximumLoan;
+
+
+        document.getElementById(
+          "loanAmount"
+        ).value =
+          Math.round(loanAmount);
+
+      }
+
+
+      const monthlyRate =
+        interestRate / 100 / 12;
+
+
+      let emi = 0;
+
+      let totalInterest = 0;
+
+      let totalPayment = 0;
+
+
+      /* =================================
+         EMI
+      ================================= */
+
+      if (
+        repaymentType === "emi"
+      ) {
+
+        if (
+          monthlyRate === 0
+        ) {
+
+          emi =
+            loanAmount / months;
+
+        } else {
+
+          emi =
+            loanAmount *
+            monthlyRate *
+            Math.pow(
+              1 + monthlyRate,
+              months
+            ) /
+            (
+              Math.pow(
+                1 + monthlyRate,
+                months
+              ) - 1
+            );
+
+        }
+
+
+        totalPayment =
+          emi * months;
+
+
+        totalInterest =
+          totalPayment -
+          loanAmount;
+
+      }
+
+
+      /* =================================
+         INTEREST ONLY
+      ================================= */
+
+      else if (
+        repaymentType === "interest"
+      ) {
+
+        const monthlyInterest =
+          loanAmount *
+          monthlyRate;
+
+
+        emi =
+          monthlyInterest;
+
+
+        totalInterest =
+          monthlyInterest *
+          months;
+
+
+        totalPayment =
+          loanAmount +
+          totalInterest;
+
+      }
+
+
+      /* =================================
+         BULLET
+      ================================= */
+
+      else if (
+        repaymentType === "bullet"
+      ) {
+
+        const monthlyInterest =
+          loanAmount *
+          monthlyRate;
+
+
+        emi =
+          monthlyInterest;
+
+
+        totalInterest =
+          monthlyInterest *
+          months;
+
+
+        totalPayment =
+          loanAmount +
+          totalInterest;
+
+      }
+
+
+      /* =================================
+         SUMMARY
+      ================================= */
+
+      document.getElementById(
+        "resultLoan"
+      ).textContent =
+        formatCurrency(
+          loanAmount
+        );
+
+
+      document.getElementById(
+        "resultEMI"
+      ).textContent =
+        formatCurrency(
+          emi
+        );
+
+
+      document.getElementById(
+        "resultInterest"
+      ).textContent =
+        formatCurrency(
+          totalInterest
+        );
+
+
+      document.getElementById(
+        "resultTotal"
+      ).textContent =
+        formatCurrency(
+          totalPayment
+        );
+
+
+      document.getElementById(
+        "resultTenure"
+      ).textContent =
+        months +
+        " Months";
+
+
+      document.getElementById(
+        "resultInterestPercent"
+      ).textContent =
+        (
+          totalInterest /
+          loanAmount *
+          100
+        ).toFixed(2) +
+        "%";
+
+
+      /* Generate schedule */
+
+      generateAmortization(
+        loanAmount,
+        interestRate,
+        months,
+        repaymentType,
+        emi
+      );
+
+    }
+
+
+    /* =================================
+       AMORTIZATION SCHEDULE
+    ================================= */
+
+    function generateAmortization(
+      loanAmount,
+      annualRate,
+      months,
+      repaymentType,
+      emi
+    ) {
+
+      const body =
+        document.getElementById(
+          "amortizationBody"
+        );
+
+
+      body.innerHTML = "";
+
+
+      const monthlyRate =
+        annualRate / 100 / 12;
+
+
+      let balance =
+        loanAmount;
+
+
+      for (
+        let month = 1;
+        month <= months;
+        month++
+      ) {
+
+        const openingBalance =
+          balance;
+
+
+        let interest =
+          0;
+
+        let principal =
+          0;
+
+        let payment =
+          0;
+
+
+        /* =========================
+           EMI
+        ========================= */
+
+        if (
+          repaymentType === "emi"
+        ) {
+
+          interest =
+            balance *
+            monthlyRate;
+
+
+          principal =
+            emi - interest;
+
+
+          payment =
+            emi;
+
+
+          if (
+            month === months
+          ) {
+
+            principal =
+              balance;
+
+
+            payment =
+              principal +
+              interest;
+
+          }
+
+
+          balance -=
+            principal;
+
+        }
+
+
+        /* =========================
+           INTEREST ONLY
+        ========================= */
+
+        else if (
+          repaymentType === "interest"
+        ) {
+
+          interest =
+            loanAmount *
+            monthlyRate;
+
+
+          payment =
+            interest;
+
+
+          principal =
+            0;
+
+
+          if (
+            month === months
+          ) {
+
+            principal =
+              loanAmount;
+
+
+            payment =
+              interest +
+              principal;
+
+
+            balance =
+              0;
+
+          }
+
+        }
+
+
+        /* =========================
+           BULLET
+        ========================= */
+
+        else if (
+          repaymentType === "bullet"
+        ) {
+
+          interest =
+            loanAmount *
+            monthlyRate;
+
+
+          payment =
+            interest;
+
+
+          principal =
+            0;
+
+
+          if (
+            month === months
+          ) {
+
+            principal =
+              loanAmount;
+
+
+            payment =
+              interest +
+              principal;
+
+
+            balance =
+              0;
+
+          }
+
+        }
+
+
+        if (
+          Math.abs(balance) <
+          0.01
+        ) {
+
+          balance = 0;
+
+        }
+
+
+        const row =
+          document.createElement(
+            "tr"
+          );
+
+
+        if (
+          month === months
+        ) {
+
+          row.classList.add(
+            "final-row"
+          );
+
+        }
+
+
+        row.innerHTML = `
+
+          <td>
+            ${month}
+          </td>
+
+          <td>
+            ${formatCurrency(
+              openingBalance
+            )}
+          </td>
+
+          <td>
+            ${formatCurrency(
+              payment
+            )}
+          </td>
+
+          <td>
+            ${formatCurrency(
+              principal
+            )}
+          </td>
+
+          <td>
+            ${formatCurrency(
+              interest
+            )}
+          </td>
+
+          <td>
+            ${formatCurrency(
+              balance
+            )}
+          </td>
+
+        `;
+
+
+        body.appendChild(row);
+
+      }
+
+    }
+
+
+    /* =================================
+       OPEN MODAL
+    ================================= */
+
+    function openAmortization() {
+
+      document
+        .getElementById(
+          "amortizationModal"
+        )
+        .classList.add(
+          "show"
+        );
+
+    }
+
+
+    /* =================================
+       CLOSE MODAL
+    ================================= */
+
+    function closeAmortization() {
+
+      document
+        .getElementById(
+          "amortizationModal"
+        )
+        .classList.remove(
+          "show"
+        );
+
+    }
+
+
+    /* =================================
+       CLICK OUTSIDE MODAL
+    ================================= */
+
+    document
+      .getElementById(
+        "amortizationModal"
+      )
+      .addEventListener(
+        "click",
+        function(event) {
+
+          if (
+            event.target === this
+          ) {
+
+            closeAmortization();
+
+          }
+
+        }
+      );
+
+
+    /* =================================
+       ESC KEY
+    ================================= */
+
+    document.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          closeAmortization();
+
+        }
+
+      }
+    );
+
+
+    /* =================================
+       RESET
+    ================================= */
+
+    function resetCalculator() {
+
+      document.getElementById(
+        "goldValue"
+      ).value = 500000;
+
+
+      document.getElementById(
+        "ltv"
+      ).value = 75;
+
+
+      document.getElementById(
+        "goldWeight"
+      ).value = 50;
+
+
+      document.getElementById(
+        "goldRate"
+      ).value = 10000;
+
+
+      document.getElementById(
+        "loanAmount"
+      ).value = 375000;
+
+
+      document.getElementById(
+        "interestRate"
+      ).value = 12;
+
+
+      document.getElementById(
+        "tenure"
+      ).value = 24;
+
+
+      document.getElementById(
+        "repaymentType"
+      ).value = "emi";
+
+
+      calculateLoan();
+
+    }
+
+
+    /* =================================
+       LIVE GOLD VALUE
+    ================================= */
+
+    document
+      .getElementById(
+        "goldWeight"
+      )
+      .addEventListener(
+        "input",
+        updateGoldValue
+      );
+
+
+    document
+      .getElementById(
+        "goldRate"
+      )
+      .addEventListener(
+        "input",
+        updateGoldValue
+      );
+
+
+    document
+      .getElementById(
+        "goldValue"
+      )
+      .addEventListener(
+        "input",
+        updateMaximumLoan
+      );
+
+
+    document
+      .getElementById(
+        "ltv"
+      )
+      .addEventListener(
+        "input",
+        updateMaximumLoan
+      );
+
+
+    /* =================================
+       INITIAL CALCULATION
+    ================================= */
+
+    calculateLoan();
+
+  </script>
+
+</body>
+</html>

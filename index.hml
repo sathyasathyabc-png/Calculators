@@ -937,9 +937,7 @@
         } else {
           card.style.display = "none";
         }
-
       });
-
     }
 
 

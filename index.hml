@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CalcHub — Smart Online Calculators</title>
+  <meta name="description" content="Free, fast and easy-to-use online calculators for everyday needs.">
+
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --primary-dark: #5541d7;
+      --secondary: #00b894;
+      --dark: #171827;
+      --text: #55586a;
+      --light: #f7f8fc;
+      --white: #ffffff;
+      --border: #e9eaf1;
+      --shadow: 0 15px 40px rgba(31, 35, 60, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Arial, sans-serif;
+      color: var(--dark);
+      background: var(--light);
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar {
+      max-width: 1180px;
+      margin: auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--dark);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #a55eea);
+      font-size: 20px;
+      box-shadow: 0 8px 20px rgba(108, 92, 231, 0.25);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      color: #55586a;
+      font-size: 15px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    .nav-button {
+      color: white !important;
+      background: var(--primary);
+      padding: 10px 17px;
+      border-radius: 10px;
+    }
+
+    .nav-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .menu-toggle {
+      display: none;
+      border: none;
+      background: transparent;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      background:
+        radial-gradient(circle at 10% 20%, rgba(108, 92, 231, 0.16), transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(0, 184, 148, 0.12), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%);
+      padding: 90px 20px 75px;
+      text-align: center;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 14px;
+      border-radius: 30px;
+      background: #eeecff;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary), #a55eea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: auto;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .hero-actions {
+      margin-top: 32px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 22px;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 10px 25px rgba(108, 92, 231, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: var(--primary-dark);
+    }
+
+    .btn-light {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--dark);
+    }
+
+    .btn-light:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    .search-wrapper {
+      max-width: 650px;
+      margin: -28px auto 0;
+      position: relative;
+      z-index: 5;
+      padding: 0 20px;
+    }
+
+    .search-box {
+      background: white;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 15px;
+      padding: 7px;
+      display: flex;
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 14px;
+      font-size: 15px;
+      color: var(--dark);
+    }
+
+    .search-box button {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 0 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .section {
+      max-width: 1180px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .section-header {
+      margin-bottom: 30px;
+    }
+
+    .section-header h2 {
+      font-size: 32px;
+      letter-spacing: -0.5px;
+      margin-bottom: 5px;
+    }
+
+    .section-header p {
+      color: var(--text);
+    }
+
+    /* =========================
+       CALCULATOR CARDS
+    ========================= */
+
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .calculator-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 25px;
+      transition: 0.25s;
+      box-shadow: 0 5px 20px rgba(30, 35, 60, 0.03);
+    }
+
+    .calculator-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: #dcd9ff;
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      font-size: 25px;
+      margin-bottom: 18px;
+      background: #f0eeff;
+    }
+
+    .calculator-card h3 {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .calculator-card p {
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .card-link {
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .card-link:hover {
+      color: var(--primary-dark);
+    }
+
+    /* =========================
+       CATEGORY SECTION
+    ========================= */
+
+    .categories {
+      background: white;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .category {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      transition: 0.2s;
+    }
+
+    .category:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .category-icon {
+      font-size: 28px;
+      margin-bottom: 7px;
+    }
+
+    .category h3 {
+      font-size: 15px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      background: var(--dark);
+      color: #b9bbca;
+      padding: 55px 20px 25px;
+    }
+
+    .footer-inner {
+      max-width: 1180px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 50px;
+    }
+
+    footer .logo {
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .footer-description {
+      max-width: 400px;
+      font-size: 14px;
+    }
+
+    footer h4 {
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    footer ul {
+      list-style: none;
+    }
+
+    footer li {
+      margin-bottom: 9px;
+      font-size: 14px;
+    }
+
+    footer a:hover {
+      color: white;
+    }
+
+    .copyright {
+      max-width: 1180px;
+      margin: 40px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid #303143;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 850px) {
+      .calculator-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      nav {
+        display: none;
+        position: absolute;
+        top: 73px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 20px;
+        flex-direction: column;
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding-top: 65px;
+      }
+
+      .calculator-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .category-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .hero h1 {
+        letter-spacing: -1px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER / NAVIGATION
+  ========================== -->
+
+  <header>
+    <div class="navbar">
+
+      <a href="index.html" class="logo">
+        <span class="logo-icon">∑</span>
+        CalcHub
+      </a>
+
+      <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">
+        ☰
+      </button>
+
+      <nav id="mainNav">
+        <a href="index.html">Home</a>
+        <a href="#calculators">Calculators</a>
+        <a href="#categories">Categories</a>
+        <a href="#about">About</a>
+        <a href="#calculators" class="nav-button">Explore Tools</a>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <!-- =========================
+       HERO
+  ========================== -->
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <span class="badge">✨ Free Online Calculators</span>
+
+      <h1>
+        Simple tools for
+        <span>smarter decisions.</span>
+      </h1>
+
+      <p>
+        Calculate, compare and plan with our collection of
+        fast, accurate and easy-to-use online calculators.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#calculators" class="btn btn-primary">
+          Explore Calculators →
+        </a>
+
+        <a href="#categories" class="btn btn-light">
+          Browse Categories
+        </a>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       SEARCH
+  ========================== -->
+
+  <div class="search-wrapper">
+
+    <div class="search-box">
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search calculators..."
+        aria-label="Search calculators"
+      >
+
+      <button onclick="searchCalculators()">
+        Search
+      </button>
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       CALCULATORS
+  ========================== -->
+
+  <main>
+
+    <section class="section" id="calculators">
+
+      <div class="section-header">
+        <h2>Popular Calculators</h2>
+        <p>Quickly access our most useful tools.</p>
+      </div>
+
+      <div class="calculator-grid" id="calculatorGrid">
+
+
+        <!-- Calculator 1 -->
+        <article class="calculator-card" data-name="PPF calculator">
+
+          <div class="card-icon">%</div>
+
+          <h3>PPF Calculator</h3>
+
+          <p>
+            Enter yearly investments and calculate your PPF maturity value
+          </p>
+
+          <!-- Change this URL to your calculator page -->
+          <a href="ppf.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 2 -->
+        <article class="calculator-card" data-name="age calculator">
+
+          <div class="card-icon">🎂</div>
+
+          <h3>Age Calculator</h3>
+
+          <p>
+            Calculate your exact age in years, months,
+            days and more.
+          </p>
+
+          <a href="calculators/age.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 3 -->
+        <article class="calculator-card" data-name="goldloan calculator">
+
+          <div class="card-icon">💰</div>
+
+          <h3>Gold Loan Calculator</h3>
+
+          <p>
+            Estimate monthly payments, total interest
+            and loan costs.
+          </p>
+
+          <a href="goldloan.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 4 -->
+        <article class="calculator-card" data-name="emi calculator">
+
+          <div class="card-icon">🏦</div>
+
+          <h3>EMI Calculator</h3>
+
+          <p>
+            Calculate monthly EMI for home, personal
+            and other loans.
+          </p>
+
+          <a href="calculators/emi.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 5 -->
+        <article class="calculator-card" data-name="bmi calculator">
+
+          <div class="card-icon">⚖️</div>
+
+          <h3>BMI Calculator</h3>
+
+          <p>
+            Calculate Body Mass Index using your height
+            and weight.
+          </p>
+
+          <a href="calculators/bmi.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 6 -->
+        <article class="calculator-card" data-name="compound interest calculator">
+
+          <div class="card-icon">📈</div>
+
+          <h3>Compound Interest</h3>
+
+          <p>
+            See how your money can grow with compound
+            interest over time.
+          </p>
+
+          <a href="calculators/compound-interest.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 7 -->
+        <article class="calculator-card" data-name="gst calculator">
+
+          <div class="card-icon">🧾</div>
+
+          <h3>GST Calculator</h3>
+
+          <p>
+            Quickly calculate GST amounts and
+            GST-inclusive prices.
+          </p>
+
+          <a href="calculators/gst.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 8 -->
+        <article class="calculator-card" data-name="discount calculator">
+
+          <div class="card-icon">🏷️</div>
+
+          <h3>Discount Calculator</h3>
+
+          <p>
+            Calculate sale prices, discounts and
+            how much you save.
+          </p>
+
+          <a href="calculators/discount.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+
+        <!-- Calculator 9 -->
+        <article class="calculator-card" data-name="unit converter">
+
+          <div class="card-icon">📏</div>
+
+          <h3>Unit Converter</h3>
+
+          <p>
+            Convert length, weight, temperature and
+            other common units.
+          </p>
+
+          <a href="calculators/unit-converter.html" class="card-link">
+            Open Calculator →
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CATEGORIES
+    ========================== -->
+
+    <section class="categories" id="categories">
+
+      <div class="section">
+
+        <div class="section-header">
+          <h2>Browse by Category</h2>
+          <p>Find the right calculator for your needs.</p>
+        </div>
+
+        <div class="category-grid">
+
+          <a href="categories/finance.html" class="category">
+            <div class="category-icon">💵</div>
+            <h3>Finance</h3>
+          </a>
+
+          <a href="categories/health.html" class="category">
+            <div class="category-icon">❤️</div>
+            <h3>Health</h3>
+          </a>
+
+          <a href="categories/math.html" class="category">
+            <div class="category-icon">🔢</div>
+            <h3>Math</h3>
+          </a>
+
+          <a href="categories/conversion.html" class="category">
+            <div class="category-icon">🔄</div>
+            <h3>Conversion</h3>
+          </a>
+
+          <a href="categories/time.html" class="category">
+            <div class="category-icon">⏱️</div>
+            <h3>Time & Date</h3>
+          </a>
+
+          <a href="categories/business.html" class="category">
+            <div class="category-icon">💼</div>
+            <h3>Business</h3>
+          </a>
+
+          <a href="categories/everyday.html" class="category">
+            <div class="category-icon">🧮</div>
+            <h3>Everyday</h3>
+          </a>
+
+          <a href="categories/other.html" class="category">
+            <div class="category-icon">✨</div>
+            <h3>More Tools</h3>
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ABOUT
+    ========================== -->
+
+    <section class="section" id="about">
+
+      <div class="section-header">
+        <h2>Why CalcHub?</h2>
+
+        <p>
+          Fast, simple and mobile-friendly calculators designed
+          to make everyday calculations easier.
+        </p>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer>
+
+    <div class="footer-inner">
+
+      <div>
+        <a href="index.html" class="logo">
+          <span class="logo-icon">∑</span>
+          CalcHub
+        </a>
+
+        <p class="footer-description">
+          Free online calculators for finance, health,
+          mathematics, business and everyday calculations.
+        </p>
+      </div>
+
+
+      <div>
+        <h4>Calculators</h4>
+
+        <ul>
+          <li><a href="calculators/percentage.html">Percentage</a></li>
+          <li><a href="calculators/age.html">Age</a></li>
+          <li><a href="calculators/loan.html">Loan</a></li>
+          <li><a href="calculators/bmi.html">BMI</a></li>
+        </ul>
+      </div>
+
+
+      <div>
+        <h4>Website</h4>
+
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#categories">Categories</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © 2026 CalcHub. All rights reserved.
+    </div>
+
+  </footer>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+
+  <script>
+
+    // Mobile navigation
+    function toggleMenu() {
+      document.getElementById("mainNav").classList.toggle("active");
+    }
+
+
+    // Calculator search
+    function searchCalculators() {
+
+      const input =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+      const cards =
+        document.querySelectorAll(".calculator-card");
+
+      cards.forEach(card => {
+
+        const name =
+          card.dataset.name.toLowerCase();
+
+        if (name.includes(input)) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+
+      });
+
+    }
+
+
+    // Search while typing
+    document
+      .getElementById("searchInput")
+      .addEventListener("input", searchCalculators);
+
+  </script>
+
+</body>
+</html>

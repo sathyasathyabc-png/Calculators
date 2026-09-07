@@ -1,0 +1,669 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>15 Year PPF Calculator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f3f7f5;
+    color: #1f2937;
+}
+
+.container {
+    width: 98%;
+    max-width: 1500px;
+    margin: 20px auto;
+}
+
+/* HEADER */
+
+.header {
+    background: linear-gradient(135deg, #087443, #0b9258);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px 12px 0 0;
+}
+
+.header h1 {
+    margin: 0 0 5px;
+    font-size: 26px;
+}
+
+.header p {
+    margin: 0;
+    opacity: .9;
+}
+
+
+/* THREE COLUMN LAYOUT */
+
+.three-sections {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr 1.8fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+
+/* SECTION */
+
+.section {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    min-width: 0;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #087443;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 12px;
+}
+
+.section-title h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.number {
+    background: #087443;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+
+/* INVESTMENT SECTION */
+
+.rate-box {
+    margin-bottom: 15px;
+}
+
+.rate-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.rate-box input {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #ccd6d1;
+    border-radius: 6px;
+}
+
+.investment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.investment-box {
+    background: #f8fbf9;
+    border: 1px solid #dce7e1;
+    border-radius: 7px;
+    padding: 8px;
+}
+
+.investment-box label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: #087443;
+    margin-bottom: 5px;
+}
+
+.investment-box input {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid #ccd6d1;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.calculate-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 7px;
+    background: #087443;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.calculate-btn:hover {
+    background: #065c36;
+}
+
+
+/* SUMMARY SECTION */
+
+.summary-item {
+    padding: 15px;
+    background: #ecfdf5;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #d1fae5;
+}
+
+.summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.summary-label {
+    color: #047857;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.summary-value {
+    color: #064e3b;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.maturity {
+    background: #087443;
+}
+
+.maturity .summary-label,
+.maturity .summary-value {
+    color: white;
+}
+
+
+/* TABLE SECTION */
+
+.table-wrapper {
+    overflow-x: auto;
+    max-height: 620px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background: #087443;
+    color: white;
+    padding: 9px 6px;
+    text-align: right;
+}
+
+th:first-child,
+td:first-child {
+    text-align: center;
+}
+
+td {
+    padding: 8px 6px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: right;
+}
+
+tr:nth-child(even) {
+    background: #f8faf9;
+}
+
+.note {
+    margin-top: 12px;
+    background: #fff8e7;
+    border-left: 3px solid #e5a800;
+    padding: 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #66501a;
+}
+
+
+/* TABLET */
+
+@media(max-width: 1100px) {
+
+    .three-sections {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .section:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+}
+
+
+/* MOBILE */
+
+@media(max-width: 700px) {
+
+    .three-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .section:nth-child(3) {
+        grid-column: auto;
+    }
+
+    .investment-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+
+/* SMALL MOBILE */
+
+@media(max-width: 450px) {
+
+    .investment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header h1 {
+        font-size: 22px;
+    }
+
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+        <h1>15-Year PPF Calculator</h1>
+        <p>Enter yearly investments and calculate your PPF maturity value</p>
+    </div>
+
+
+    <!-- THREE SECTIONS IN ONE ROW -->
+
+    <div class="three-sections">
+
+
+        <!-- =====================================
+             SECTION 1 : YEARLY INVESTMENT
+        ====================================== -->
+
+        <div class="section">
+
+            <div class="section-title">
+                <div class="number">1</div>
+                <h2>Yearly Investment</h2>
+            </div>
+
+
+            <div class="rate-box">
+                <label>Interest Rate (% p.a.)</label>
+
+                <input
+                    type="number"
+                    id="rate"
+                    value="7.1"
+                    step="0.01"
+                    oninput="calculatePPF()"
+                >
+            </div>
+
+
+            <div class="investment-grid">
+
+                <div class="investment-box">
+                    <label>Year 1</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 2</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 3</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 4</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 5</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 6</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 7</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 8</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 9</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 10</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 11</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 12</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 13</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 14</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+                <div class="investment-box">
+                    <label>Year 15</label>
+                    <input type="number" class="investment" value="150000">
+                </div>
+
+            </div>
+
+
+            <button class="calculate-btn" onclick="calculatePPF()">
+                Calculate PPF
+            </button>
+
+        </div>
+
+
+        <!-- =====================================
+             SECTION 2 : SUMMARY
+        ====================================== -->
+
+        <div class="section">
+
+            <div class="section-title">
+                <div class="number">2</div>
+                <h2>PPF Summary</h2>
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Total Investment
+                </div>
+
+                <div class="summary-value" id="totalInvestment">
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Total Interest
+                </div>
+
+                <div class="summary-value" id="totalInterest">
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Interest Rate
+                </div>
+
+                <div class="summary-value" id="displayRate">
+                    7.1%
+                </div>
+
+            </div>
+
+
+            <div class="summary-item maturity">
+
+                <div class="summary-label">
+                    15-Year Maturity Value
+                </div>
+
+                <div class="summary-value" id="maturityValue">
+                    ₹0
+                </div>
+
+            </div>
+
+	<div>
+
+                <img style="height:150px;width:100%" src="WCLogo.png"/>
+
+            </div>
+        </div>
+
+
+        <!-- =====================================
+             SECTION 3 : YEAR-WISE DETAILS
+        ====================================== -->
+
+        <div class="section">
+
+            <div class="section-title">
+                <div class="number">3</div>
+                <h2>Year-Wise Details</h2>
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Year</th>
+                            <th>Investment</th>
+                            <th>Opening</th>
+                            <th>Interest</th>
+                            <th>Closing</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="resultTable"></tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="note">
+
+                <strong>Note:</strong>
+                This is an illustrative calculation using the selected
+                annual interest rate. Actual PPF interest is calculated
+                according to the applicable PPF rules and interest rates.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function formatINR(value) {
+
+    return "₹" +
+        Math.round(value).toLocaleString("en-IN");
+
+}
+
+
+function calculatePPF() {
+
+    const rate =
+        Number(document.getElementById("rate").value) / 100;
+
+
+    const investments =
+        document.querySelectorAll(".investment");
+
+
+    let balance = 0;
+
+    let totalInvestment = 0;
+
+    let totalInterest = 0;
+
+
+    const table =
+        document.getElementById("resultTable");
+
+
+    table.innerHTML = "";
+
+
+    investments.forEach((input, index) => {
+
+        const year = index + 1;
+
+        const investment =
+            Number(input.value) || 0;
+
+
+        const openingBalance =
+            balance;
+
+
+        /*
+         * Investment assumed at beginning
+         * of each year.
+         */
+
+        balance += investment;
+
+
+        const interest =
+            balance * rate;
+
+
+        balance += interest;
+
+
+        totalInvestment += investment;
+
+        totalInterest += interest;
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>${year}</td>
+
+            <td>${formatINR(investment)}</td>
+
+            <td>${formatINR(openingBalance)}</td>
+
+            <td>${formatINR(interest)}</td>
+
+            <td>${formatINR(balance)}</td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+
+    document.getElementById("totalInvestment")
+        .textContent =
+        formatINR(totalInvestment);
+
+
+    document.getElementById("totalInterest")
+        .textContent =
+        formatINR(totalInterest);
+
+
+    document.getElementById("maturityValue")
+        .textContent =
+        formatINR(balance);
+
+
+    document.getElementById("displayRate")
+        .textContent =
+        (rate * 100).toFixed(2) + "%";
+
+}
+
+
+/* Initial calculation */
+
+calculatePPF();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+
+    .calculator {
+      width: 90%;
+      max-width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #222;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: #2575fc;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #145dcc;
+    }
+
+    #result {
+      margin-top: 22px;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .error {
+      color: #d32f2f !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="calculator">
+    <h1>🎂 Age Calculator</h1>
+
+    <label for="birthdate">Date of Birth</label>
+    <input type="date" id="birthdate">
+
+    <button onclick="calculateAge()">Calculate Age</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    // Prevent selecting a future birth date
+    const birthdateInput = document.getElementById("birthdate");
+    birthdateInput.max = getLocalDateString(new Date());
+
+    function getLocalDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
+    function calculateAge() {
+      const birthValue = birthdateInput.value;
+      const result = document.getElementById("result");
+
+      if (!birthValue) {
+        result.className = "error";
+        result.textContent = "Please select your date of birth.";
+        return;
+      }
+
+      const [year, month, day] = birthValue.split("-").map(Number);
+
+      const today = new Date();
+      const birthDate = new Date(year, month - 1, day);
+
+      if (birthDate > today) {
+        result.className = "error";
+        result.textContent = "Date of birth cannot be in the future.";
+        return;
+      }
+
+      let years = today.getFullYear() - year;
+      let months = today.getMonth() - (month - 1);
+      let days = today.getDate() - day;
+
+      if (days < 0) {
+        months--;
+
+        // Number of days in the previous month
+        const daysInPreviousMonth = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          0
+        ).getDate();
+
+        days += daysInPreviousMonth;
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      result.className = "";
+      result.innerHTML = `
+        Your age is:<br>
+        ${years} Years, ${months} Months, ${days} Days
+      `;
+    }
+  </script>
+
+</body>
+</html>

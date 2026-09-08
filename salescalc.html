@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sales Discount & Profit Calculator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    background: #f4f7fb;
+    color: #222;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.card {
+    background: #fff;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.range-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: end;
+}
+
+button {
+    border: none;
+    border-radius: 7px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.add-btn {
+    background: #16a34a;
+    color: white;
+}
+
+.delete-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.calculate-btn {
+    width: 100%;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    padding: 15px;
+}
+
+.results {
+    display: none;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.result-box {
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 9px;
+}
+
+.result-box span {
+    display: block;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.result-box strong {
+    font-size: 20px;
+}
+
+.green {
+    color: #15803d;
+}
+
+.red {
+    color: #dc2626;
+}
+
+.blue {
+    color: #2563eb;
+}
+
+.profit-summary {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f0fdf4;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.big-profit {
+    font-size: 32px;
+    font-weight: bold;
+    color: #15803d;
+}
+
+.warning {
+    background: #fef2f2;
+    color: #b91c1c;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.info {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+@media(max-width: 700px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .range-row {
+        grid-template-columns: 1fr;
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Sales Discount & Profit Calculator</h1>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Original / Cost Price</label>
+                <input
+                    type="number"
+                    id="costPrice"
+                    placeholder="₹ Cost price"
+                    min="0"
+                    step="0.01"
+                >
+            </div>
+
+            <div>
+                <label>Selling Price</label>
+                <input
+                    type="number"
+                    id="sellingPrice"
+                    placeholder="₹ Selling price"
+                    min="0"
+                    step="0.01"
+                >
+            </div>
+
+            <div>
+                <label>Quantity</label>
+                <input
+                    type="number"
+                    id="quantity"
+                    placeholder="Quantity"
+                    min="1"
+                    step="1"
+                >
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DISCOUNT RANGES -->
+
+    <div class="card">
+
+        <h2>Quantity Discount Ranges</h2>
+
+        <div class="info">
+            Set your own quantity ranges and discount percentages.
+            The matching range will automatically be applied.
+        </div>
+
+        <div id="discountRanges"></div>
+
+        <button class="add-btn" onclick="addRange()">
+            + Add Discount Range
+        </button>
+
+    </div>
+
+
+    <!-- CALCULATE -->
+
+    <div class="card">
+
+        <button class="calculate-btn" onclick="calculate()">
+            Calculate
+        </button>
+
+    </div>
+
+
+    <!-- RESULTS -->
+
+    <div class="card results" id="results">
+
+        <h2>Calculation Results</h2>
+
+        <div class="result-grid">
+
+            <div class="result-box">
+                <span>Original / Cost Price Per Item</span>
+                <strong>
+                    ₹<span id="rCost">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Selling Price Per Item</span>
+                <strong>
+                    ₹<span id="rSelling">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Quantity</span>
+                <strong id="rQuantity">0</strong>
+            </div>
+
+            <div class="result-box">
+                <span>Discount Range</span>
+                <strong id="rRange">None</strong>
+            </div>
+
+            <div class="result-box">
+                <span>Discount Percentage</span>
+                <strong class="blue">
+                    <span id="rDiscountPercent">0</span>%
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Gross Sales Value</span>
+                <strong>
+                    ₹<span id="rGrossSales">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Discount Amount</span>
+                <strong class="red">
+                    ₹<span id="rDiscountAmount">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Final Sales Value</span>
+                <strong>
+                    ₹<span id="rFinalSales">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Total Cost</span>
+                <strong>
+                    ₹<span id="rTotalCost">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Profit Per Item</span>
+                <strong class="green">
+                    ₹<span id="rProfitItem">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Total Profit</span>
+                <strong class="green">
+                    ₹<span id="rTotalProfit">0.00</span>
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Profit Margin</span>
+                <strong class="green">
+                    <span id="rMargin">0.00</span>%
+                </strong>
+            </div>
+
+            <div class="result-box">
+                <span>Markup</span>
+                <strong class="blue">
+                    <span id="rMarkup">0.00</span>%
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="profit-summary">
+
+            <div>Final Total Profit</div>
+
+            <div class="big-profit">
+                ₹<span id="rBigProfit">0.00</span>
+            </div>
+
+        </div>
+
+        <div id="warning"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let rangeID = 0;
+
+
+/* -----------------------------
+   ADD DISCOUNT RANGE
+----------------------------- */
+
+function addRange(min = "", max = "", discount = "") {
+
+    rangeID++;
+
+    const container =
+        document.getElementById("discountRanges");
+
+    const row =
+        document.createElement("div");
+
+    row.className = "range-row";
+
+    row.id = "range-" + rangeID;
+
+    row.innerHTML = `
+
+        <div>
+            <label>Minimum Qty</label>
+            <input
+                type="number"
+                class="minQty"
+                min="1"
+                value="${min}"
+                placeholder="1"
+            >
+        </div>
+
+        <div>
+            <label>Maximum Qty</label>
+            <input
+                type="number"
+                class="maxQty"
+                min="1"
+                value="${max}"
+                placeholder="10"
+            >
+        </div>
+
+        <div>
+            <label>Discount %</label>
+            <input
+                type="number"
+                class="discount"
+                min="0"
+                max="100"
+                step="0.01"
+                value="${discount}"
+                placeholder="5"
+            >
+        </div>
+
+        <button
+            class="delete-btn"
+            onclick="removeRange(${rangeID})"
+        >
+            Delete
+        </button>
+
+    `;
+
+    container.appendChild(row);
+}
+
+
+/* -----------------------------
+   DELETE RANGE
+----------------------------- */
+
+function removeRange(id) {
+
+    const row =
+        document.getElementById("range-" + id);
+
+    if (row) {
+        row.remove();
+    }
+}
+
+
+/* -----------------------------
+   GET RANGES
+----------------------------- */
+
+function getRanges() {
+
+    const rows =
+        document.querySelectorAll(".range-row");
+
+    const ranges = [];
+
+    rows.forEach(row => {
+
+        const min =
+            parseFloat(
+                row.querySelector(".minQty").value
+            );
+
+        const max =
+            parseFloat(
+                row.querySelector(".maxQty").value
+            );
+
+        const discount =
+            parseFloat(
+                row.querySelector(".discount").value
+            );
+
+        if (
+            !isNaN(min) &&
+            !isNaN(max) &&
+            !isNaN(discount)
+        ) {
+
+            ranges.push({
+                min: min,
+                max: max,
+                discount: discount
+            });
+
+        }
+
+    });
+
+    return ranges;
+}
+
+
+/* -----------------------------
+   CALCULATE
+----------------------------- */
+
+function calculate() {
+
+    const costPrice =
+        parseFloat(
+            document.getElementById("costPrice").value
+        );
+
+    const sellingPrice =
+        parseFloat(
+            document.getElementById("sellingPrice").value
+        );
+
+    const quantity =
+        parseInt(
+            document.getElementById("quantity").value
+        );
+
+
+    /* VALIDATION */
+
+    if (
+        isNaN(costPrice) ||
+        costPrice < 0
+    ) {
+        alert("Enter a valid original / cost price.");
+        return;
+    }
+
+
+    if (
+        isNaN(sellingPrice) ||
+        sellingPrice < 0
+    ) {
+        alert("Enter a valid selling price.");
+        return;
+    }
+
+
+    if (
+        isNaN(quantity) ||
+        quantity < 1
+    ) {
+        alert("Enter a valid quantity.");
+        return;
+    }
+
+
+    /* FIND DISCOUNT */
+
+    const ranges = getRanges();
+
+    let applicableRange = null;
+
+
+    for (const range of ranges) {
+
+        if (
+            quantity >= range.min &&
+            quantity <= range.max
+        ) {
+
+            applicableRange = range;
+            break;
+
+        }
+
+    }
+
+
+    let discountPercent = 0;
+
+    if (applicableRange) {
+        discountPercent =
+            applicableRange.discount;
+    }
+
+
+    /* -----------------------------
+       SALES CALCULATION
+    ----------------------------- */
+
+    const grossSales =
+        sellingPrice * quantity;
+
+
+    const discountAmount =
+        grossSales *
+        (discountPercent / 100);
+
+
+    const finalSales =
+        grossSales -
+        discountAmount;
+
+
+    /* -----------------------------
+       COST CALCULATION
+    ----------------------------- */
+
+    const totalCost =
+        costPrice * quantity;
+
+
+    /* -----------------------------
+       PROFIT
+    ----------------------------- */
+
+    const totalProfit =
+        finalSales - totalCost;
+
+
+    const profitPerItem =
+        totalProfit / quantity;
+
+
+    /*
+      Profit Margin =
+      Profit / Actual Sales × 100
+    */
+
+    let margin = 0;
+
+    if (finalSales !== 0) {
+
+        margin =
+            (totalProfit / finalSales) * 100;
+
+    }
+
+
+    /*
+      Markup =
+      Profit / Cost × 100
+    */
+
+    let markup = 0;
+
+    if (totalCost !== 0) {
+
+        markup =
+            (totalProfit / totalCost) * 100;
+
+    }
+
+
+    /* -----------------------------
+       DISPLAY
+    ----------------------------- */
+
+    document.getElementById("rCost")
+        .textContent =
+        costPrice.toFixed(2);
+
+    document.getElementById("rSelling")
+        .textContent =
+        sellingPrice.toFixed(2);
+
+    document.getElementById("rQuantity")
+        .textContent =
+        quantity;
+
+    document.getElementById("rDiscountPercent")
+        .textContent =
+        discountPercent;
+
+
+    document.getElementById("rGrossSales")
+        .textContent =
+        grossSales.toFixed(2);
+
+
+    document.getElementById("rDiscountAmount")
+        .textContent =
+        discountAmount.toFixed(2);
+
+
+    document.getElementById("rFinalSales")
+        .textContent =
+        finalSales.toFixed(2);
+
+
+    document.getElementById("rTotalCost")
+        .textContent =
+        totalCost.toFixed(2);
+
+
+    document.getElementById("rProfitItem")
+        .textContent =
+        profitPerItem.toFixed(2);
+
+
+    document.getElementById("rTotalProfit")
+        .textContent =
+        totalProfit.toFixed(2);
+
+
+    document.getElementById("rBigProfit")
+        .textContent =
+        totalProfit.toFixed(2);
+
+
+    document.getElementById("rMargin")
+        .textContent =
+        margin.toFixed(2);
+
+
+    document.getElementById("rMarkup")
+        .textContent =
+        markup.toFixed(2);
+
+
+    /* RANGE */
+
+    if (applicableRange) {
+
+        document.getElementById("rRange")
+            .textContent =
+            applicableRange.min +
+            " - " +
+            applicableRange.max;
+
+    } else {
+
+        document.getElementById("rRange")
+            .textContent =
+            "No discount";
+
+    }
+
+
+    /* -----------------------------
+       PROFIT WARNING
+    ----------------------------- */
+
+    const warning =
+        document.getElementById("warning");
+
+    if (totalProfit < 0) {
+
+        warning.innerHTML = `
+            <div class="warning">
+                ⚠️ This sale results in a loss of
+                ₹${Math.abs(totalProfit).toFixed(2)}.
+            </div>
+        `;
+
+    } else {
+
+        warning.innerHTML = "";
+
+    }
+
+
+    /* SHOW RESULTS */
+
+    document.getElementById("results")
+        .style.display = "block";
+}
+
+
+/* -----------------------------
+   DEFAULT EXAMPLE RANGES
+----------------------------- */
+
+addRange(1, 9, 0);
+addRange(10, 24, 5);
+addRange(25, 49, 10);
+addRange(50, 99, 15);
+addRange(100, 999999, 20);
+
+</script>
+
+</body>
+</html>

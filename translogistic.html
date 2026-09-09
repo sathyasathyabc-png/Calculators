@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WHITE CIGER — Smart Logistics</title>
+
+<style>
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  color: #fff;
+  overflow-x: hidden;
+
+  background:
+    radial-gradient(circle at 10% 10%, #2563eb 0, transparent 28%),
+    radial-gradient(circle at 90% 15%, #06b6d4 0, transparent 25%),
+    radial-gradient(circle at 50% 100%, #7c3aed 0, transparent 30%),
+    linear-gradient(135deg, #020617, #0f172a 55%, #020617);
+}
+
+/* Ambient background */
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: .22;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body::before {
+  background: #0ea5e9;
+  left: -150px;
+  top: 35%;
+}
+
+body::after {
+  background: #8b5cf6;
+  right: -150px;
+  bottom: 0;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+.container {
+  width: min(1250px, 92%);
+  margin: auto;
+}
+
+.glass {
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.14);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.25),
+    inset 0 1px rgba(255,255,255,.10);
+}
+
+.badge {
+  display: inline-block;
+
+  padding: 8px 14px;
+
+  border-radius: 50px;
+
+  color: #7dd3fc;
+
+  background: rgba(56,189,248,.07);
+
+  border: 1px solid rgba(125,211,252,.25);
+
+  font-size: .75rem;
+
+  letter-spacing: .7px;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+nav {
+  margin-top: 20px;
+
+  padding: 15px 20px;
+
+  border-radius: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -.5px;
+}
+
+.logo span {
+  color: #38bdf8;
+}
+
+.nav-links {
+  display: flex;
+  gap: 5px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #cbd5e1;
+
+  text-decoration: none;
+
+  padding: 9px 14px;
+
+  border-radius: 10px;
+
+  transition: .25s;
+}
+
+.nav-links a:hover {
+  color: white;
+  background: rgba(255,255,255,.08);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #86efac;
+
+  font-size: .8rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  box-shadow:
+    0 0 12px #22c55e;
+
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+
+  0%,100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .35;
+  }
+
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+  min-height: 75vh;
+
+  padding: 75px 0 45px;
+
+  display: grid;
+
+  grid-template-columns: 1.15fr .85fr;
+
+  gap: 45px;
+
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 6vw, 5.8rem);
+
+  line-height: .95;
+
+  letter-spacing: -5px;
+
+  margin: 20px 0 25px;
+}
+
+.hero h1 span {
+  background:
+    linear-gradient(
+      90deg,
+      #38bdf8,
+      #818cf8,
+      #c084fc
+    );
+
+  -webkit-background-clip: text;
+
+  color: transparent;
+}
+
+.hero p {
+  max-width: 620px;
+
+  color: #94a3b8;
+
+  line-height: 1.7;
+
+  font-size: 1rem;
+}
+
+.actions {
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 30px;
+
+  flex-wrap: wrap;
+}
+
+.primary,
+.transparent {
+  padding: 13px 20px;
+
+  border-radius: 13px;
+
+  transition: .25s;
+}
+
+.primary {
+  color: white;
+
+  border: 1px solid rgba(56,189,248,.3);
+
+  background: rgba(56,189,248,.14);
+
+  font-weight: 700;
+}
+
+.primary:hover {
+  background: rgba(56,189,248,.25);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 30px rgba(14,165,233,.12);
+}
+
+.transparent {
+  color: #cbd5e1;
+
+  background: transparent;
+
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.transparent:hover {
+  color: white;
+
+  background: rgba(255,255,255,.07);
+}
+
+
+/* =========================================================
+   HERO TRUCK
+========================================================= */
+
+.truck-card {
+  padding: 30px;
+
+  border-radius: 30px;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.truck-card::after {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: -50px;
+  top: -50px;
+
+  border-radius: 50%;
+
+  background: #0ea5e9;
+
+  opacity: .12;
+
+  filter: blur(50px);
+}
+
+.truck-icon {
+  text-align: center;
+
+  font-size: 7rem;
+
+  margin: 20px 0;
+
+  filter:
+    drop-shadow(0 18px 25px rgba(0,0,0,.4));
+
+  animation: truckFloat 3s ease-in-out infinite;
+}
+
+@keyframes truckFloat {
+
+  0%,100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+}
+
+.route {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  color: #cbd5e1;
+
+  font-size: .85rem;
+}
+
+.route-line {
+  height: 2px;
+
+  flex: 1;
+
+  margin: 0 15px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #38bdf8,
+      #818cf8
+    );
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 15px;
+
+  margin: 25px 0;
+}
+
+.stat {
+  padding: 22px;
+
+  border-radius: 20px;
+
+  transition: .25s;
+}
+
+.stat:hover {
+  transform: translateY(-4px);
+
+  background: rgba(255,255,255,.08);
+}
+
+.stat small {
+  color: #94a3b8;
+}
+
+.stat h2 {
+  font-size: 1.8rem;
+
+  margin: 9px 0 4px;
+}
+
+.up {
+  color: #4ade80;
+
+  font-size: .75rem;
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard {
+  display: grid;
+
+  grid-template-columns:
+    1.5fr .8fr;
+
+  gap: 18px;
+
+  margin: 30px 0;
+}
+
+.panel {
+  padding: 25px;
+
+  border-radius: 25px;
+}
+
+.panel-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.panel-header span {
+  color: #64748b;
+
+  font-size: .75rem;
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+.map {
+  height: 330px;
+
+  border-radius: 20px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      rgba(56,189,248,.04) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(56,189,248,.04) 1px,
+      transparent 1px
+    ),
+    rgba(0,0,0,.16);
+
+  background-size: 45px 45px;
+}
+
+.road {
+  position: absolute;
+
+  height: 3px;
+
+  background:
+    rgba(255,255,255,.15);
+
+  border-radius: 10px;
+}
+
+.road.one {
+  width: 80%;
+
+  left: 10%;
+
+  top: 45%;
+
+  transform: rotate(-20deg);
+}
+
+.road.two {
+  width: 70%;
+
+  left: 15%;
+
+  top: 65%;
+
+  transform: rotate(18deg);
+}
+
+.location {
+  position: absolute;
+
+  width: 14px;
+  height: 14px;
+
+  border-radius: 50%;
+
+  background: #38bdf8;
+
+  box-shadow:
+    0 0 0 7px rgba(56,189,248,.12),
+    0 0 25px #38bdf8;
+
+  transition: 2s ease;
+}
+
+.location.a {
+  left: 18%;
+  top: 65%;
+}
+
+.location.b {
+  left: 76%;
+  top: 28%;
+}
+
+.location.c {
+  left: 55%;
+  top: 52%;
+
+  background: #a78bfa;
+
+  box-shadow:
+    0 0 0 7px rgba(167,139,250,.12),
+    0 0 25px #a78bfa;
+}
+
+.map-label {
+  position: absolute;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   SHIPMENTS
+========================================================= */
+
+.shipment {
+  padding: 15px;
+
+  border-radius: 15px;
+
+  background:
+    rgba(255,255,255,.035);
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  margin-bottom: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  transition: .2s;
+}
+
+.shipment:hover {
+  background: rgba(255,255,255,.07);
+}
+
+.shipment-left {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.shipment-icon {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 12px;
+
+  background:
+    rgba(56,189,248,.1);
+}
+
+.shipment strong {
+  display: block;
+
+  font-size: .85rem;
+}
+
+.shipment small {
+  color: #64748b;
+
+  font-size: .72rem;
+}
+
+.shipment-status {
+  color: #4ade80;
+
+  font-size: .7rem;
+}
+
+
+/* =========================================================
+   DELIVERY COST CALCULATOR
+========================================================= */
+
+.calculator-section {
+  margin: 35px 0 70px;
+}
+
+.calculator {
+  padding: 30px;
+
+  border-radius: 28px;
+}
+
+.calculator-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 30px;
+}
+
+.calculator-header h2 {
+  font-size: 2rem;
+
+  margin: 9px 0;
+}
+
+.calculator-header p {
+  color: #94a3b8;
+}
+
+.calculator-icon {
+  width: 80px;
+  height: 80px;
+
+  display: grid;
+
+  place-items: center;
+
+  font-size: 2.8rem;
+
+  border-radius: 22px;
+
+  background:
+    rgba(56,189,248,.08);
+
+  border:
+    1px solid rgba(56,189,248,.2);
+}
+
+.calculator-grid {
+  display: grid;
+
+  grid-template-columns:
+    1.3fr .7fr;
+
+  gap: 25px;
+}
+
+.calculator-inputs {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 16px;
+}
+
+.input-group {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.input-group.full {
+  grid-column: 1 / -1;
+}
+
+.input-group label {
+  color: #94a3b8;
+
+  font-size: .78rem;
+
+  margin-bottom: 8px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:
+    1px solid rgba(255,255,255,.13);
+
+  border-radius: 12px;
+
+  outline: none;
+
+  transition: .25s;
+}
+
+.input-group input::placeholder {
+  color: #64748b;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color:
+    rgba(56,189,248,.6);
+
+  background:
+    rgba(56,189,248,.06);
+
+  box-shadow:
+    0 0 20px rgba(56,189,248,.08);
+}
+
+.input-group option {
+  background: #0f172a;
+
+  color: white;
+}
+
+
+/* Cost result */
+
+.cost-result {
+  padding: 25px;
+
+  border-radius: 23px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(56,189,248,.09),
+      rgba(129,140,248,.05)
+    );
+
+  border:
+    1px solid rgba(255,255,255,.12);
+}
+
+.result-label {
+  color: #64748b;
+
+  font-size: .7rem;
+
+  letter-spacing: 1.5px;
+}
+
+.total-cost {
+  font-size: 3.5rem;
+
+  font-weight: 900;
+
+  margin: 8px 0 25px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #38bdf8,
+      #818cf8
+    );
+
+  -webkit-background-clip: text;
+
+  color: transparent;
+}
+
+.route-display {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  color: #cbd5e1;
+
+  font-size: .75rem;
+
+  margin-bottom: 25px;
+}
+
+.route-track {
+  flex: 1;
+
+  margin: 0 12px;
+
+  position: relative;
+}
+
+.route-track div {
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #38bdf8,
+      #818cf8
+    );
+}
+
+.truck-moving {
+  position: absolute;
+
+  left: 45%;
+
+  top: -13px;
+
+  font-size: 1.2rem;
+
+  animation:
+    truckMove 2.5s
+    infinite alternate
+    ease-in-out;
+}
+
+@keyframes truckMove {
+
+  from {
+    transform: translateX(-8px);
+  }
+
+  to {
+    transform: translateX(8px);
+  }
+
+}
+
+.cost-breakdown {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.cost-breakdown div {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.cost-breakdown span {
+  color: #94a3b8;
+
+  font-size: .8rem;
+}
+
+.cost-breakdown strong {
+  color: #e2e8f0;
+}
+
+.calculator-divider {
+  height: 1px;
+
+  background:
+    rgba(255,255,255,.1);
+
+  margin: 20px 0;
+}
+
+.cost-summary {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  color: #94a3b8;
+
+  font-size: .82rem;
+
+  margin-bottom: 18px;
+}
+
+.cost-summary strong {
+  color: #38bdf8;
+
+  font-size: 1.1rem;
+}
+
+.calculate-button,
+.quote-button {
+  width: 100%;
+
+  padding: 13px;
+
+  border-radius: 12px;
+
+  font-weight: 700;
+
+  transition: .25s;
+}
+
+.calculate-button {
+  color: white;
+
+  border:
+    1px solid rgba(56,189,248,.3);
+
+  background:
+    rgba(56,189,248,.13);
+
+  margin-bottom: 10px;
+}
+
+.calculate-button:hover {
+  background:
+    rgba(56,189,248,.25);
+
+  transform: translateY(-2px);
+}
+
+.quote-button {
+  color: #94a3b8;
+
+  background: transparent;
+
+  border:
+    1px solid rgba(255,255,255,.1);
+}
+
+.quote-button:hover {
+  color: white;
+
+  background:
+    rgba(255,255,255,.06);
+}
+
+
+/* =========================================================
+   FLEET
+========================================================= */
+
+.fleet-section {
+  margin-bottom: 70px;
+}
+
+.fleet {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+}
+
+.driver {
+  padding: 20px;
+
+  border-radius: 20px;
+
+  transition: .25s;
+}
+
+.driver:hover {
+  transform: translateY(-5px);
+}
+
+.driver-top {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0ea5e9,
+      #6366f1
+    );
+
+  font-weight: bold;
+}
+
+.driver-info strong {
+  display: block;
+}
+
+.driver-info small {
+  color: #64748b;
+
+  font-size: .7rem;
+}
+
+.progress {
+  height: 6px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(255,255,255,.08);
+
+  margin-top: 18px;
+
+  overflow: hidden;
+}
+
+.progress div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #38bdf8,
+      #818cf8
+    );
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  text-align: center;
+
+  padding: 30px;
+
+  color: #64748b;
+
+  border-top:
+    1px solid rgba(255,255,255,.08);
+
+  font-size: .8rem;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width: 950px) {
+
+  .hero,
+  .dashboard,
+  .calculator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .fleet {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media(max-width: 650px) {
+
+  .container {
+    width: 94%;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .status {
+    display: none;
+  }
+
+  .hero {
+    padding-top: 50px;
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+
+    letter-spacing: -3px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .input-group.full {
+    grid-column: auto;
+  }
+
+  .calculator-header {
+    align-items: flex-start;
+  }
+
+  .calculator-icon {
+    width: 55px;
+    height: 55px;
+
+    font-size: 1.8rem;
+  }
+
+  .total-cost {
+    font-size: 2.8rem;
+  }
+
+  .truck-icon {
+    font-size: 5rem;
+  }
+
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="glass">
+
+  <div class="logo">
+    BcSathish<span>LOGIX</span>
+  </div>
+
+  <ul class="nav-links">
+
+    <li>
+      <a href="#">Dashboard</a>
+    </li>
+
+    <li>
+      <a href="#tracking">Tracking</a>
+    </li>
+
+    <li>
+      <a href="#calculator">Cost Calculator</a>
+    </li>
+
+    <li>
+      <a href="#fleet">Fleet</a>
+    </li>
+
+  </ul>
+
+  <div class="status">
+
+    <div class="status-dot"></div>
+
+    Fleet Online
+
+  </div>
+
+</nav>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+  <div>
+
+    <div class="badge">
+      ● SMART LOGISTICS NETWORK
+    </div>
+
+    <h1>
+      Move More.<br>
+      <span>Deliver Faster.</span>
+    </h1>
+
+    <p>
+      Manage your entire transportation network from one
+      transparent logistics dashboard. Track trucks, shipments,
+      drivers, routes and delivery costs in real time.
+    </p>
+
+    <div class="actions">
+
+      <button
+        class="primary"
+        onclick="trackShipment()">
+
+        🚚 Track Shipment
+
+      </button>
+
+      <button
+        class="transparent"
+        onclick="scrollToCalculator()">
+
+        Calculate Delivery Cost →
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- TRUCK -->
+
+  <div class="truck-card glass">
+
+    <div class="badge">
+      LIVE VEHICLE
+    </div>
+
+    <div class="truck-icon">
+      🚛
+    </div>
+
+    <div class="route">
+
+      <span>
+        Chennai
+      </span>
+
+      <div class="route-line"></div>
+
+      <span>
+        Bengaluru
+      </span>
+
+    </div>
+
+    <p style="
+      text-align:center;
+      margin-top:15px;
+      color:#64748b;
+      font-size:.8rem;">
+
+      TN 38 AB 4721 • ETA 14:35
+
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     STATS
+===================================================== -->
+
+<section class="stats">
+
+  <div class="stat glass">
+
+    <small>
+      Active Trucks
+    </small>
+
+    <h2>
+      248
+    </h2>
+
+    <span class="up">
+      ▲ 12% this week
+    </span>
+
+  </div>
+
+
+  <div class="stat glass">
+
+    <small>
+      In Transit
+    </small>
+
+    <h2>
+      1,284
+    </h2>
+
+    <span class="up">
+      ▲ 8.4%
+    </span>
+
+  </div>
+
+
+  <div class="stat glass">
+
+    <small>
+      Delivered
+    </small>
+
+    <h2>
+      8,642
+    </h2>
+
+    <span class="up">
+      ▲ 18.2%
+    </span>
+
+  </div>
+
+
+  <div class="stat glass">
+
+    <small>
+      On-Time Rate
+    </small>
+
+    <h2>
+      96.8%
+    </h2>
+
+    <span class="up">
+      ▲ 2.1%
+    </span>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     TRACKING + SHIPMENTS
+===================================================== -->
+
+<section
+  id="tracking"
+  class="dashboard">
+
+
+  <!-- MAP -->
+
+  <div class="panel glass">
+
+    <div class="panel-header">
+
+      <h2>
+        Live Fleet Tracking
+      </h2>
+
+      <span>
+        Updated just now
+      </span>
+
+    </div>
+
+
+    <div class="map">
+
+      <div class="road one"></div>
+
+      <div class="road two"></div>
+
+
+      <div class="location a"></div>
+
+      <div class="location b"></div>
+
+      <div class="location c"></div>
+
+
+      <div
+        class="map-label"
+        style="
+          left:13%;
+          top:70%;">
+
+        Chennai
+
+      </div>
+
+
+      <div
+        class="map-label"
+        style="
+          right:12%;
+          top:22%;">
+
+        Bengaluru
+
+      </div>
+
+
+      <div
+        class="map-label"
+        style="
+          left:50%;
+          top:55%;">
+
+        Truck #248
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SHIPMENTS -->
+
+  <div
+    id="shipments"
+    class="panel glass">
+
+    <div class="panel-header">
+
+      <h2>
+        Shipments
+      </h2>
+
+      <span>
+        Today
+      </span>
+
+    </div>
+
+
+    <div class="shipment">
+
+      <div class="shipment-left">
+
+        <div class="shipment-icon">
+          📦
+        </div>
+
+        <div>
+
+          <strong>
+            #TLX-82941
+          </strong>
+
+          <small>
+            Chennai → Hyderabad
+          </small>
+
+        </div>
+
+      </div>
+
+      <div class="shipment-status">
+        In Transit
+      </div>
+
+    </div>
+
+
+    <div class="shipment">
+
+      <div class="shipment-left">
+
+        <div class="shipment-icon">
+          📦
+        </div>
+
+        <div>
+
+          <strong>
+            #TLX-82942
+          </strong>
+
+          <small>
+            Bengaluru → Mumbai
+          </small>
+
+        </div>
+
+      </div>
+
+      <div class="shipment-status">
+        On Route
+      </div>
+
+    </div>
+
+
+    <div class="shipment">
+
+      <div class="shipment-left">
+
+        <div class="shipment-icon">
+          📦
+        </div>
+
+        <div>
+
+          <strong>
+            #TLX-82943
+          </strong>
+
+          <small>
+            Coimbatore → Chennai
+          </small>
+
+        </div>
+
+      </div>
+
+      <div class="shipment-status">
+        Delivered
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     DELIVERY COST CALCULATOR
+===================================================== -->
+
+<section
+  id="calculator"
+  class="calculator-section">
+
+  <div class="calculator glass">
+
+
+    <div class="calculator-header">
+
+      <div>
+
+        <div class="badge">
+          SMART FREIGHT TOOL
+        </div>
+
+        <h2>
+          Delivery Cost Calculator
+        </h2>
+
+        <p>
+          Estimate your transportation cost before
+          dispatching a truck.
+        </p>
+
+      </div>
+
+      <div class="calculator-icon">
+        🚛
+      </div>
+
+    </div>
+
+
+    <div class="calculator-grid">
+
+
+      <!-- INPUTS -->
+
+      <div class="calculator-inputs">
+
+
+        <div class="input-group">
+
+          <label>
+            Pickup Location
+          </label>
+
+          <input
+            id="pickup"
+            type="text"
+            placeholder="e.g. Chennai"
+            oninput="calculateDelivery()">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Delivery Location
+          </label>
+
+          <input
+            id="delivery"
+            type="text"
+            placeholder="e.g. Bengaluru"
+            oninput="calculateDelivery()">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Distance (KM)
+          </label>
+
+          <input
+            id="distance"
+            type="number"
+            min="1"
+            placeholder="350"
+            oninput="calculateDelivery()">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Cargo Weight (KG)
+          </label>
+
+          <input
+            id="weight"
+            type="number"
+            min="0"
+            placeholder="5000"
+            oninput="calculateDelivery()">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Truck Type
+          </label>
+
+          <select
+            id="truckType"
+            onchange="calculateDelivery()">
+
+            <option value="18">
+              Mini Truck — ₹18/km
+            </option>
+
+            <option value="26">
+              Light Truck — ₹26/km
+            </option>
+
+            <option
+              value="34"
+              selected>
+              Medium Truck — ₹34/km
+            </option>
+
+            <option value="48">
+              Heavy Truck — ₹48/km
+            </option>
+
+            <option value="65">
+              Trailer — ₹65/km
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Fuel Price (₹ / L)
+          </label>
+
+          <input
+            id="fuel"
+            type="number"
+            value="95"
+            min="1"
+            oninput="calculateDelivery()">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Fuel Efficiency (KM/L)
+          </label>
+
+          <input
+            id="efficiency"
+            type="number"
+            value="4"
+            min="1"
+            step=".1"
+            oninput="calculateDelivery()">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>
+            Delivery Priority
+          </label>
+
+          <select
+            id="priority"
+            onchange="calculateDelivery()">
+
+            <option value="1">
+              Standard — 0%
+            </option>
+
+            <option value="1.10">
+              Express — +10%
+            </option>
+
+            <option value="1.25">
+              Urgent — +25%
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="input-group full">
+
+          <label>
+            Toll Charges (₹)
+          </label>
+
+          <input
+            id="tolls"
+            type="number"
+            value="1500"
+            min="0"
+            oninput="calculateDelivery()">
+
+        </div>
+
+      </div>
+
+
+      <!-- RESULT -->
+
+      <div class="cost-result">
+
+        <div class="result-label">
+          ESTIMATED DELIVERY COST
+        </div>
+
+
+        <div class="total-cost">
+          ₹<span id="totalCost">0</span>
+        </div>
+
+
+        <div class="route-display">
+
+          <span id="fromText">
+            Pickup
+          </span>
+
+          <div class="route-track">
+
+            <span class="truck-moving">
+              🚛
+            </span>
+
+            <div></div>
+
+          </div>
+
+          <span id="toText">
+            Delivery
+          </span>
+
+        </div>
+
+
+        <div class="cost-breakdown">
+
+
+          <div>
+
+            <span>
+              Base Transport
+            </span>
+
+            <strong>
+              ₹<span id="transportCost">0</span>
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Fuel Cost
+            </span>
+
+            <strong>
+              ₹<span id="fuelCost">0</span>
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Toll Charges
+            </span>
+
+            <strong>
+              ₹<span id="tollCost">0</span>
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Priority Fee
+            </span>
+
+            <strong>
+              ₹<span id="priorityCost">0</span>
+            </strong>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="calculator-divider"></div>
+
+
+        <div class="cost-summary">
+
+          <span>
+            Estimated Cost / KM
+          </span>
+
+          <strong>
+            ₹<span id="perKm">0</span>
+          </strong>
+
+        </div>
+
+
+        <button
+          class="calculate-button"
+          onclick="calculateDelivery()">
+
+          Calculate Delivery Cost →
+
+        </button>
+
+
+        <button
+          class="quote-button"
+          onclick="generateQuote()">
+
+          Generate Freight Quote
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FLEET
+===================================================== -->
+
+<section
+  id="fleet"
+  class="fleet-section">
+
+  <div class="panel-header">
+
+    <h2>
+      Fleet Operations
+    </h2>
+
+    <span>
+      Driver performance
+    </span>
+
+  </div>
+
+
+  <div class="fleet">
+
+
+    <div class="driver glass">
+
+      <div class="driver-top">
+
+        <div class="avatar">
+          AK
+        </div>
+
+        <div class="driver-info">
+
+          <strong>
+            Arun Kumar
+          </strong>
+
+          <small>
+            Truck #248 • Volvo FH
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <div class="progress">
+
+        <div style="width:82%"></div>
+
+      </div>
+
+      <p style="
+        margin-top:10px;
+        color:#64748b;
+        font-size:.75rem;">
+
+        Route completion 82%
+
+      </p>
+
+    </div>
+
+
+    <div class="driver glass">
+
+      <div class="driver-top">
+
+        <div class="avatar">
+          RS
+        </div>
+
+        <div class="driver-info">
+
+          <strong>
+            Rahul Singh
+          </strong>
+
+          <small>
+            Truck #172 • Scania
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <div class="progress">
+
+        <div style="width:64%"></div>
+
+      </div>
+
+      <p style="
+        margin-top:10px;
+        color:#64748b;
+        font-size:.75rem;">
+
+        Route completion 64%
+
+      </p>
+
+    </div>
+
+
+    <div class="driver glass">
+
+      <div class="driver-top">
+
+        <div class="avatar">
+          VP
+        </div>
+
+        <div class="driver-info">
+
+          <strong>
+            Vijay Prakash
+          </strong>
+
+          <small>
+            Truck #391 • BharatBenz
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <div class="progress">
+
+        <div style="width:91%"></div>
+
+      </div>
+
+      <p style="
+        margin-top:10px;
+        color:#64748b;
+        font-size:.75rem;">
+
+        Route completion 91%
+
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+  WHITE CIGER • Smart Transportation & Logistics
+
+  <br>
+
+  <span style="
+    font-size:.7rem;
+    opacity:.6;">
+
+    Fleet • Freight • Tracking • Delivery
+
+  </span>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   TRACK SHIPMENT
+========================================================= */
+
+function trackShipment() {
+
+  const id = prompt(
+    "Enter shipment ID:",
+    "TLX-82941"
+  );
+
+  if (!id) return;
+
+  alert(
+    "🚛 SHIPMENT STATUS\n\n" +
+    "Shipment: " + id +
+    "\nStatus: In Transit" +
+    "\nCurrent Location: Vellore" +
+    "\nETA: Today, 14:35"
+  );
+
+}
+
+
+/* =========================================================
+   SCROLL TO CALCULATOR
+========================================================= */
+
+function scrollToCalculator() {
+
+  document
+    .getElementById("calculator")
+    .scrollIntoView({
+      behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   DELIVERY COST CALCULATOR
+========================================================= */
+
+function calculateDelivery() {
+
+  const distance =
+    Number(
+      document
+        .getElementById("distance")
+        .value
+    ) || 0;
+
+
+  const weight =
+    Number(
+      document
+        .getElementById("weight")
+        .value
+    ) || 0;
+
+
+  const truckRate =
+    Number(
+      document
+        .getElementById("truckType")
+        .value
+    ) || 0;
+
+
+  const fuelPrice =
+    Number(
+      document
+        .getElementById("fuel")
+        .value
+    ) || 0;
+
+
+  const efficiency =
+    Number(
+      document
+        .getElementById("efficiency")
+        .value
+    ) || 1;
+
+
+  const tolls =
+    Number(
+      document
+        .getElementById("tolls")
+        .value
+    ) || 0;
+
+
+  const priority =
+    Number(
+      document
+        .getElementById("priority")
+        .value
+    ) || 1;
+
+
+  /* Base transport */
+
+  const transport =
+    distance * truckRate;
+
+
+  /* Fuel */
+
+  const fuel =
+    (distance / efficiency) *
+    fuelPrice;
+
+
+  /* Weight surcharge */
+
+  let weightMultiplier = 1;
+
+  if (weight > 5000) {
+
+    const extraWeight =
+      weight - 5000;
+
+    weightMultiplier =
+      1 +
+      (extraWeight / 1000) *
+      0.05;
+
+  }
+
+
+  const transportWithWeight =
+    transport * weightMultiplier;
+
+
+  /* Priority */
+
+  const subtotal =
+    transportWithWeight +
+    fuel +
+    tolls;
+
+
+  const priorityFee =
+    subtotal *
+    (priority - 1);
+
+
+  /* Final */
+
+  const total =
+    subtotal +
+    priorityFee;
+
+
+  /* Update values */
+
+  document
+    .getElementById("transportCost")
+    .textContent =
+    Math.round(
+      transportWithWeight
+    ).toLocaleString("en-IN");
+
+
+  document
+    .getElementById("fuelCost")
+    .textContent =
+    Math.round(
+      fuel
+    ).toLocaleString("en-IN");
+
+
+  document
+    .getElementById("tollCost")
+    .textContent =
+    Math.round(
+      tolls
+    ).toLocaleString("en-IN");
+
+
+  document
+    .getElementById("priorityCost")
+    .textContent =
+    Math.round(
+      priorityFee
+    ).toLocaleString("en-IN");
+
+
+  document
+    .getElementById("totalCost")
+    .textContent =
+    Math.round(
+      total
+    ).toLocaleString("en-IN");
+
+
+  /* Cost per KM */
+
+  const perKm =
+    distance > 0
+      ? total / distance
+      : 0;
+
+
+  document
+    .getElementById("perKm")
+    .textContent =
+    perKm.toFixed(2);
+
+
+  /* Route */
+
+  const pickup =
+    document
+      .getElementById("pickup")
+      .value;
+
+  const delivery =
+    document
+      .getElementById("delivery")
+      .value;
+
+
+  document
+    .getElementById("fromText")
+    .textContent =
+    pickup || "Pickup";
+
+
+  document
+    .getElementById("toText")
+    .textContent =
+    delivery || "Delivery";
+
+}
+
+
+/* =========================================================
+   GENERATE QUOTE
+========================================================= */
+
+function generateQuote() {
+
+  calculateDelivery();
+
+
+  const total =
+    document
+      .getElementById("totalCost")
+      .textContent;
+
+
+  const pickup =
+    document
+      .getElementById("pickup")
+      .value ||
+    "Pickup location";
+
+
+  const delivery =
+    document
+      .getElementById("delivery")
+      .value ||
+    "Delivery location";
+
+
+  alert(
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "       WHITE CIGER\n" +
+    "     FREIGHT QUOTE\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n\n" +
+
+    "Route\n" +
+    pickup +
+    " → " +
+    delivery +
+    "\n\n" +
+
+    "Estimated Cost\n" +
+    "₹" +
+    total +
+    "\n\n" +
+
+    "Quote ID\n" +
+    "TLX-Q" +
+    Math.floor(
+      10000 +
+      Math.random() * 90000
+    ) +
+
+    "\n\n" +
+
+    "Thank you for choosing WHITE CIGER."
+  );
+
+}
+
+
+/* =========================================================
+   SIMULATED LIVE TRUCK MOVEMENT
+========================================================= */
+
+const locations =
+  document.querySelectorAll(
+    ".location"
+  );
+
+
+setInterval(() => {
+
+  locations.forEach(
+    (location) => {
+
+      const x =
+        12 +
+        Math.random() * 75;
+
+      const y =
+        18 +
+        Math.random() * 65;
+
+      location.style.left =
+        x + "%";
+
+      location.style.top =
+        y + "%";
+
+    }
+  );
+
+}, 4000);
+
+
+/* =========================================================
+   INITIAL CALCULATION
+========================================================= */
+
+calculateDelivery();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EBITDA & Business Valuation Calculator</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: Inter, Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: #f3f6fa;
+        color: #172033;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 32px;
+        color: #102a43;
+    }
+
+    .header p {
+        color: #64748b;
+        margin-top: 8px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 20px;
+        color: #102a43;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 12px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    /* Label + Info Icon */
+    .label-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 7px;
+    }
+
+    .label-row label {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .info-icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: #2563eb;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        cursor: help;
+        flex-shrink: 0;
+    }
+
+    /* Tooltip */
+    .info-icon .tooltip {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: 100;
+        left: 50%;
+        bottom: calc(100% + 10px);
+        transform: translateX(-50%) translateY(5px);
+
+        width: 270px;
+        padding: 12px 14px;
+
+        background: #172033;
+        color: #ffffff;
+        border-radius: 8px;
+
+        font-size: 12px;
+        font-weight: normal;
+        line-height: 1.5;
+        text-align: left;
+
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+
+        transition: all 0.2s ease;
+        pointer-events: none;
+    }
+
+    .info-icon .tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+
+        border-width: 6px;
+        border-style: solid;
+        border-color: #172033 transparent transparent transparent;
+    }
+
+    .info-icon:hover .tooltip,
+    .info-icon:focus .tooltip {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-prefix {
+        position: relative;
+    }
+
+    .input-prefix span {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        color: #64748b;
+    }
+
+    .input-prefix input {
+        padding-left: 30px;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    .results {
+        grid-column: 1 / -1;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .result-box {
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .result-box.highlight {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+    }
+
+    .result-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .result-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #172033;
+    }
+
+    .highlight .result-value {
+        color: #1d4ed8;
+    }
+
+    .valuation {
+        margin-top: 20px;
+        padding: 25px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0f766e, #0d9488);
+        color: white;
+        text-align: center;
+    }
+
+    .valuation-title {
+        font-size: 14px;
+        opacity: 0.85;
+    }
+
+    .valuation-value {
+        font-size: 36px;
+        font-weight: 800;
+        margin-top: 8px;
+    }
+
+    .formula {
+        margin-top: 18px;
+        padding: 15px;
+        background: #f8fafc;
+        border-radius: 8px;
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .error {
+        color: #dc2626;
+        background: #fef2f2;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+    }
+
+    .footer {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: 25px;
+    }
+
+    @media (max-width: 800px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+
+        .results {
+            grid-column: auto;
+        }
+
+        .result-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+            font-size: 25px;
+        }
+
+        .info-icon .tooltip {
+            width: 230px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>EBITDA & Business Valuation Calculator</h1>
+        <p>Calculate EBITDA, margins, profitability and estimated business value</p>
+    </div>
+
+    <div class="grid">
+
+        <!-- OPERATING INFORMATION -->
+        <div class="card">
+
+            <h2>Operating Information</h2>
+
+            <!-- Revenue -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="revenue">Revenue</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Total sales or income generated by the business
+                            during the period, before deducting operating costs.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="revenue"
+                        placeholder="10,00,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+
+            <!-- COGS -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="cogs">Cost of Goods Sold (COGS)</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Direct costs associated with producing or
+                            purchasing the goods or services sold by the
+                            business. Examples include raw materials,
+                            inventory and direct production costs.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="cogs"
+                        placeholder="4,00,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+
+            <!-- Operating Expenses -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="opex">Operating Expenses</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Day-to-day business expenses excluding COGS,
+                            interest, taxes, depreciation and amortization.
+                            Examples include salaries, rent, utilities,
+                            marketing and administration.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="opex"
+                        placeholder="2,00,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+
+            <!-- Depreciation -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="depreciation">Depreciation</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Non-cash expense representing the allocation
+                            of the cost of tangible assets such as
+                            machinery, vehicles, buildings or equipment
+                            over their useful life.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="depreciation"
+                        placeholder="50,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+
+            <!-- Amortization -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="amortization">Amortization</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Non-cash expense associated with allocating
+                            the cost of intangible assets such as
+                            software, patents, trademarks or licenses
+                            over their useful life.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="amortization"
+                        placeholder="20,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- FINANCIAL INFORMATION -->
+        <div class="card">
+
+            <h2>Financial Information</h2>
+
+            <!-- Interest -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="interest">Interest Expense</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Interest paid or payable on business debt,
+                            loans, overdrafts, bonds or other financing.
+                            Interest is excluded from EBITDA.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="interest"
+                        placeholder="30,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+
+            <!-- Tax -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="tax">Tax Expense</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            Income tax expense for the period.
+                            Taxes are excluded from EBITDA.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input
+                        type="number"
+                        id="tax"
+                        placeholder="60,000"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+
+            <!-- EBITDA Multiple -->
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="multiple">EBITDA Multiple</label>
+
+                    <span class="info-icon" tabindex="0">
+                        i
+                        <span class="tooltip">
+                            The valuation multiple applied to EBITDA.
+                            For example, a 5× multiple means the estimated
+                            enterprise value is five times EBITDA.
+                            The appropriate multiple depends on industry,
+                            growth, risk and market conditions.
+                        </span>
+                    </span>
+                </div>
+
+                <input
+                    type="number"
+                    id="multiple"
+                    value="5"
+                    step="0.1"
+                    min="0"
+                >
+            </div>
+
+
+            <button onclick="calculate()">
+                Calculate EBITDA
+            </button>
+
+            <div class="error" id="error">
+                Please enter a valid Revenue and EBITDA Multiple.
+            </div>
+
+        </div>
+
+
+        <!-- RESULTS -->
+        <div class="card results">
+
+            <h2>Financial Results</h2>
+
+            <div class="result-grid">
+
+                <div class="result-box highlight">
+                    <div class="result-label">EBITDA</div>
+                    <div class="result-value" id="ebitda">₹0</div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label">EBITDA Margin</div>
+                    <div class="result-value" id="margin">0%</div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label">EBIT</div>
+                    <div class="result-value" id="ebit">₹0</div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label">Net Profit</div>
+                    <div class="result-value" id="netProfit">₹0</div>
+                </div>
+
+            </div>
+
+
+            <div class="valuation">
+
+                <div class="valuation-title">
+                    Estimated Business Valuation
+                </div>
+
+                <div class="valuation-value" id="valuation">
+                    ₹0
+                </div>
+
+                <div class="valuation-title">
+                    EBITDA × Multiple
+                </div>
+
+            </div>
+
+
+            <div class="formula">
+
+                <strong>Calculations:</strong><br><br>
+
+                EBITDA = Revenue − COGS − Operating Expenses<br>
+
+                EBIT = EBITDA − Depreciation − Amortization<br>
+
+                Net Profit = EBIT − Interest − Tax<br>
+
+                EBITDA Margin = EBITDA ÷ Revenue × 100<br>
+
+                Business Valuation = EBITDA × EBITDA Multiple
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        EBITDA and valuation figures are estimates and should not be
+        considered financial advice.
+    </div>
+
+</div>
+
+
+<script>
+
+function formatINR(value) {
+    return "₹" + Number(value).toLocaleString("en-IN", {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0
+    });
+}
+
+
+function getValue(id) {
+
+    const value = parseFloat(
+        document.getElementById(id).value
+    );
+
+    return isNaN(value) ? 0 : value;
+}
+
+
+function calculate() {
+
+    const revenue = getValue("revenue");
+    const cogs = getValue("cogs");
+    const opex = getValue("opex");
+
+    const depreciation = getValue("depreciation");
+    const amortization = getValue("amortization");
+
+    const interest = getValue("interest");
+    const tax = getValue("tax");
+
+    const multiple = getValue("multiple");
+
+
+    if (revenue <= 0 || multiple <= 0) {
+
+        document.getElementById("error").style.display = "block";
+
+        return;
+    }
+
+    document.getElementById("error").style.display = "none";
+
+
+    // EBITDA
+    const ebitda =
+        revenue -
+        cogs -
+        opex;
+
+
+    // EBITDA Margin
+    const margin =
+        (ebitda / revenue) * 100;
+
+
+    // EBIT
+    const ebit =
+        ebitda -
+        depreciation -
+        amortization;
+
+
+    // Net Profit
+    const netProfit =
+        ebit -
+        interest -
+        tax;
+
+
+    // Business Valuation
+    const valuation =
+        ebitda * multiple;
+
+
+    // Display results
+
+    document.getElementById("ebitda").textContent =
+        formatINR(ebitda);
+
+    document.getElementById("margin").textContent =
+        margin.toFixed(2) + "%";
+
+    document.getElementById("ebit").textContent =
+        formatINR(ebit);
+
+    document.getElementById("netProfit").textContent =
+        formatINR(netProfit);
+
+    document.getElementById("valuation").textContent =
+        formatINR(valuation);
+}
+
+
+// Enter key calculates the result
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        calculate();
+    }
+
+});
+
+</script>
+
+</body>
+</html>

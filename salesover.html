@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Overview Calculator</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+        padding: 30px 15px;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        padding: 30px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .header h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .header p {
+        opacity: 0.9;
+    }
+
+    .calculator {
+        background: white;
+        padding: 30px;
+        border-radius: 0 0 16px 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 19px;
+        font-weight: bold;
+        margin: 5px 0 18px;
+        color: #111827;
+        border-left: 4px solid #2563eb;
+        padding-left: 10px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .field {
+        position: relative;
+    }
+
+    .label-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 7px;
+    }
+
+    .field label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    /* Information Icon */
+    .info-icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: #2563eb;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        cursor: help;
+        user-select: none;
+    }
+
+    /* Tooltip */
+    .info-tooltip {
+        position: absolute;
+        left: 0;
+        bottom: calc(100% + 10px);
+        width: 300px;
+        padding: 14px 16px;
+        background: #111827;
+        color: #f9fafb;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: normal;
+        line-height: 1.55;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(5px);
+        transition: all 0.2s ease;
+        z-index: 100;
+    }
+
+    .info-tooltip::after {
+        content: "";
+        position: absolute;
+        left: 28px;
+        top: 100%;
+        border-width: 6px;
+        border-style: solid;
+        border-color: #111827 transparent transparent transparent;
+    }
+
+    .info-icon:hover .info-tooltip,
+    .info-icon:focus .info-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .info-tooltip strong {
+        color: white;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .info-tooltip .exclude {
+        color: #fca5a5;
+        margin-top: 6px;
+    }
+
+    .field input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .field input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .results {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .result-card {
+        padding: 20px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+    }
+
+    .result-card .label {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .result-card .value {
+        font-size: 25px;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .blue {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+    }
+
+    .blue .value {
+        color: #2563eb;
+    }
+
+    .green {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+    }
+
+    .green .value {
+        color: #16a34a;
+    }
+
+    .orange {
+        background: #fff7ed;
+        border-color: #fed7aa;
+    }
+
+    .orange .value {
+        color: #ea580c;
+    }
+
+    .purple {
+        background: #faf5ff;
+        border-color: #e9d5ff;
+    }
+
+    .purple .value {
+        color: #9333ea;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    button {
+        border: none;
+        padding: 13px 22px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .calculate {
+        background: #2563eb;
+        color: white;
+    }
+
+    .calculate:hover {
+        background: #1d4ed8;
+    }
+
+    .reset {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .reset:hover {
+        background: #d1d5db;
+    }
+
+    .formula {
+        margin-top: 25px;
+        padding: 18px;
+        background: #f9fafb;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 1.8;
+        color: #4b5563;
+    }
+
+    .formula strong {
+        color: #111827;
+    }
+
+    @media (max-width: 650px) {
+        .grid,
+        .results {
+            grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+            font-size: 23px;
+        }
+
+        .calculator,
+        .header {
+            padding: 20px;
+        }
+
+        .buttons {
+            flex-direction: column;
+        }
+
+        button {
+            width: 100%;
+        }
+
+        .info-tooltip {
+            width: 260px;
+            left: -20px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Sales Overview Calculator</h1>
+        <p>Calculate sales, receivables, profit and turnover quickly.</p>
+    </div>
+
+    <div class="calculator">
+
+        <!-- SALES -->
+        <div class="section-title">Sales Information</div>
+
+        <div class="grid">
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Gross Sales (₹)</label>
+                </div>
+                <input type="number" id="grossSales" placeholder="0">
+            </div>
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Sales Returns (₹)</label>
+                </div>
+                <input type="number" id="salesReturns" placeholder="0">
+            </div>
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Sales Discounts (₹)</label>
+                </div>
+                <input type="number" id="salesDiscounts" placeholder="0">
+            </div>
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Cost of Goods Sold / COGS (₹)</label>
+                </div>
+                <input type="number" id="cogs" placeholder="0">
+            </div>
+
+        </div>
+
+        <!-- RECEIVABLES -->
+        <div class="section-title">Receivables Information</div>
+
+        <div class="grid">
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Opening Receivables (₹)</label>
+                </div>
+                <input type="number" id="openingReceivables" placeholder="0">
+            </div>
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Closing Receivables (₹)</label>
+                </div>
+                <input type="number" id="closingReceivables" placeholder="0">
+            </div>
+
+            <div class="field">
+                <div class="label-row">
+                    <label>Cash Collected from Customers (₹)</label>
+                </div>
+                <input type="number" id="cashCollected" placeholder="0">
+            </div>
+
+            <!-- OPERATING EXPENSES -->
+            <div class="field">
+
+                <div class="label-row">
+                    <label>Operating Expenses (₹)</label>
+
+                    <span class="info-icon"
+                          tabindex="0"
+                          aria-label="Information about operating expenses">
+                        i
+
+                        <span class="info-tooltip">
+                            <strong>What are Operating Expenses?</strong>
+
+                            Operating expenses are the normal day-to-day
+                            costs required to run the business.
+
+                            <br><br>
+
+                            <b>Examples:</b><br>
+                            • Salaries and wages<br>
+                            • Rent<br>
+                            • Electricity and utilities<br>
+                            • Advertising and marketing<br>
+                            • Office expenses<br>
+                            • Insurance<br>
+                            • Routine repairs and maintenance
+
+                            <div class="exclude">
+                                <b>Not included:</b><br>
+                                Capital expenditure such as purchasing
+                                machinery, buildings, vehicles or other
+                                long-term assets.
+                            </div>
+
+                            <br>
+
+                            Capital expenditure is normally recorded as an
+                            asset and is not treated as an operating expense.
+                            Depreciation/amortization may be recognized as
+                            an expense over the asset's useful life.
+                        </span>
+                    </span>
+                </div>
+
+                <input type="number" id="expenses" placeholder="0">
+
+            </div>
+
+        </div>
+
+        <!-- RESULTS -->
+        <div class="section-title">Results</div>
+
+        <div class="results">
+
+            <div class="result-card blue">
+                <div class="label">Net Sales</div>
+                <div class="value" id="netSales">₹0.00</div>
+            </div>
+
+            <div class="result-card green">
+                <div class="label">Gross Profit</div>
+                <div class="value" id="grossProfit">₹0.00</div>
+            </div>
+
+            <div class="result-card orange">
+                <div class="label">Net Profit</div>
+                <div class="value" id="netProfit">₹0.00</div>
+            </div>
+
+            <div class="result-card purple">
+                <div class="label">Average Receivables</div>
+                <div class="value" id="averageReceivables">₹0.00</div>
+            </div>
+
+            <div class="result-card blue">
+                <div class="label">Receivables Turnover</div>
+                <div class="value" id="receivableTurnover">0.00 ×</div>
+            </div>
+
+            <div class="result-card green">
+                <div class="label">Profit Margin</div>
+                <div class="value" id="profitMargin">0.00%</div>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button class="calculate" onclick="calculate()">Calculate</button>
+            <button class="reset" onclick="resetCalculator()">Reset</button>
+        </div>
+
+        <div class="formula">
+            <strong>Formulas used:</strong><br>
+            Net Sales = Gross Sales − Sales Returns − Sales Discounts<br>
+            Gross Profit = Net Sales − COGS<br>
+            Net Profit = Gross Profit − Operating Expenses<br>
+            Average Receivables = (Opening Receivables + Closing Receivables) ÷ 2<br>
+            Receivables Turnover = Net Credit Sales ÷ Average Receivables<br>
+            Profit Margin = Net Profit ÷ Net Sales × 100
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+function getValue(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+}
+
+function money(value) {
+    return "₹" + value.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function calculate() {
+
+    const grossSales = getValue("grossSales");
+    const salesReturns = getValue("salesReturns");
+    const salesDiscounts = getValue("salesDiscounts");
+    const cogs = getValue("cogs");
+
+    const openingReceivables = getValue("openingReceivables");
+    const closingReceivables = getValue("closingReceivables");
+
+    const expenses = getValue("expenses");
+
+    // Net Sales
+    const netSales =
+        grossSales - salesReturns - salesDiscounts;
+
+    // Gross Profit
+    const grossProfit =
+        netSales - cogs;
+
+    // Net Profit
+    const netProfit =
+        grossProfit - expenses;
+
+    // Average Receivables
+    const averageReceivables =
+        (openingReceivables + closingReceivables) / 2;
+
+    // Receivables Turnover
+    let receivableTurnover = 0;
+
+    if (averageReceivables > 0) {
+        receivableTurnover =
+            netSales / averageReceivables;
+    }
+
+    // Profit Margin
+    let profitMargin = 0;
+
+    if (netSales > 0) {
+        profitMargin =
+            (netProfit / netSales) * 100;
+    }
+
+    // Display Results
+    document.getElementById("netSales").textContent =
+        money(netSales);
+
+    document.getElementById("grossProfit").textContent =
+        money(grossProfit);
+
+    document.getElementById("netProfit").textContent =
+        money(netProfit);
+
+    document.getElementById("averageReceivables").textContent =
+        money(averageReceivables);
+
+    document.getElementById("receivableTurnover").textContent =
+        receivableTurnover.toFixed(2) + " ×";
+
+    document.getElementById("profitMargin").textContent =
+        profitMargin.toFixed(2) + "%";
+}
+
+function resetCalculator() {
+
+    document.querySelectorAll("input").forEach(input => {
+        input.value = "";
+    });
+
+    document.getElementById("netSales").textContent = "₹0.00";
+    document.getElementById("grossProfit").textContent = "₹0.00";
+    document.getElementById("netProfit").textContent = "₹0.00";
+    document.getElementById("averageReceivables").textContent = "₹0.00";
+    document.getElementById("receivableTurnover").textContent = "0.00 ×";
+    document.getElementById("profitMargin").textContent = "0.00%";
+}
+
+</script>
+
+</body>
+</html>

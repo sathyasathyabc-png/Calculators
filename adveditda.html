@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Advanced EBITDA Valuation Calculator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Inter, Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 35px auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    color: #102a43;
+    font-size: 32px;
+}
+
+.header p {
+    color: #64748b;
+    margin-top: 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(15,23,42,.08);
+}
+
+.card h2 {
+    margin: 0 0 20px;
+    font-size: 20px;
+    color: #102a43;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 12px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.label-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 7px;
+}
+
+.label-row label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.info-icon {
+    position: relative;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: help;
+}
+
+.tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    width: 270px;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: #172033;
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    font-weight: normal;
+    z-index: 20;
+    transition: .2s;
+}
+
+.info-icon:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fff;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+
+.input-prefix {
+    position: relative;
+}
+
+.input-prefix span {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    color: #64748b;
+}
+
+.input-prefix input {
+    padding-left: 30px;
+}
+
+button {
+    width: 100%;
+    border: 0;
+    border-radius: 8px;
+    padding: 14px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.results {
+    grid-column: 1 / -1;
+}
+
+.multiple-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.multiple-title {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.multiple-value {
+    font-size: 34px;
+    font-weight: 800;
+    color: #1d4ed8;
+    margin: 7px 0;
+}
+
+.multiple-range {
+    color: #475569;
+    font-size: 13px;
+}
+
+.score {
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.result-box {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.result-label {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.result-value {
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.highlight {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.highlight .result-value {
+    color: #047857;
+}
+
+.valuation {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.value-card {
+    padding: 22px;
+    border-radius: 12px;
+    text-align: center;
+    color: #fff;
+}
+
+.enterprise {
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.equity {
+    background: linear-gradient(135deg,#0f766e,#0d9488);
+}
+
+.value-title {
+    font-size: 13px;
+    opacity: .85;
+}
+
+.value-number {
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 7px;
+}
+
+.formula {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.error {
+    display: none;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    color: #b91c1c;
+    background: #fef2f2;
+}
+
+.footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+@media(max-width:800px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .results {
+        grid-column: auto;
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width:500px) {
+    .result-grid,
+    .valuation {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 25px;
+    }
+
+    .tooltip {
+        width: 220px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Advanced EBITDA Valuation Calculator</h1>
+        <p>
+            Estimate EBITDA, valuation multiple, enterprise value and equity value
+        </p>
+    </div>
+
+    <div class="grid">
+
+        <!-- BUSINESS INFORMATION -->
+        <div class="card">
+
+            <h2>Business Information</h2>
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="industry">Industry</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Select the industry that most closely matches
+                            your business. Different industries typically
+                            trade at different EBITDA multiples.
+                        </span>
+                    </span>
+                </div>
+
+                <select id="industry">
+                    <option value="2.5">Restaurant / Food Service</option>
+                    <option value="3.5">Retail / Trading</option>
+                    <option value="4.0">Construction</option>
+                    <option value="4.5">Manufacturing</option>
+                    <option value="5.0">Professional Services</option>
+                    <option value="6.0">Healthcare</option>
+                    <option value="7.0">Technology / Software</option>
+                    <option value="6.5">SaaS / Subscription</option>
+                    <option value="4.0">Logistics / Transportation</option>
+                    <option value="4.5">Other</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="growth">Revenue Growth</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Average annual revenue growth. Faster and
+                            sustainable growth can justify a higher
+                            valuation multiple.
+                        </span>
+                    </span>
+                </div>
+
+                <select id="growth">
+                    <option value="-1">Negative / Declining</option>
+                    <option value="0">0% – 5%</option>
+                    <option value="0.5">5% – 10%</option>
+                    <option value="1">10% – 20%</option>
+                    <option value="1.5">20% – 30%</option>
+                    <option value="2">30%+</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="recurring">Recurring Revenue</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Recurring revenue comes from subscriptions,
+                            contracts, memberships or repeat agreements.
+                            Predictable revenue can increase the multiple.
+                        </span>
+                    </span>
+                </div>
+
+                <select id="recurring">
+                    <option value="-0.5">Mostly One-Time</option>
+                    <option value="0">Mixed</option>
+                    <option value="1">Mostly Recurring</option>
+                    <option value="1.5">Highly Recurring</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="customers">Customer Concentration</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Measures dependence on a small number of
+                            customers. A diversified customer base generally
+                            reduces business risk.
+                        </span>
+                    </span>
+                </div>
+
+                <select id="customers">
+                    <option value="1">Highly Diversified</option>
+                    <option value="0.5">Moderately Diversified</option>
+                    <option value="0">Some Concentration</option>
+                    <option value="-1">Highly Concentrated</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="owner">Owner Dependence</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Indicates how dependent the business is on the
+                            owner personally. A business that can operate
+                            independently of the owner may command a higher
+                            multiple.
+                        </span>
+                    </span>
+                </div>
+
+                <select id="owner">
+                    <option value="1">Low - Management Team in Place</option>
+                    <option value="0">Moderate</option>
+                    <option value="-1">High - Owner Dependent</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="stability">Business Stability</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Considers the consistency of revenue and EBITDA
+                            over recent years. Stable results generally
+                            reduce investment risk.
+                        </span>
+                    </span>
+                </div>
+
+                <select id="stability">
+                    <option value="1">Very Stable</option>
+                    <option value="0.5">Stable</option>
+                    <option value="0">Moderately Volatile</option>
+                    <option value="-1">Highly Volatile</option>
+                </select>
+            </div>
+
+        </div>
+
+
+        <!-- FINANCIAL INFORMATION -->
+        <div class="card">
+
+            <h2>Financial Information</h2>
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="revenue">Annual Revenue</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Total annual sales or operating revenue before
+                            deducting business expenses.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input type="number" id="revenue" placeholder="1,00,00,000">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="cogs">COGS</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Cost of goods or services sold directly to
+                            customers.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input type="number" id="cogs" placeholder="40,00,000">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="opex">Operating Expenses</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Operating costs such as salaries, rent,
+                            marketing, administration and utilities.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input type="number" id="opex" placeholder="20,00,000">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="debt">Total Debt</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Interest-bearing debt that would be deducted
+                            from Enterprise Value to estimate Equity Value.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input type="number" id="debt" placeholder="20,00,000">
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="cash">Cash & Cash Equivalents</label>
+                    <span class="info-icon">
+                        i
+                        <span class="tooltip">
+                            Cash available to the business. Cash is added
+                            to Enterprise Value when calculating Equity Value.
+                        </span>
+                    </span>
+                </div>
+
+                <div class="input-prefix">
+                    <span>₹</span>
+                    <input type="number" id="cash" placeholder="10,00,000">
+                </div>
+            </div>
+
+
+            <button onclick="calculate()">
+                Calculate Valuation
+            </button>
+
+            <div class="error" id="error">
+                Please enter Annual Revenue greater than zero.
+            </div>
+
+        </div>
+
+
+        <!-- RESULTS -->
+        <div class="card results">
+
+            <h2>Valuation Results</h2>
+
+            <div class="multiple-box">
+
+                <div class="multiple-title">
+                    Suggested EBITDA Multiple
+                </div>
+
+                <div class="multiple-value" id="baseMultiple">
+                    5.0×
+                </div>
+
+                <div class="multiple-range" id="multipleRange">
+                    Suggested Range: 4.0× – 6.0×
+                </div>
+
+                <div class="score" id="score">
+                    Business Quality Score: 0
+                </div>
+
+            </div>
+
+
+            <div class="result-grid">
+
+                <div class="result-box highlight">
+                    <div class="result-label">EBITDA</div>
+                    <div class="result-value" id="ebitda">
+                        ₹0
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label">EBITDA Margin</div>
+                    <div class="result-value" id="margin">
+                        0%
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label">Low Value</div>
+                    <div class="result-value" id="lowValue">
+                        ₹0
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label">High Value</div>
+                    <div class="result-value" id="highValue">
+                        ₹0
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="valuation">
+
+                <div class="value-card enterprise">
+
+                    <div class="value-title">
+                        Enterprise Value
+                    </div>
+
+                    <div class="value-number" id="enterpriseValue">
+                        ₹0
+                    </div>
+
+                    <div class="value-title">
+                        EBITDA × Suggested Multiple
+                    </div>
+
+                </div>
+
+
+                <div class="value-card equity">
+
+                    <div class="value-title">
+                        Estimated Equity Value
+                    </div>
+
+                    <div class="value-number" id="equityValue">
+                        ₹0
+                    </div>
+
+                    <div class="value-title">
+                        Enterprise Value − Debt + Cash
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="formula">
+
+                <strong>How the calculation works</strong><br><br>
+
+                EBITDA = Revenue − COGS − Operating Expenses<br>
+
+                EBITDA Margin = EBITDA ÷ Revenue × 100<br>
+
+                Suggested Multiple = Industry Base Multiple
+                + Business Quality Adjustments<br>
+
+                Enterprise Value = EBITDA × Suggested Multiple<br>
+
+                Equity Value = Enterprise Value − Debt + Cash
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Multiple ranges shown are illustrative estimates. Actual valuation
+        should consider comparable transactions, market conditions,
+        financial quality and due diligence.
+    </div>
+
+</div>
+
+
+<script>
+
+function getValue(id) {
+
+    const value = parseFloat(
+        document.getElementById(id).value
+    );
+
+    return isNaN(value) ? 0 : value;
+}
+
+
+function formatINR(value) {
+
+    return "₹" + Number(value).toLocaleString("en-IN", {
+        maximumFractionDigits: 0
+    });
+
+}
+
+
+function calculate() {
+
+    const revenue = getValue("revenue");
+    const cogs = getValue("cogs");
+    const opex = getValue("opex");
+
+    const debt = getValue("debt");
+    const cash = getValue("cash");
+
+    if (revenue <= 0) {
+
+        document.getElementById("error").style.display = "block";
+        return;
+    }
+
+    document.getElementById("error").style.display = "none";
+
+
+    /*
+        EBITDA CALCULATION
+    */
+
+    const ebitda =
+        revenue -
+        cogs -
+        opex;
+
+
+    /*
+        EBITDA MARGIN
+    */
+
+    const margin =
+        (ebitda / revenue) * 100;
+
+
+    /*
+        INDUSTRY BASE MULTIPLE
+    */
+
+    const industryMultiple =
+        parseFloat(
+            document.getElementById("industry").value
+        );
+
+
+    /*
+        QUALITY ADJUSTMENTS
+    */
+
+    const growth =
+        parseFloat(
+            document.getElementById("growth").value
+        );
+
+    const recurring =
+        parseFloat(
+            document.getElementById("recurring").value
+        );
+
+    const customers =
+        parseFloat(
+            document.getElementById("customers").value
+        );
+
+    const owner =
+        parseFloat(
+            document.getElementById("owner").value
+        );
+
+    const stability =
+        parseFloat(
+            document.getElementById("stability").value
+        );
+
+
+    /*
+        TOTAL QUALITY SCORE
+    */
+
+    const qualityScore =
+        growth +
+        recurring +
+        customers +
+        owner +
+        stability;
+
+
+    /*
+        Convert score into multiple adjustment
+
+        Maximum adjustment approximately ±2×
+    */
+
+    let adjustment =
+        qualityScore * 0.30;
+
+
+    /*
+        Limit adjustment
+    */
+
+    adjustment =
+        Math.max(-2, Math.min(2, adjustment));
+
+
+    /*
+        BASE MULTIPLE
+    */
+
+    const baseMultiple =
+        industryMultiple + adjustment;
+
+
+    /*
+        MULTIPLE RANGE
+    */
+
+    const lowMultiple =
+        Math.max(1, baseMultiple - 1);
+
+    const highMultiple =
+        baseMultiple + 1;
+
+
+    /*
+        VALUATIONS
+    */
+
+    const enterpriseValue =
+        ebitda * baseMultiple;
+
+    const lowValue =
+        ebitda * lowMultiple;
+
+    const highValue =
+        ebitda * highMultiple;
+
+
+    /*
+        EQUITY VALUE
+
+        EV - Debt + Cash
+    */
+
+    const equityValue =
+        enterpriseValue -
+        debt +
+        cash;
+
+
+    /*
+        DISPLAY
+    */
+
+    document.getElementById("ebitda").textContent =
+        formatINR(ebitda);
+
+    document.getElementById("margin").textContent =
+        margin.toFixed(2) + "%";
+
+    document.getElementById("baseMultiple").textContent =
+        baseMultiple.toFixed(1) + "×";
+
+    document.getElementById("multipleRange").textContent =
+        "Suggested Range: " +
+        lowMultiple.toFixed(1) +
+        "× – " +
+        highMultiple.toFixed(1) +
+        "×";
+
+    document.getElementById("score").textContent =
+        "Business Quality Score: " +
+        qualityScore.toFixed(1);
+
+    document.getElementById("lowValue").textContent =
+        formatINR(lowValue);
+
+    document.getElementById("highValue").textContent =
+        formatINR(highValue);
+
+    document.getElementById("enterpriseValue").textContent =
+        formatINR(enterpriseValue);
+
+    document.getElementById("equityValue").textContent =
+        formatINR(equityValue);
+
+}
+
+
+// Automatically recalculate when a selection changes
+
+document.querySelectorAll("select").forEach(function(element) {
+
+    element.addEventListener("change", function() {
+
+        if (getValue("revenue") > 0) {
+            calculate();
+        }
+
+    });
+
+});
+
+
+// Recalculate when financial inputs change
+
+document.querySelectorAll("input").forEach(function(element) {
+
+    element.addEventListener("input", function() {
+
+        if (getValue("revenue") > 0) {
+            calculate();
+        }
+
+    });
+
+});
+
+
+// Enter key
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        calculate();
+    }
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganesh Flash Light - Canvas</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #08001a;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    canvas {
+        width: min(95vw, 800px);
+        height: min(90vh, 800px);
+        background: radial-gradient(circle, #32106b, #08001a 70%);
+        border-radius: 20px;
+        box-shadow: 0 0 40px #ff00ff;
+    }
+</style>
+</head>
+
+<body>
+
+<canvas id="ganeshCanvas" width="800" height="800"></canvas>
+
+<script>
+const canvas = document.getElementById("ganeshCanvas");
+const ctx = canvas.getContext("2d");
+
+let time = 0;
+
+function glow(color, blur = 20) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur;
+}
+
+function drawLight(x, y, color, size = 8) {
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+
+    glow(color, 25);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+}
+
+/* Decorative flashing lights */
+function drawLights() {
+    const colors = [
+        "#ff1744",
+        "#00e5ff",
+        "#76ff03",
+        "#ffea00",
+        "#ff00ff",
+        "#ff9100"
+    ];
+
+    for (let i = 0; i < 32; i++) {
+        const angle = (Math.PI * 2 / 32) * i;
+
+        const x = 400 + Math.cos(angle) * 330;
+        const y = 400 + Math.sin(angle) * 330;
+
+        const color = colors[(i + Math.floor(time / 8)) % colors.length];
+
+        drawLight(x, y, color, 7 + Math.sin(time / 5 + i) * 2);
+    }
+}
+
+/* Crown */
+function drawCrown() {
+    ctx.save();
+
+    glow("#ffd700", 25);
+
+    ctx.fillStyle = "#ffb300";
+    ctx.strokeStyle = "#ffe082";
+    ctx.lineWidth = 8;
+
+    ctx.beginPath();
+    ctx.moveTo(300, 260);
+    ctx.lineTo(330, 120);
+    ctx.lineTo(375, 205);
+    ctx.lineTo(400, 90);
+    ctx.lineTo(425, 205);
+    ctx.lineTo(470, 120);
+    ctx.lineTo(500, 260);
+    ctx.closePath();
+
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+/* Ganesha */
+function drawGanesh() {
+
+    // Ears
+    ctx.fillStyle = "#ff9f68";
+    ctx.strokeStyle = "#d85b3c";
+    ctx.lineWidth = 8;
+
+    ctx.beginPath();
+    ctx.ellipse(285, 355, 85, 125, -0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.ellipse(515, 355, 85, 125, 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Head
+    glow("#ff7043", 15);
+    ctx.fillStyle = "#ff9f68";
+
+    ctx.beginPath();
+    ctx.arc(400, 350, 125, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    // Crown
+    drawCrown();
+
+    // Eyes
+    ctx.fillStyle = "#ffffff";
+
+    ctx.beginPath();
+    ctx.ellipse(355, 340, 22, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(445, 340, 22, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#111";
+
+    ctx.beginPath();
+    ctx.arc(360, 345, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(440, 345, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Trunk
+    glow("#ff7043", 15);
+    ctx.fillStyle = "#ff9f68";
+
+    ctx.beginPath();
+    ctx.moveTo(375, 390);
+    ctx.bezierCurveTo(
+        370, 450,
+        385, 510,
+        430, 500
+    );
+
+    ctx.bezierCurveTo(
+        470, 490,
+        455, 440,
+        425, 420
+    );
+
+    ctx.lineTo(405, 395);
+    ctx.closePath();
+
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    // Tusks
+    ctx.fillStyle = "#fff8dc";
+
+    ctx.beginPath();
+    ctx.moveTo(365, 405);
+    ctx.lineTo(325, 455);
+    ctx.lineTo(370, 440);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(435, 405);
+    ctx.lineTo(475, 455);
+    ctx.lineTo(430, 440);
+    ctx.closePath();
+    ctx.fill();
+
+    // Body
+    glow("#ff7043", 20);
+    ctx.fillStyle = "#ff9f68";
+
+    ctx.beginPath();
+    ctx.ellipse(400, 590, 150, 145, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    // Necklace
+    ctx.strokeStyle = "#ffd700";
+    ctx.lineWidth = 15;
+
+    ctx.beginPath();
+    ctx.arc(400, 535, 80, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+
+    // Belly decoration
+    ctx.fillStyle = "#ffd700";
+
+    for (let i = 0; i < 7; i++) {
+        drawLight(
+            350 + i * 17,
+            590 + Math.sin(i) * 10,
+            "#ffd700",
+            5
+        );
+    }
+
+    // Arms
+    ctx.strokeStyle = "#ff9f68";
+    ctx.lineWidth = 45;
+    ctx.lineCap = "round";
+
+    ctx.beginPath();
+    ctx.moveTo(300, 570);
+    ctx.lineTo(200, 650);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(500, 570);
+    ctx.lineTo(600, 650);
+    ctx.stroke();
+
+    // Hands
+    ctx.fillStyle = "#ff9f68";
+
+    ctx.beginPath();
+    ctx.arc(190, 655, 30, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(610, 655, 30, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Modak
+    glow("#ffd700", 15);
+    ctx.fillStyle = "#ffca28";
+
+    ctx.beginPath();
+    ctx.arc(190, 625, 22, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+}
+
+/* Background sparkles */
+function drawSparkles() {
+    for (let i = 0; i < 50; i++) {
+        const x = (i * 137) % 800;
+        const y = (i * 83) % 800;
+
+        const brightness =
+            0.3 + Math.abs(Math.sin(time / 10 + i));
+
+        ctx.globalAlpha = brightness;
+
+        drawLight(
+            x,
+            y,
+            i % 2 ? "#ffffff" : "#00e5ff",
+            2
+        );
+
+        ctx.globalAlpha = 1;
+    }
+}
+
+/* Main animation */
+function animate() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Background
+    const gradient = ctx.createRadialGradient(
+        400, 400, 50,
+        400, 400, 450
+    );
+
+    gradient.addColorStop(0, "#4a148c");
+    gradient.addColorStop(0.5, "#21005d");
+    gradient.addColorStop(1, "#050014");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 800, 800);
+
+    drawSparkles();
+    drawLights();
+    drawGanesh();
+
+    // Om symbol
+    ctx.font = "bold 55px serif";
+    ctx.textAlign = "center";
+
+    glow("#ffea00", 25);
+    ctx.fillStyle = "#ffea00";
+    ctx.fillText("ॐ", 400, 755);
+
+    ctx.shadowBlur = 0;
+
+    time++;
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>

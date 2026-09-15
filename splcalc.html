@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Scheme Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #222;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #1d4ed8;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #153eaa;
+        }
+
+        .results {
+            margin-top: 25px;
+        }
+
+        .result-card {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border-left: 5px solid #1d4ed8;
+        }
+
+        .result-card h3 {
+            margin: 0 0 8px;
+            color: #1d4ed8;
+        }
+
+        .amount {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .maturity {
+            background: #ecfdf5;
+            border-left-color: #16a34a;
+        }
+
+        .maturity h3 {
+            color: #15803d;
+        }
+
+        .note {
+            margin-top: 20px;
+            padding: 12px;
+            background: #fff7ed;
+            border-radius: 7px;
+            font-size: 14px;
+            color: #9a3412;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Special Scheme Calculator</h2>
+
+    <div class="form-group">
+        <label for="amount">Amount (₹)</label>
+        <input type="number" id="amount" placeholder="Enter amount" min="0">
+    </div>
+
+    <div class="form-group">
+        <label for="days">Number of Days</label>
+        <input type="number" id="days" placeholder="Enter days" min="1">
+    </div>
+
+    <div class="form-group">
+        <label for="rate">Interest Rate (%)</label>
+        <input type="number" id="rate" placeholder="Enter annual interest rate" min="0" step="0.01">
+    </div>
+
+    <button onclick="calculateInterest()">Calculate</button>
+
+    <div class="results" id="results"></div>
+
+</div>
+
+<script>
+
+function formatMoney(value) {
+    return "₹" + value.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function calculateInterest() {
+
+    const principal = parseFloat(document.getElementById("amount").value);
+    const days = parseFloat(document.getElementById("days").value);
+    const rate = parseFloat(document.getElementById("rate").value);
+
+    if (isNaN(principal) || isNaN(days) || isNaN(rate) ||
+        principal <= 0 || days <= 0 || rate < 0) {
+
+        document.getElementById("results").innerHTML =
+            `<div class="result-card" style="color:red;">
+                Please enter valid Amount, Days and Interest Rate.
+            </div>`;
+
+        return;
+    }
+
+    /*
+        SIMPLE INTEREST
+
+        SI = P × R × T / 100
+
+        For monthly:
+        T = 30 / 365
+
+        For quarterly:
+        T = 90 / 365
+
+        For yearly:
+        T = 365 / 365
+    */
+
+    const monthlyInterest =
+        principal * rate * (30 / 365) / 100;
+
+    const quarterlyInterest =
+        principal * rate * (90 / 365) / 100;
+
+    const yearlyInterest =
+        principal * rate * (365 / 365) / 100;
+
+
+    /*
+        MATURITY
+
+        Compound interest based on the entered number of days.
+
+        Daily compounding:
+        A = P × (1 + R/100/365)^Days
+    */
+
+    const maturityAmount =
+        principal * Math.pow(
+            1 + (rate / 100 / 365),
+            days
+        );
+
+    const maturityInterest =
+        maturityAmount - principal;
+
+
+    document.getElementById("results").innerHTML = `
+
+        <div class="result-card">
+            <h3>Monthly — 30 Days</h3>
+            <div>Simple Interest:
+                <span class="amount">
+                    ${formatMoney(monthlyInterest)}
+                </span>
+            </div>
+            
+        </div>
+
+        <div class="result-card">
+            <h3>Quarterly — 90 Days</h3>
+            <div>Simple Interest:
+                <span class="amount">
+                    ${formatMoney(quarterlyInterest)}
+                </span>
+            </div>
+            
+        </div>
+
+        <div class="result-card">
+            <h3>Yearly — 365 Days</h3>
+            <div>Simple Interest:
+                <span class="amount">
+                    ${formatMoney(yearlyInterest)}
+                </span>
+            </div>
+            
+        </div>
+
+        <div class="result-card maturity">
+            <h3>On Maturity — ${days} Days</h3>
+            <div>Compound Interest:
+                <span class="amount">
+                    ${formatMoney(maturityInterest)}
+                </span>
+            </div>
+            <div>Maturity Amount:
+                <span class="amount">
+                    ${formatMoney(maturityAmount)}
+                </span>
+            </div>
+        </div>
+
+        <div class="note">
+            Monthly, quarterly and yearly calculations use
+            <strong>simple interest</strong>.
+            Maturity uses <strong>daily compound interest</strong>
+            for the entered number of days.
+        </div>
+    `;
+}
+
+</script>
+
+</body>
+</html>

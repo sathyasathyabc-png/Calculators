@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resource Planner</title>
+
+<style>
+:root{
+  --bg:#f4f6fa;
+  --panel:#fff;
+  --line:#dfe3ea;
+  --text:#172033;
+  --muted:#687386;
+  --blue:#2563eb;
+  --blue2:#dbeafe;
+  --danger:#dc2626;
+  --hour:56px;
+  --resource:190px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+button,input,select,textarea{font:inherit}
+button{
+  border:1px solid #ccd3df;
+  background:#fff;
+  border-radius:7px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+button:hover{background:#f7f9fc}
+button.primary{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+button.danger{
+  color:var(--danger);
+  border-color:#fecaca;
+}
+header{
+  background:#172033;
+  color:#fff;
+  padding:16px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+header h1{font-size:20px;margin:0}
+header small{color:#cbd5e1}
+.toolbar{
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:12px 18px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.toolbar .spacer{flex:1}
+.toolbar select,.toolbar input{padding:8px 10px}
+.calendar-shell{
+  margin:18px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:auto;
+  box-shadow:0 2px 8px #0000000a;
+}
+.calendar{
+  min-width:1250px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:var(--resource) repeat(7, minmax(150px,1fr));
+}
+.cell{
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.resource-head{
+  position:sticky;
+  left:0;
+  z-index:8;
+  background:#f8fafc;
+}
+.day-head{
+  min-height:68px;
+  padding:10px 12px;
+  background:#f8fafc;
+  position:sticky;
+  top:0;
+  z-index:7;
+  cursor:pointer;
+}
+.day-head:hover{background:#eef4ff}
+.day-head .name{
+  font-size:12px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.day-head .number{
+  font-size:18px;
+  font-weight:700;
+}
+.day-head.today{
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+.resource{
+  min-height:92px;
+  padding:12px;
+  background:#fbfcfe;
+  position:sticky;
+  left:0;
+  z-index:5;
+}
+.resource strong{display:block}
+.resource span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.day-body{
+  min-height:92px;
+  position:relative;
+  background:#fff;
+}
+.day-body.expanded{
+  min-height:calc(var(--hour) * 10);
+  background-image:
+    linear-gradient(to bottom,
+      transparent calc(var(--hour) - 1px),
+      #e8ebf0 var(--hour));
+  background-size:100% var(--hour);
+}
+.day-body.today{background-color:#fbfdff}
+.hour-labels{
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  pointer-events:none;
+}
+.hour-label{
+  height:var(--hour);
+  padding:4px;
+  font-size:10px;
+  color:#a0a8b5;
+  border-bottom:1px dashed #eef0f3;
+}
+.day-body:not(.expanded) .hour-labels{display:none}
+.drop-zone{
+  position:absolute;
+  inset:0;
+  z-index:1;
+}
+.day-body.drag-over{background:#dbeafe!important}
+.task{
+  position:absolute;
+  z-index:3;
+  left:5px;
+  right:5px;
+  min-height:42px;
+  padding:7px 24px 7px 9px;
+  color:white;
+  border-radius:7px;
+  cursor:grab;
+  box-shadow:0 2px 5px #0002;
+  overflow:hidden;
+  user-select:none;
+}
+.day-body:not(.expanded) .task{
+  position:relative;
+  left:auto;
+  right:auto;
+  top:auto!important;
+  margin:6px;
+}
+.task:active{cursor:grabbing}
+.task strong{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.task small{
+  display:block;
+  opacity:.9;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.task .handle{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:7px;
+  cursor:ew-resize;
+}
+.task .handle.left{left:0}
+.task .handle.right{right:0}
+.task .handle:hover{background:#ffffff33}
+.task .delete{
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:19px;
+  height:19px;
+  padding:0;
+  border:0;
+  background:#0003;
+  color:#fff;
+  border-radius:50%;
+  display:none;
+}
+.task:hover .delete{display:block}
+.week-summary{
+  padding:12px 18px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  gap:24px;
+  flex-wrap:wrap;
+  font-size:13px;
+}
+.week-summary b{font-size:15px}
+.legend{
+  padding:0 18px 18px;
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+  font-size:12px;
+  color:var(--muted);
+}
+.legend span{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:5px;
+}
+
+/* modal */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:#0007;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  padding:15px;
+}
+.overlay.show{display:flex}
+.modal{
+  width:min(560px,96vw);
+  max-height:94vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:12px;
+  padding:22px;
+  box-shadow:0 20px 60px #0004;
+}
+.modal h2{margin:0 0 18px}
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:13px;
+}
+.form-field.full{grid-column:1/-1}
+.form-field label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+.form-field input,
+.form-field select,
+.form-field textarea{
+  width:100%;
+  border:1px solid #ccd3df;
+  border-radius:7px;
+  padding:9px;
+}
+.form-field textarea{min-height:75px;resize:vertical}
+.modal-actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+}
+.modal-right{display:flex;gap:8px}
+
+@media(max-width:700px){
+  :root{--resource:150px}
+  header{padding:13px}
+  .calendar-shell{margin:10px}
+  .toolbar{padding:10px}
+  .form-grid{grid-template-columns:1fr}
+  .form-field.full{grid-column:auto}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h1>Resource Planner</h1>
+    <small id="rangeTitle"></small>
+  </div>
+  <div id="taskCount"></div>
+</header>
+
+<div class="toolbar">
+  <button onclick="changeWeek(-1)">← Previous</button>
+  <button onclick="goToday()">Today</button>
+  <button onclick="changeWeek(1)">Next →</button>
+
+  <select id="resourceFilter" onchange="render()">
+    <option value="all">All resources</option>
+  </select>
+
+  <select id="projectFilter" onchange="render()">
+    <option value="all">All projects</option>
+  </select>
+
+  <select id="categoryFilter" onchange="render()">
+    <option value="all">All categories</option>
+  </select>
+
+  <div class="spacer"></div>
+
+  <button onclick="exportJSON()">⬇ Export JSON</button>
+  <button onclick="document.getElementById('fileInput').click()">⬆ Restore JSON</button>
+  <input id="fileInput" type="file" accept=".json,application/json" hidden
+         onchange="importJSON(event)">
+
+  <button class="primary" onclick="openAdd()">+ Assignment</button>
+</div>
+
+<div class="week-summary">
+  <div>Assignments: <b id="summaryTasks">0</b></div>
+  <div>Resources used: <b id="summaryResources">0</b></div>
+  <div>Planned days: <b id="summaryDays">0</b></div>
+</div>
+
+<div class="calendar-shell">
+  <div id="calendar" class="calendar"></div>
+</div>
+
+<div class="legend">
+  <div><span style="background:#2563eb"></span>Development</div>
+  <div><span style="background:#16a34a"></span>Design</div>
+  <div><span style="background:#9333ea"></span>Management</div>
+  <div><span style="background:#ea580c"></span>Testing</div>
+  <div><span style="background:#0891b2"></span>Other</div>
+</div>
+
+<div id="overlay" class="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">New Assignment</h2>
+
+    <div class="form-grid">
+
+      <div class="form-field full">
+        <label>Task name *</label>
+        <input id="fName" placeholder="e.g. API Development">
+      </div>
+
+      <div class="form-field">
+        <label>Resource *</label>
+        <select id="fResource"></select>
+      </div>
+
+      <div class="form-field">
+        <label>Project *</label>
+        <input id="fProject" placeholder="e.g. Website Redesign">
+      </div>
+
+      <div class="form-field">
+        <label>Start date *</label>
+        <input id="fStart" type="date">
+      </div>
+
+      <div class="form-field">
+        <label>End date *</label>
+        <input id="fEnd" type="date">
+      </div>
+
+      <div class="form-field">
+        <label>Start time</label>
+        <input id="fStartTime" type="time" value="08:00">
+      </div>
+
+      <div class="form-field">
+        <label>End time</label>
+        <input id="fEndTime" type="time" value="17:00">
+      </div>
+
+      <div class="form-field">
+        <label>Category</label>
+        <select id="fCategory">
+          <option>Development</option>
+          <option>Design</option>
+          <option>Management</option>
+          <option>Testing</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="form-field full">
+        <label>Notes</label>
+        <textarea id="fNotes" placeholder="Optional notes"></textarea>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      <button id="deleteButton" class="danger" onclick="deleteCurrent()">
+        Delete
+      </button>
+
+      <div class="modal-right">
+        <button onclick="closeModal()">Cancel</button>
+        <button class="primary" onclick="saveAssignment()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+
+const STORAGE_KEY = "resource-planner-v2";
+
+const defaultData = {
+  version: 2,
+
+  resources: [
+    {id:1,name:"Resource1",role:"Developer"},
+    {id:2,name:"Resource2",role:"UI/UX Designer"},
+    {id:3,name:"Resource3",role:"Project Manager"},
+    {id:4,name:"Resource4",role:"QA Engineer"},
+    {id:5,name:"Resource5",role:"Developer"}
+  ],
+
+  assignments: []
+};
+
+const colors = {
+  Development:"#2563eb",
+  Design:"#16a34a",
+  Management:"#9333ea",
+  Testing:"#ea580c",
+  Other:"#0891b2"
+};
+
+let data = loadData();
+let currentDate = new Date();
+let editingId = null;
+let draggedId = null;
+let expandedDays = new Set();
+
+/* ============================================================
+   STORAGE
+============================================================ */
+
+function loadData(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(!saved){
+      return createDemoData();
+    }
+
+    const parsed = JSON.parse(saved);
+
+    if(!parsed || !Array.isArray(parsed.resources) ||
+       !Array.isArray(parsed.assignments)){
+      throw new Error("Invalid planner data");
+    }
+
+    return parsed;
+
+  }catch(err){
+    console.warn(err);
+    return createDemoData();
+  }
+}
+
+function createDemoData(){
+  const today = dateString(new Date());
+
+  return {
+    ...defaultData,
+    assignments:[
+      {
+        id:101,
+        name:"API Development",
+        resourceId:1,
+        project:"Website Redesign",
+        startDate:today,
+        endDate:dateString(addDays(new Date(),2)),
+        startTime:"08:00",
+        endTime:"17:00",
+        category:"Development",
+        notes:"Backend API work"
+      },
+      {
+        id:102,
+        name:"Homepage Design",
+        resourceId:2,
+        project:"Website Redesign",
+        startDate:dateString(addDays(new Date(),1)),
+        endDate:dateString(addDays(new Date(),3)),
+        startTime:"09:00",
+        endTime:"16:00",
+        category:"Design",
+        notes:"Desktop and mobile layouts"
+      },
+      {
+        id:103,
+        name:"Sprint Planning",
+        resourceId:3,
+        project:"Mobile App",
+        startDate:dateString(addDays(new Date(),2)),
+        endDate:dateString(addDays(new Date(),2)),
+        startTime:"10:00",
+        endTime:"12:00",
+        category:"Management",
+        notes:"Sprint planning session"
+      },
+      {
+        id:104,
+        name:"Regression Testing",
+        resourceId:4,
+        project:"Mobile App",
+        startDate:dateString(addDays(new Date(),3)),
+        endDate:dateString(addDays(new Date(),4)),
+        startTime:"09:00",
+        endTime:"17:00",
+        category:"Testing",
+        notes:"Full regression test"
+      }
+    ]
+  };
+}
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+/* ============================================================
+   DATE HELPERS
+============================================================ */
+
+function dateString(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+
+function parseDate(s){
+  const [y,m,d]=s.split("-").map(Number);
+  return new Date(y,m-1,d);
+}
+
+function addDays(d,n){
+  const x=new Date(d);
+  x.setDate(x.getDate()+n);
+  return x;
+}
+
+function startWeek(d){
+  const x=new Date(d);
+  x.setHours(0,0,0,0);
+  x.setDate(x.getDate()-x.getDay());
+  return x;
+}
+
+function weekDates(){
+  const start=startWeek(currentDate);
+  return Array.from({length:7},(_,i)=>addDays(start,i));
+}
+
+function formatDate(d){
+  return d.toLocaleDateString("en-IN",{
+    day:"numeric",
+    month:"short",
+    year:"numeric"
+  });
+}
+
+function formatShort(d){
+  return d.toLocaleDateString("en-IN",{
+    day:"numeric",
+    month:"short"
+  });
+}
+
+function overlaps(task,day){
+  return task.startDate <= dateString(day) &&
+         task.endDate >= dateString(day);
+}
+
+function dayDiff(a,b){
+  return Math.round(
+    (parseDate(b)-parseDate(a))/86400000
+  );
+}
+
+/* ============================================================
+   FILTERS
+============================================================ */
+
+function populateControls(){
+
+  const rf=document.getElementById("resourceFilter");
+  const pf=document.getElementById("projectFilter");
+  const cf=document.getElementById("categoryFilter");
+
+  const oldR=rf.value || "all";
+  const oldP=pf.value || "all";
+  const oldC=cf.value || "all";
+
+  rf.innerHTML='<option value="all">All resources</option>';
+
+  data.resources.forEach(r=>{
+    rf.innerHTML+=
+      `<option value="${r.id}">${esc(r.name)}</option>`;
+  });
+
+  pf.innerHTML='<option value="all">All projects</option>';
+
+  [...new Set(data.assignments.map(x=>x.project))]
+    .filter(Boolean)
+    .sort()
+    .forEach(p=>{
+      pf.innerHTML+=
+        `<option value="${esc(p)}">${esc(p)}</option>`;
+    });
+
+  cf.innerHTML='<option value="all">All categories</option>';
+
+  Object.keys(colors).forEach(c=>{
+    cf.innerHTML+=`<option>${c}</option>`;
+  });
+
+  if([...rf.options].some(o=>o.value===oldR)) rf.value=oldR;
+  if([...pf.options].some(o=>o.value===oldP)) pf.value=oldP;
+  if([...cf.options].some(o=>o.value===oldC)) cf.value=oldC;
+
+  const fr=document.getElementById("fResource");
+
+  fr.innerHTML="";
+
+  data.resources.forEach(r=>{
+    fr.innerHTML+=
+      `<option value="${r.id}">${esc(r.name)}</option>`;
+  });
+}
+
+function filteredAssignments(){
+
+  const r=document.getElementById("resourceFilter").value;
+  const p=document.getElementById("projectFilter").value;
+  const c=document.getElementById("categoryFilter").value;
+
+  return data.assignments.filter(t=>{
+    if(r!=="all" && String(t.resourceId)!==r) return false;
+    if(p!=="all" && t.project!==p) return false;
+    if(c!=="all" && t.category!==c) return false;
+    return true;
+  });
+}
+
+/* ============================================================
+   RENDER
+============================================================ */
+
+function render(){
+
+  populateControls();
+
+  const dates=weekDates();
+  const assignments=filteredAssignments();
+
+  const first=dates[0];
+  const last=dates[6];
+
+  document.getElementById("rangeTitle").textContent =
+    `${formatDate(first)} – ${formatDate(last)}`;
+
+  document.getElementById("taskCount").textContent =
+    `${assignments.length} assignment${assignments.length===1?"":"s"}`;
+
+  document.getElementById("summaryTasks").textContent =
+    assignments.length;
+
+  document.getElementById("summaryResources").textContent =
+    new Set(assignments.map(t=>t.resourceId)).size;
+
+  const plannedDays=assignments.reduce(
+    (sum,t)=>sum+dayDiff(t.startDate,t.endDate)+1,0
+  );
+
+  document.getElementById("summaryDays").textContent=plannedDays;
+
+  const rf=document.getElementById("resourceFilter").value;
+
+  const resources=data.resources.filter(r=>
+    rf==="all" || String(r.id)===rf
+  );
+
+  const calendar=document.getElementById("calendar");
+
+  calendar.innerHTML="";
+
+  const grid=document.createElement("div");
+  grid.className="grid";
+
+  const resourceHead=document.createElement("div");
+  resourceHead.className="cell day-head resource-head";
+  resourceHead.textContent="Resource";
+  grid.appendChild(resourceHead);
+
+  dates.forEach(day=>{
+    const head=document.createElement("div");
+
+    head.className="cell day-head";
+
+    if(dateString(day)===dateString(new Date())){
+      head.classList.add("today");
+    }
+
+    head.innerHTML=`
+      <div class="name">
+        ${day.toLocaleDateString("en-US",{weekday:"short"})}
+      </div>
+      <div class="number">${day.getDate()}</div>
+    `;
+
+    head.title="Click to expand/collapse hourly view";
+
+    head.onclick=()=>{
+      const key=dateString(day);
+
+      if(expandedDays.has(key)){
+        expandedDays.delete(key);
+      }else{
+        expandedDays.add(key);
+      }
+
+      render();
+    };
+
+    grid.appendChild(head);
+  });
+
+  resources.forEach(resource=>{
+
+    const rc=document.createElement("div");
+    rc.className="cell resource";
+
+    rc.innerHTML=`
+      <strong>${esc(resource.name)}</strong>
+      <span>${esc(resource.role)}</span>
+    `;
+
+    grid.appendChild(rc);
+
+    dates.forEach(day=>{
+      const body=document.createElement("div");
+
+      body.className="cell day-body";
+
+      if(expandedDays.has(dateString(day))){
+        body.classList.add("expanded");
+      }
+
+      if(dateString(day)===dateString(new Date())){
+        body.classList.add("today");
+      }
+
+      body.dataset.date=dateString(day);
+      body.dataset.resource=resource.id;
+
+      body.innerHTML=`
+        <div class="hour-labels">
+          ${[8,9,10,11,12,13,14,15,16,17]
+            .map(h=>`<div class="hour-label">${h}:00</div>`)
+            .join("")}
+        </div>
+      `;
+
+      setupDrop(body);
+
+      assignments
+        .filter(t=>
+          t.resourceId===resource.id &&
+          overlaps(t,day)
+        )
+        .forEach(task=>{
+          const el=createTask(task,day);
+          body.appendChild(el);
+        });
+
+      body.addEventListener("dblclick",()=>{
+        openAdd(dateString(day),resource.id);
+      });
+
+      grid.appendChild(body);
+    });
+  });
+
+  calendar.appendChild(grid);
+}
+
+/* ============================================================
+   TASK RENDERING
+============================================================ */
+
+function createTask(task,day){
+
+  const el=document.createElement("div");
+  el.className="task";
+  el.draggable=true;
+
+  el.style.background=colors[task.category] || colors.Other;
+
+  const singleDay=task.startDate===task.endDate;
+
+  el.innerHTML=`
+    <button class="delete" title="Delete">×</button>
+    <div class="handle left"></div>
+    <div class="handle right"></div>
+    <strong>${esc(task.name)}</strong>
+    <small>${esc(task.project)}</small>
+    <small>${task.startDate} → ${task.endDate}</small>
+  `;
+
+  el.querySelector(".delete").onclick=e=>{
+    e.stopPropagation();
+
+    if(confirm("Delete this assignment?")){
+      data.assignments=data.assignments.filter(
+        x=>x.id!==task.id
+      );
+      saveData();
+      render();
+    }
+  };
+
+  el.addEventListener("click",e=>{
+    if(
+      e.target.classList.contains("handle") ||
+      e.target.classList.contains("delete")
+    ) return;
+
+    openEdit(task.id);
+  });
+
+  el.addEventListener("dragstart",e=>{
+    draggedId=task.id;
+    e.dataTransfer.effectAllowed="move";
+    e.dataTransfer.setData("text/plain",String(task.id));
+  });
+
+  el.addEventListener("dragend",()=>{
+    draggedId=null;
+    document.querySelectorAll(".drag-over")
+      .forEach(x=>x.classList.remove("drag-over"));
+  });
+
+  /* Resize handles modify start/end dates */
+  el.querySelector(".handle.left").addEventListener("mousedown",e=>{
+    e.stopPropagation();
+    startResize(e,task,"start");
+  });
+
+  el.querySelector(".handle.right").addEventListener("mousedown",e=>{
+    e.stopPropagation();
+    startResize(e,task,"end");
+  });
+
+  if(expandedDays.has(dateString(day))){
+
+    const startHour=8;
+    const endHour=18;
+
+    let top=0;
+    let height=56;
+
+    if(day.getTime()===parseDate(task.startDate).getTime()){
+      top=timeToPixels(task.startTime,startHour);
+    }
+
+    if(day.getTime()===parseDate(task.endDate).getTime()){
+      const bottom=timeToPixels(task.endTime,startHour);
+      height=Math.max(35,bottom-top);
+    }
+
+    if(task.startDate!==task.endDate){
+
+      if(dateString(day)===task.startDate){
+        height=Math.max(35,560-top);
+      }else if(dateString(day)===task.endDate){
+        top=0;
+        height=Math.max(35,timeToPixels(task.endTime,startHour));
+      }else{
+        top=3;
+        height=554;
+      }
+    }
+
+    el.style.top=top+"px";
+    el.style.height=height+"px";
+  }
+
+  return el;
+}
+
+function timeToPixels(time,startHour){
+
+  const [h,m]=time.split(":").map(Number);
+
+  return ((h-startHour)+(m/60))*56;
+}
+
+/* ============================================================
+   DRAG AND DROP
+============================================================ */
+
+function setupDrop(body){
+
+  body.addEventListener("dragover",e=>{
+    e.preventDefault();
+    body.classList.add("drag-over");
+    e.dataTransfer.dropEffect="move";
+  });
+
+  body.addEventListener("dragleave",()=>{
+    body.classList.remove("drag-over");
+  });
+
+  body.addEventListener("drop",e=>{
+    e.preventDefault();
+
+    body.classList.remove("drag-over");
+
+    const id=Number(
+      e.dataTransfer.getData("text/plain") || draggedId
+    );
+
+    const task=data.assignments.find(x=>x.id===id);
+
+    if(!task)return;
+
+    const newDate=body.dataset.date;
+    const oldStart=parseDate(task.startDate);
+    const oldEnd=parseDate(task.endDate);
+
+    const duration=dayDiff(
+      task.startDate,
+      task.endDate
+    );
+
+    task.resourceId=Number(body.dataset.resource);
+
+    task.startDate=newDate;
+    task.endDate=dateString(
+      addDays(parseDate(newDate),duration)
+    );
+
+    saveData();
+    render();
+  });
+}
+
+/* ============================================================
+   RESIZE
+============================================================ */
+
+function startResize(e,task,side){
+
+  e.preventDefault();
+
+  const originalStart=task.startDate;
+  const originalEnd=task.endDate;
+
+  const startX=e.clientX;
+
+  function move(ev){
+
+    const diff=Math.round((ev.clientX-startX)/150);
+
+    if(diff===0)return;
+
+    if(side==="start"){
+
+      let newStart=addDays(
+        parseDate(originalStart),
+        diff
+      );
+
+      if(newStart>parseDate(originalEnd)){
+        newStart=parseDate(originalEnd);
+      }
+
+      task.startDate=dateString(newStart);
+
+    }else{
+
+      let newEnd=addDays(
+        parseDate(originalEnd),
+        diff
+      );
+
+      if(newEnd<parseDate(originalStart)){
+        newEnd=parseDate(originalStart);
+      }
+
+      task.endDate=dateString(newEnd);
+    }
+
+    render();
+  }
+
+  function stop(){
+    document.removeEventListener("mousemove",move);
+    document.removeEventListener("mouseup",stop);
+    saveData();
+  }
+
+  document.addEventListener("mousemove",move);
+  document.addEventListener("mouseup",stop);
+}
+
+/* ============================================================
+   MODAL
+============================================================ */
+
+function openAdd(startDate=null,resourceId=null){
+
+  editingId=null;
+
+  document.getElementById("modalTitle").textContent=
+    "New Assignment";
+
+  document.getElementById("deleteButton").style.display="none";
+
+  document.getElementById("fName").value="";
+  document.getElementById("fProject").value="";
+  document.getElementById("fStart").value=
+    startDate || dateString(currentDate);
+  document.getElementById("fEnd").value=
+    startDate || dateString(currentDate);
+  document.getElementById("fStartTime").value="08:00";
+  document.getElementById("fEndTime").value="17:00";
+  document.getElementById("fCategory").value="Development";
+  document.getElementById("fNotes").value="";
+
+  if(resourceId){
+    document.getElementById("fResource").value=resourceId;
+  }else{
+    document.getElementById("fResource").value=
+      data.resources[0]?.id || "";
+  }
+
+  document.getElementById("overlay").classList.add("show");
+}
+
+function openEdit(id){
+
+  const task=data.assignments.find(x=>x.id===id);
+
+  if(!task)return;
+
+  editingId=id;
+
+  document.getElementById("modalTitle").textContent=
+    "Edit Assignment";
+
+  document.getElementById("deleteButton").style.display=
+    "block";
+
+  document.getElementById("fName").value=task.name;
+  document.getElementById("fResource").value=task.resourceId;
+  document.getElementById("fProject").value=task.project;
+  document.getElementById("fStart").value=task.startDate;
+  document.getElementById("fEnd").value=task.endDate;
+  document.getElementById("fStartTime").value=task.startTime || "08:00";
+  document.getElementById("fEndTime").value=task.endTime || "17:00";
+  document.getElementById("fCategory").value=task.category || "Other";
+  document.getElementById("fNotes").value=task.notes || "";
+
+  document.getElementById("overlay").classList.add("show");
+}
+
+function closeModal(){
+  document.getElementById("overlay").classList.remove("show");
+  editingId=null;
+}
+
+function saveAssignment(){
+
+  const name=document.getElementById("fName").value.trim();
+  const project=document.getElementById("fProject").value.trim();
+  const resourceId=Number(document.getElementById("fResource").value);
+  const startDate=document.getElementById("fStart").value;
+  const endDate=document.getElementById("fEnd").value;
+  const startTime=document.getElementById("fStartTime").value;
+  const endTime=document.getElementById("fEndTime").value;
+  const category=document.getElementById("fCategory").value;
+  const notes=document.getElementById("fNotes").value.trim();
+
+  if(!name || !project || !startDate || !endDate){
+    alert("Please complete the required fields.");
+    return;
+  }
+
+  if(endDate<startDate){
+    alert("End date cannot be before start date.");
+    return;
+  }
+
+  if(startDate===endDate && endTime<=startTime){
+    alert("End time must be after start time.");
+    return;
+  }
+
+  if(editingId){
+
+    const task=data.assignments.find(x=>x.id===editingId);
+
+    if(task){
+      Object.assign(task,{
+        name,
+        resourceId,
+        project,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        category,
+        notes
+      });
+    }
+
+  }else{
+
+    data.assignments.push({
+      id:Date.now(),
+      name,
+      resourceId,
+      project,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      category,
+      notes
+    });
+  }
+
+  saveData();
+  closeModal();
+  render();
+}
+
+function deleteCurrent(){
+
+  if(!editingId)return;
+
+  if(!confirm("Delete this assignment?"))return;
+
+  data.assignments=data.assignments.filter(
+    x=>x.id!==editingId
+  );
+
+  saveData();
+  closeModal();
+  render();
+}
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function changeWeek(amount){
+  currentDate=addDays(currentDate,amount*7);
+  render();
+}
+
+function goToday(){
+  currentDate=new Date();
+  render();
+}
+
+/* ============================================================
+   JSON EXPORT / RESTORE
+============================================================ */
+
+function exportJSON(){
+
+  const backup={
+    ...data,
+    exportedAt:new Date().toISOString(),
+    application:"Resource Planner",
+    formatVersion:2
+  };
+
+  const json=JSON.stringify(backup,null,2);
+
+  const blob=new Blob(
+    [json],
+    {type:"application/json"}
+  );
+
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+
+  a.href=url;
+  a.download=
+    `resource-planner-${dateString(new Date())}.json`;
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event){
+
+  const file=event.target.files[0];
+
+  if(!file)return;
+
+  const reader=new FileReader();
+
+  reader.onload=function(){
+
+    try{
+
+      const imported=JSON.parse(reader.result);
+
+      validateImportedData(imported);
+
+      if(!confirm(
+        "Restore this backup? Current planner data will be replaced."
+      )){
+        event.target.value="";
+        return;
+      }
+
+      data={
+        version:2,
+        resources:imported.resources,
+        assignments:imported.assignments
+      };
+
+      saveData();
+
+      expandedDays.clear();
+
+      alert(
+        `Restored ${data.assignments.length} assignments successfully.`
+      );
+
+      render();
+
+    }catch(err){
+
+      alert(
+        "Restore failed. The selected file is not a valid Resource Planner JSON backup.\n\n"+
+        err.message
+      );
+
+    }
+
+    event.target.value="";
+  };
+
+  reader.readAsText(file);
+}
+
+function validateImportedData(obj){
+
+  if(!obj || typeof obj!=="object"){
+    throw new Error("Backup must contain a JSON object.");
+  }
+
+  if(!Array.isArray(obj.resources)){
+    throw new Error("Missing resources array.");
+  }
+
+  if(!Array.isArray(obj.assignments)){
+    throw new Error("Missing assignments array.");
+  }
+
+  obj.resources.forEach(r=>{
+    if(
+      typeof r.id!=="number" ||
+      typeof r.name!=="string"
+    ){
+      throw new Error("Invalid resource record.");
+    }
+  });
+
+  obj.assignments.forEach(t=>{
+    const required=[
+      "id",
+      "name",
+      "resourceId",
+      "project",
+      "startDate",
+      "endDate"
+    ];
+
+    required.forEach(k=>{
+      if(t[k]===undefined){
+        throw new Error(
+          `Assignment is missing "${k}".`
+        );
+      }
+    });
+
+    if(t.endDate<t.startDate){
+      throw new Error(
+        `Invalid date range for "${t.name}".`
+      );
+    }
+  });
+}
+
+/* ============================================================
+   UTILITY
+============================================================ */
+
+function esc(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+document.getElementById("overlay").addEventListener("click",e=>{
+  if(e.target.id==="overlay"){
+    closeModal();
+  }
+});
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    closeModal();
+  }
+});
+
+/* Initial render */
+render();
+</script>
+
+</body>
+</html>

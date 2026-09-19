@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Event Rental Manager</title>
+
+<style>
+:root{
+  --primary:#2563eb;
+  --dark:#172033;
+  --green:#16a34a;
+  --red:#dc2626;
+  --orange:#ea580c;
+  --bg:#f3f6fb;
+  --card:#fff;
+  --border:#dbe2ea;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:#172033;
+}
+header{
+  background:linear-gradient(135deg,#172033,#2563eb);
+  color:white;
+  padding:20px;
+}
+.header-inner{
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+header h1{margin:0;font-size:25px}
+header p{margin:5px 0 0;opacity:.85}
+.container{
+  max-width:1400px;
+  margin:20px auto;
+  padding:0 15px;
+}
+nav{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+nav button{
+  border:0;
+  background:white;
+  padding:11px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  color:#334155;
+}
+nav button.active{
+  background:var(--primary);
+  color:white;
+}
+.section{display:none}
+.section.active{display:block}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:20px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  box-shadow:0 2px 8px #00000008;
+}
+.card h3{margin:0 0 8px;font-size:14px;color:#64748b}
+.card .number{font-size:25px;font-weight:bold}
+.panel{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+}
+.panel h2{
+  margin-top:0;
+  font-size:19px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:5px;
+}
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  border:1px solid #cbd5e1;
+  border-radius:7px;
+  font-size:14px;
+}
+textarea{min-height:80px}
+button{
+  font-family:inherit;
+}
+.btn{
+  border:0;
+  border-radius:7px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.primary{background:var(--primary);color:white}
+.success{background:var(--green);color:white}
+.danger{background:var(--red);color:white}
+.warning{background:var(--orange);color:white}
+.gray{background:#64748b;color:white}
+.small{padding:7px 10px;font-size:12px}
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+}
+th{
+  background:#f8fafc;
+  font-size:12px;
+  text-transform:uppercase;
+}
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
+}
+.green{background:#dcfce7;color:#166534}
+.red{background:#fee2e2;color:#991b1b}
+.orange{background:#ffedd5;color:#9a3412}
+.blue{background:#dbeafe;color:#1e40af}
+.item-row{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr auto;
+  gap:8px;
+  align-items:end;
+  margin-bottom:8px;
+}
+.notice{
+  padding:12px;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#9a3412;
+  border-radius:8px;
+  margin-bottom:15px;
+}
+.search{
+  max-width:350px;
+  margin-bottom:12px;
+}
+.empty{
+  padding:30px;
+  text-align:center;
+  color:#64748b;
+}
+footer{
+  text-align:center;
+  padding:25px;
+  color:#64748b;
+}
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .form-grid,.grid{grid-template-columns:1fr}
+  .item-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .cards{grid-template-columns:1fr}
+  .header-inner{display:block}
+  table{display:block;overflow-x:auto}
+}
+
+/* PRINT CUSTOMER DOCUMENT */
+#printArea{display:none}
+
+@media print{
+  body *{visibility:hidden!important}
+  #printArea,#printArea *{visibility:visible!important}
+  #printArea{
+    display:block!important;
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    padding:25px;
+    color:#000;
+    background:white;
+  }
+  .no-print{display:none!important}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>🎪 Event Rental Manager</h1>
+      <p>Stock • Bookings • Quotations • Customer Print • JSON Backup</p>
+    </div>
+    <div>
+      <button class="btn gray" onclick="exportJSON()">⬇ JSON Backup</button>
+      <button class="btn success" onclick="document.getElementById('importFile').click()">⬆ Restore JSON</button>
+      <input id="importFile" type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<nav>
+  <button class="active" onclick="showSection('dashboard',this)">Dashboard</button>
+  <button onclick="showSection('stock',this)">📦 Stock</button>
+  <button onclick="showSection('booking',this)">📅 New Booking</button>
+  <button onclick="showSection('bookings',this)">🧾 Bookings</button>
+  <button onclick="showSection('settings',this)">⚙ Settings</button>
+</nav>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section active">
+
+  <div class="cards">
+    <div class="card">
+      <h3>Total Stock Items</h3>
+      <div class="number" id="dashItems">0</div>
+    </div>
+    <div class="card">
+      <h3>Total Units</h3>
+      <div class="number" id="dashUnits">0</div>
+    </div>
+    <div class="card">
+      <h3>Upcoming Bookings</h3>
+      <div class="number" id="dashBookings">0</div>
+    </div>
+    <div class="card">
+      <h3>Total Booking Value</h3>
+      <div class="number" id="dashRevenue">₹0</div>
+    </div>
+  </div>
+
+  <div id="lowStockNotice"></div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Upcoming Events</h2>
+      <div id="dashboardBookings"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Low Stock</h2>
+      <div id="dashboardLowStock"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- STOCK -->
+<section id="stock" class="section">
+
+  <div class="panel">
+    <h2>Add / Edit Rental Item</h2>
+
+    <input type="hidden" id="editStockId">
+
+    <div class="form-grid">
+      <div>
+        <label>Item Name</label>
+        <input id="stockName" placeholder="Example: Banquet Chair">
+      </div>
+
+      <div>
+        <label>Category</label>
+        <select id="stockCategory">
+          <option>Furniture</option>
+          <option>Stage</option>
+          <option>Tent</option>
+          <option>Lighting</option>
+          <option>Sound</option>
+          <option>Decoration</option>
+          <option>Catering</option>
+          <option>Electrical</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Total Quantity</label>
+        <input id="stockQty" type="number" min="0">
+      </div>
+
+      <div>
+        <label>Rental Rate / Unit</label>
+        <input id="stockRate" type="number" min="0">
+      </div>
+
+      <div>
+        <label>Purchase Cost / Unit</label>
+        <input id="stockCost" type="number" min="0">
+      </div>
+
+      <div>
+        <label>Low Stock Level</label>
+        <input id="stockMin" type="number" min="0" value="5">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" onclick="saveStock()">Save Item</button>
+      <button class="btn gray" onclick="clearStockForm()">Clear</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Inventory</h2>
+    <input class="search" id="stockSearch" oninput="renderStock()" placeholder="Search stock...">
+
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Total</th>
+            <th>Booked</th>
+            <th>Available</th>
+            <th>Rate</th>
+            <th>Value</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="stockTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<!-- BOOKING -->
+<section id="booking" class="section">
+
+  <div class="panel">
+    <h2>Create Customer Booking / Quotation</h2>
+
+    <div class="form-grid">
+      <div>
+        <label>Customer Name</label>
+        <input id="customerName">
+      </div>
+
+      <div>
+        <label>Phone</label>
+        <input id="customerPhone">
+      </div>
+
+      <div>
+        <label>Event Type</label>
+        <select id="eventType">
+          <option>Wedding</option>
+          <option>Birthday</option>
+          <option>Corporate</option>
+          <option>Reception</option>
+          <option>Engagement</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Event Date</label>
+        <input id="eventDate" type="date">
+      </div>
+
+      <div>
+        <label>Return Date</label>
+        <input id="returnDate" type="date">
+      </div>
+
+      <div>
+        <label>Venue</label>
+        <input id="venue">
+      </div>
+    </div>
+
+    <br>
+
+    <label>Rental Items</label>
+    <div id="bookingItems"></div>
+
+    <button class="btn gray small" onclick="addBookingItem()">+ Add Item</button>
+
+    <div class="form-grid" style="margin-top:20px">
+      <div>
+        <label>Transport / Delivery Charge</label>
+        <input id="deliveryCharge" type="number" value="0" oninput="calculateBooking()">
+      </div>
+
+      <div>
+        <label>Discount</label>
+        <input id="discount" type="number" value="0" oninput="calculateBooking()">
+      </div>
+
+      <div>
+        <label>Advance Paid</label>
+        <input id="advance" type="number" value="0" oninput="calculateBooking()">
+      </div>
+    </div>
+
+    <div class="panel" style="background:#f8fafc;margin-top:20px">
+      <h2>Quotation Summary</h2>
+      <div id="bookingSummary"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn success" onclick="saveBooking()">💾 Save Booking</button>
+      <button class="btn primary" onclick="printCurrentQuotation()">🖨 Print Customer Quotation</button>
+      <button class="btn gray" onclick="clearBooking()">Clear</button>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- BOOKINGS -->
+<section id="bookings" class="section">
+
+  <div class="panel">
+    <h2>Bookings</h2>
+    <input class="search" id="bookingSearch" oninput="renderBookings()" placeholder="Search customer / venue...">
+
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Booking No.</th>
+            <th>Customer</th>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Venue</th>
+            <th>Total</th>
+            <th>Advance</th>
+            <th>Balance</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="section">
+
+  <div class="panel">
+    <h2>Business Details</h2>
+
+    <div class="form-grid">
+      <div>
+        <label>Business Name</label>
+        <input id="businessName">
+      </div>
+
+      <div>
+        <label>Phone</label>
+        <input id="businessPhone">
+      </div>
+
+      <div>
+        <label>Email</label>
+        <input id="businessEmail">
+      </div>
+
+      <div>
+        <label>GST Number</label>
+        <input id="businessGST">
+      </div>
+
+      <div style="grid-column:span 2">
+        <label>Address</label>
+        <textarea id="businessAddress"></textarea>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" onclick="saveSettings()">Save Business Details</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Data Management</h2>
+    <p>Use JSON backup to keep a copy of your inventory and bookings.</p>
+    <div class="actions">
+      <button class="btn success" onclick="exportJSON()">⬇ Download JSON Backup</button>
+      <button class="btn danger" onclick="clearAllData()">Delete All Data</button>
+    </div>
+  </div>
+
+</section>
+
+</div>
+
+<footer>
+  Event Rental Manager • Local browser application
+</footer>
+
+<!-- CUSTOMER PRINT AREA -->
+<div id="printArea"></div>
+
+<script>
+
+const defaultStock = [
+  {id:1,name:"Banquet Chair",category:"Furniture",qty:100,rate:40,cost:900,min:10},
+  {id:2,name:"Round Table",category:"Furniture",qty:15,rate:300,cost:3500,min:3},
+  {id:3,name:"Rectangular Table",category:"Furniture",qty:10,rate:250,cost:2500,min:2},
+  {id:4,name:"Stage Platform",category:"Stage",qty:4,rate:2500,cost:12000,min:1},
+  {id:5,name:"Tent / Canopy",category:"Tent",qty:3,rate:5000,cost:25000,min:1},
+  {id:6,name:"LED PAR Light",category:"Lighting",qty:20,rate:150,cost:1200,min:4},
+  {id:7,name:"Wireless Microphone",category:"Sound",qty:4,rate:500,cost:5000,min:1},
+  {id:8,name:"Speaker",category:"Sound",qty:4,rate:1000,cost:9000,min:1},
+  {id:9,name:"Backdrop Frame",category:"Decoration",qty:5,rate:1000,cost:3000,min:1},
+  {id:10,name:"Dance Floor Panel",category:"Decoration",qty:40,rate:100,cost:700,min:5}
+];
+
+let stock = JSON.parse(localStorage.getItem("er_stock") || "null") || defaultStock;
+let bookings = JSON.parse(localStorage.getItem("er_bookings") || "[]");
+
+let settings = JSON.parse(localStorage.getItem("er_settings") || "null") || {
+  name:"My Event Rental",
+  phone:"",
+  email:"",
+  gst:"",
+  address:""
+};
+
+let currentBookingId = null;
+
+function money(n){
+  return "₹" + Number(n || 0).toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+
+function saveData(){
+  localStorage.setItem("er_stock",JSON.stringify(stock));
+  localStorage.setItem("er_bookings",JSON.stringify(bookings));
+  localStorage.setItem("er_settings",JSON.stringify(settings));
+}
+
+function showSection(id,button){
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+  if(button) button.classList.add("active");
+
+  if(id==="dashboard") renderDashboard();
+  if(id==="stock") renderStock();
+  if(id==="bookings") renderBookings();
+}
+
+function getBookedQty(stockId){
+  let total=0;
+
+  bookings.forEach(b=>{
+    if(!b.items) return;
+
+    b.items.forEach(i=>{
+      if(Number(i.stockId)===Number(stockId)){
+        total += Number(i.qty || 0);
+      }
+    });
+  });
+
+  return total;
+}
+
+function renderDashboard(){
+
+  document.getElementById("dashItems").textContent=stock.length;
+
+  document.getElementById("dashUnits").textContent=
+    stock.reduce((a,b)=>a+Number(b.qty),0);
+
+  document.getElementById("dashBookings").textContent=bookings.length;
+
+  document.getElementById("dashRevenue").textContent=
+    money(bookings.reduce((a,b)=>a+Number(b.total||0),0));
+
+  const low=stock.filter(s=>
+    Number(s.qty)-getBookedQty(s.id)<=Number(s.min)
+  );
+
+  document.getElementById("lowStockNotice").innerHTML=
+    low.length ?
+    `<div class="notice">⚠️ ${low.length} item(s) are at or below the low-stock level.</div>`:"";
+
+  const upcoming=[...bookings]
+    .sort((a,b)=>(a.eventDate||"").localeCompare(b.eventDate||""))
+    .slice(0,8);
+
+  document.getElementById("dashboardBookings").innerHTML=
+    upcoming.length ?
+    `<table>
+      <tr><th>Date</th><th>Customer</th><th>Event</th><th>Total</th></tr>
+      ${upcoming.map(b=>`
+      <tr>
+        <td>${b.eventDate||""}</td>
+        <td>${escapeHTML(b.customerName)}</td>
+        <td>${escapeHTML(b.eventType)}</td>
+        <td>${money(b.total)}</td>
+      </tr>`).join("")}
+    </table>`:
+    `<div class="empty">No bookings yet.</div>`;
+
+  document.getElementById("dashboardLowStock").innerHTML=
+    low.length ?
+    `<table>
+      <tr><th>Item</th><th>Available</th><th>Minimum</th></tr>
+      ${low.map(s=>{
+        const av=s.qty-getBookedQty(s.id);
+        return `<tr>
+          <td>${escapeHTML(s.name)}</td>
+          <td><span class="badge red">${av}</span></td>
+          <td>${s.min}</td>
+        </tr>`;
+      }).join("")}
+    </table>`:
+    `<div class="empty">Stock levels are OK.</div>`;
+}
+
+function renderStock(){
+
+  const search=(document.getElementById("stockSearch")?.value||"").toLowerCase();
+
+  const rows=stock.filter(s=>
+    `${s.name} ${s.category}`.toLowerCase().includes(search)
+  );
+
+  document.getElementById("stockTable").innerHTML=
+    rows.map(s=>{
+      const booked=getBookedQty(s.id);
+      const available=Number(s.qty)-booked;
+      const value=Number(s.qty)*Number(s.cost);
+
+      return `<tr>
+        <td><b>${escapeHTML(s.name)}</b></td>
+        <td>${escapeHTML(s.category)}</td>
+        <td>${s.qty}</td>
+        <td>${booked}</td>
+        <td>
+          <span class="badge ${available<=s.min?'red':'green'}">
+            ${available}
+          </span>
+        </td>
+        <td>${money(s.rate)}</td>
+        <td>${money(value)}</td>
+        <td>
+          <button class="btn primary small" onclick="editStock(${s.id})">Edit</button>
+          <button class="btn danger small" onclick="deleteStock(${s.id})">Delete</button>
+        </td>
+      </tr>`;
+    }).join("") ||
+    `<tr><td colspan="8" class="empty">No stock found.</td></tr>`;
+}
+
+function saveStock(){
+
+  const name=document.getElementById("stockName").value.trim();
+
+  if(!name){
+    alert("Enter item name.");
+    return;
+  }
+
+  const id=Number(document.getElementById("editStockId").value);
+
+  const obj={
+    id:id || Date.now(),
+    name,
+    category:document.getElementById("stockCategory").value,
+    qty:Number(document.getElementById("stockQty").value)||0,
+    rate:Number(document.getElementById("stockRate").value)||0,
+    cost:Number(document.getElementById("stockCost").value)||0,
+    min:Number(document.getElementById("stockMin").value)||0
+  };
+
+  if(id){
+    const index=stock.findIndex(x=>x.id===id);
+    if(index>=0) stock[index]=obj;
+  }else{
+    stock.push(obj);
+  }
+
+  saveData();
+  clearStockForm();
+  renderStock();
+  renderDashboard();
+}
+
+function editStock(id){
+
+  const s=stock.find(x=>x.id===id);
+  if(!s) return;
+
+  document.getElementById("editStockId").value=s.id;
+  document.getElementById("stockName").value=s.name;
+  document.getElementById("stockCategory").value=s.category;
+  document.getElementById("stockQty").value=s.qty;
+  document.getElementById("stockRate").value=s.rate;
+  document.getElementById("stockCost").value=s.cost;
+  document.getElementById("stockMin").value=s.min;
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deleteStock(id){
+
+  if(!confirm("Delete this item?")) return;
+
+  stock=stock.filter(x=>x.id!==id);
+
+  saveData();
+  renderStock();
+  renderDashboard();
+}
+
+function clearStockForm(){
+
+  ["editStockId","stockName","stockQty","stockRate","stockCost"]
+    .forEach(id=>document.getElementById(id).value="");
+
+  document.getElementById("stockMin").value=5;
+}
+
+function addBookingItem(stockId="",qty=1){
+
+  const container=document.getElementById("bookingItems");
+
+  const row=document.createElement("div");
+  row.className="item-row booking-item";
+
+  row.innerHTML=`
+    <div>
+      <label>Item</label>
+      <select class="booking-stock" onchange="calculateBooking()">
+        <option value="">Select item</option>
+        ${stock.map(s=>`
+          <option value="${s.id}" ${Number(stockId)===Number(s.id)?"selected":""}>
+            ${escapeHTML(s.name)} — ${money(s.rate)}
+          </option>
+        `).join("")}
+      </select>
+    </div>
+
+    <div>
+      <label>Qty</label>
+      <input class="booking-qty" type="number" min="1" value="${qty}" oninput="calculateBooking()">
+    </div>
+
+    <div>
+      <label>Rate</label>
+      <input class="booking-rate" type="number" readonly>
+    </div>
+
+    <div>
+      <label>Total</label>
+      <input class="booking-line-total" type="number" readonly>
+    </div>
+
+    <button class="btn danger small" onclick="this.parentElement.remove();calculateBooking()">×</button>
+  `;
+
+  container.appendChild(row);
+  calculateBooking();
+}
+
+function calculateBooking(){
+
+  let subtotal=0;
+
+  document.querySelectorAll(".booking-item").forEach(row=>{
+
+    const id=Number(row.querySelector(".booking-stock").value);
+    const qty=Number(row.querySelector(".booking-qty").value)||0;
+    const item=stock.find(s=>s.id===id);
+
+    const rate=item ? Number(item.rate):0;
+    const total=rate*qty;
+
+    row.querySelector(".booking-rate").value=rate;
+    row.querySelector(".booking-line-total").value=total;
+
+    subtotal+=total;
+  });
+
+  const delivery=Number(document.getElementById("deliveryCharge").value)||0;
+  const discount=Number(document.getElementById("discount").value)||0;
+  const advance=Number(document.getElementById("advance").value)||0;
+
+  const total=Math.max(0,subtotal+delivery-discount);
+  const balance=Math.max(0,total-advance);
+
+  document.getElementById("bookingSummary").innerHTML=`
+    <table>
+      <tr><td>Rental Subtotal</td><td style="text-align:right">${money(subtotal)}</td></tr>
+      <tr><td>Delivery / Transport</td><td style="text-align:right">${money(delivery)}</td></tr>
+      <tr><td>Discount</td><td style="text-align:right">-${money(discount)}</td></tr>
+      <tr><th>Grand Total</th><th style="text-align:right">${money(total)}</th></tr>
+      <tr><td>Advance</td><td style="text-align:right">${money(advance)}</td></tr>
+      <tr><th>Balance</th><th style="text-align:right">${money(balance)}</th></tr>
+    </table>
+  `;
+
+  return {subtotal,delivery,discount,advance,total,balance};
+}
+
+function collectBooking(){
+
+  const items=[];
+
+  document.querySelectorAll(".booking-item").forEach(row=>{
+
+    const stockId=Number(row.querySelector(".booking-stock").value);
+    const qty=Number(row.querySelector(".booking-qty").value)||0;
+
+    if(stockId && qty>0){
+      const item=stock.find(s=>s.id===stockId);
+
+      items.push({
+        stockId,
+        name:item?.name||"",
+        qty,
+        rate:Number(item?.rate||0),
+        total:qty*Number(item?.rate||0)
+      });
+    }
+  });
+
+  const summary=calculateBooking();
+
+  return {
+    id:currentBookingId || Date.now(),
+    bookingNo:currentBookingId
+      ? (bookings.find(b=>b.id===currentBookingId)?.bookingNo || "ER-"+Date.now())
+      : "ER-"+String(Date.now()).slice(-6),
+
+    customerName:document.getElementById("customerName").value.trim(),
+    customerPhone:document.getElementById("customerPhone").value.trim(),
+    eventType:document.getElementById("eventType").value,
+    eventDate:document.getElementById("eventDate").value,
+    returnDate:document.getElementById("returnDate").value,
+    venue:document.getElementById("venue").value.trim(),
+
+    items,
+
+    subtotal:summary.subtotal,
+    delivery:summary.delivery,
+    discount:summary.discount,
+    advance:summary.advance,
+    total:summary.total,
+    balance:summary.balance,
+
+    created:new Date().toISOString()
+  };
+}
+
+function validateBooking(b){
+
+  if(!b.customerName){
+    alert("Enter customer name.");
+    return false;
+  }
+
+  if(!b.eventDate){
+    alert("Select event date.");
+    return false;
+  }
+
+  if(!b.items.length){
+    alert("Add at least one rental item.");
+    return false;
+  }
+
+  return true;
+}
+
+function saveBooking(){
+
+  const b=collectBooking();
+
+  if(!validateBooking(b)) return;
+
+  if(currentBookingId){
+    const index=bookings.findIndex(x=>x.id===currentBookingId);
+    if(index>=0) bookings[index]=b;
+  }else{
+    bookings.push(b);
+  }
+
+  saveData();
+
+  alert("Booking saved successfully.");
+
+  currentBookingId=null;
+  clearBooking();
+  renderBookings();
+  renderDashboard();
+}
+
+function clearBooking(){
+
+  currentBookingId=null;
+
+  ["customerName","customerPhone","eventDate","returnDate","venue",
+   "deliveryCharge","discount","advance"]
+   .forEach(id=>{
+     const el=document.getElementById(id);
+     if(el) el.value="";
+   });
+
+  document.getElementById("deliveryCharge").value=0;
+  document.getElementById("discount").value=0;
+  document.getElementById("advance").value=0;
+
+  document.getElementById("bookingItems").innerHTML="";
+  addBookingItem();
+
+  calculateBooking();
+}
+
+function renderBookings(){
+
+  const search=(document.getElementById("bookingSearch")?.value||"").toLowerCase();
+
+  const rows=bookings
+    .filter(b=>
+      `${b.customerName} ${b.venue} ${b.bookingNo}`
+      .toLowerCase()
+      .includes(search)
+    )
+    .sort((a,b)=>(a.eventDate||"").localeCompare(b.eventDate||""));
+
+  document.getElementById("bookingTable").innerHTML=
+    rows.map(b=>`
+      <tr>
+        <td><b>${b.bookingNo}</b></td>
+        <td>${escapeHTML(b.customerName)}</td>
+        <td>${escapeHTML(b.eventType)}</td>
+        <td>${b.eventDate}</td>
+        <td>${escapeHTML(b.venue)}</td>
+        <td>${money(b.total)}</td>
+        <td>${money(b.advance)}</td>
+        <td>
+          <span class="badge ${b.balance>0?'orange':'green'}">
+            ${money(b.balance)}
+          </span>
+        </td>
+        <td>
+          <button class="btn primary small" onclick="printBooking(${b.id})">Print</button>
+          <button class="btn gray small" onclick="editBooking(${b.id})">Edit</button>
+          <button class="btn danger small" onclick="deleteBooking(${b.id})">Delete</button>
+        </td>
+      </tr>
+    `).join("") ||
+    `<tr><td colspan="9" class="empty">No bookings found.</td></tr>`;
+}
+
+function editBooking(id){
+
+  const b=bookings.find(x=>x.id===id);
+  if(!b) return;
+
+  currentBookingId=id;
+
+  document.getElementById("customerName").value=b.customerName;
+  document.getElementById("customerPhone").value=b.customerPhone;
+  document.getElementById("eventType").value=b.eventType;
+  document.getElementById("eventDate").value=b.eventDate;
+  document.getElementById("returnDate").value=b.returnDate;
+  document.getElementById("venue").value=b.venue;
+  document.getElementById("deliveryCharge").value=b.delivery;
+  document.getElementById("discount").value=b.discount;
+  document.getElementById("advance").value=b.advance;
+
+  document.getElementById("bookingItems").innerHTML="";
+
+  b.items.forEach(i=>addBookingItem(i.stockId,i.qty));
+
+  showSection("booking",document.querySelectorAll("nav button")[2]);
+}
+
+function deleteBooking(id){
+
+  if(!confirm("Delete this booking?")) return;
+
+  bookings=bookings.filter(b=>b.id!==id);
+
+  saveData();
+  renderBookings();
+  renderDashboard();
+}
+
+function printCurrentQuotation(){
+
+  const b=collectBooking();
+
+  if(!validateBooking(b)) return;
+
+  buildPrint(b);
+  window.print();
+}
+
+function printBooking(id){
+
+  const b=bookings.find(x=>x.id===id);
+  if(!b) return;
+
+  buildPrint(b);
+  window.print();
+}
+
+function buildPrint(b){
+
+  const itemRows=b.items.map(i=>`
+    <tr>
+      <td>${escapeHTML(i.name)}</td>
+      <td>${i.qty}</td>
+      <td>${money(i.rate)}</td>
+      <td>${money(i.total)}</td>
+    </tr>
+  `).join("");
+
+  document.getElementById("printArea").innerHTML=`
+    <div style="font-family:Arial,sans-serif;max-width:850px;margin:auto">
+
+      <div style="text-align:center;border-bottom:2px solid #111;padding-bottom:15px">
+        <h1 style="margin:0">${escapeHTML(settings.name)}</h1>
+        <div>${escapeHTML(settings.address)}</div>
+        <div>
+          ${escapeHTML(settings.phone)}
+          ${settings.email ? " | "+escapeHTML(settings.email):""}
+        </div>
+        ${settings.gst ? `<div>GST: ${escapeHTML(settings.gst)}</div>`:""}
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin:20px 0">
+        <div>
+          <h2 style="margin:0">RENTAL QUOTATION</h2>
+          <p>Booking No: <b>${b.bookingNo}</b></p>
+        </div>
+
+        <div style="text-align:right">
+          <p>Date: ${new Date().toLocaleDateString("en-IN")}</p>
+          <p>Event Date: <b>${b.eventDate}</b></p>
+        </div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+        <tr>
+          <td style="border:1px solid #ccc;padding:8px">
+            <b>Customer</b><br>${escapeHTML(b.customerName)}
+          </td>
+          <td style="border:1px solid #ccc;padding:8px">
+            <b>Phone</b><br>${escapeHTML(b.customerPhone)}
+          </td>
+          <td style="border:1px solid #ccc;padding:8px">
+            <b>Venue</b><br>${escapeHTML(b.venue)}
+          </td>
+        </tr>
+      </table>
+
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="border:1px solid #ccc;padding:9px;text-align:left">Item</th>
+            <th style="border:1px solid #ccc;padding:9px">Qty</th>
+            <th style="border:1px solid #ccc;padding:9px">Rate</th>
+            <th style="border:1px solid #ccc;padding:9px">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemRows}
+        </tbody>
+      </table>
+
+      <table style="width:350px;margin-left:auto;margin-top:20px;border-collapse:collapse">
+        <tr><td style="padding:7px">Subtotal</td><td style="padding:7px;text-align:right">${money(b.subtotal)}</td></tr>
+        <tr><td style="padding:7px">Transport</td><td style="padding:7px;text-align:right">${money(b.delivery)}</td></tr>
+        <tr><td style="padding:7px">Discount</td><td style="padding:7px;text-align:right">-${money(b.discount)}</td></tr>
+        <tr style="font-size:18px;font-weight:bold">
+          <td style="padding:10px;border-top:2px solid #111">TOTAL</td>
+          <td style="padding:10px;border-top:2px solid #111;text-align:right">${money(b.total)}</td>
+        </tr>
+        <tr><td style="padding:7px">Advance</td><td style="padding:7px;text-align:right">${money(b.advance)}</td></tr>
+        <tr style="font-weight:bold">
+          <td style="padding:7px">BALANCE</td><td style="padding:7px;text-align:right">${money(b.balance)}</td>
+        </tr>
+      </table>
+
+      <div style="margin-top:45px;border-top:1px solid #ccc;padding-top:15px">
+        <b>Terms & Conditions</b>
+        <ol>
+          <li>Rental items must be returned in good condition.</li>
+          <li>Damage or loss may be charged separately.</li>
+          <li>Booking is subject to availability on the event date.</li>
+          <li>Advance payment confirms the booking.</li>
+        </ol>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:50px">
+        <div>Customer Signature</div>
+        <div>Authorized Signature</div>
+      </div>
+
+    </div>
+  `;
+}
+
+function saveSettings(){
+
+  settings={
+    name:document.getElementById("businessName").value.trim(),
+    phone:document.getElementById("businessPhone").value.trim(),
+    email:document.getElementById("businessEmail").value.trim(),
+    gst:document.getElementById("businessGST").value.trim(),
+    address:document.getElementById("businessAddress").value.trim()
+  };
+
+  saveData();
+
+  alert("Business details saved.");
+}
+
+function loadSettings(){
+
+  document.getElementById("businessName").value=settings.name||"";
+  document.getElementById("businessPhone").value=settings.phone||"";
+  document.getElementById("businessEmail").value=settings.email||"";
+  document.getElementById("businessGST").value=settings.gst||"";
+  document.getElementById("businessAddress").value=settings.address||"";
+}
+
+function exportJSON(){
+
+  const data={
+    version:1,
+    exportedAt:new Date().toISOString(),
+    settings,
+    stock,
+    bookings
+  };
+
+  const blob=new Blob(
+    [JSON.stringify(data,null,2)],
+    {type:"application/json"}
+  );
+
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=
+    "event-rental-backup-"+new Date().toISOString().slice(0,10)+".json";
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event){
+
+  const file=event.target.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+
+  reader.onload=function(e){
+
+    try{
+
+      const data=JSON.parse(e.target.result);
+
+      if(!Array.isArray(data.stock) ||
+         !Array.isArray(data.bookings)){
+        throw new Error("Invalid backup");
+      }
+
+      if(!confirm("Restore this backup? Current data will be replaced.")){
+        return;
+      }
+
+      stock=data.stock;
+      bookings=data.bookings;
+
+      if(data.settings) settings=data.settings;
+
+      saveData();
+      loadSettings();
+
+      renderStock();
+      renderBookings();
+      renderDashboard();
+
+      alert("Backup restored successfully.");
+
+    }catch(err){
+      alert("Invalid JSON backup file.");
+    }
+
+  };
+
+  reader.readAsText(file);
+}
+
+function clearAllData(){
+
+  if(!confirm("DELETE ALL inventory and booking data?")) return;
+
+  localStorage.removeItem("er_stock");
+  localStorage.removeItem("er_bookings");
+
+  stock=[];
+  bookings=[];
+
+  renderStock();
+  renderBookings();
+  renderDashboard();
+
+  alert("Inventory and bookings deleted.");
+}
+
+function escapeHTML(value){
+
+  return String(value??"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* INITIALIZE */
+
+loadSettings();
+renderStock();
+renderBookings();
+renderDashboard();
+addBookingItem();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF JPG PNG Merge Tool</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f5f7;color:#172033;font:14px Arial}.wrap{max-width:1050px;margin:30px auto;padding:15px}.card{background:#fff;border:1px solid #e4e7ec;border-radius:18px;box-shadow:0 12px 35px #0001;overflow:hidden}header{padding:25px 28px;border-bottom:1px solid #eee}h1{margin:0 0 6px;font-size:28px}.muted{color:#667085}.body{padding:22px}.drop{display:block;border:2px dashed #98a2b3;border-radius:14px;padding:34px;text-align:center;background:#fafafa;cursor:pointer}.drop:hover{background:#f2f4f7}.drop b{display:block;font-size:17px;margin-bottom:7px}.drop span{font-size:12px;color:#667085}input{display:none}.bar{display:flex;gap:9px;align-items:center;margin:18px 0;flex-wrap:wrap}.bar button{width:auto}button,select{height:40px;border:1px solid #d0d5dd;background:#fff;border-radius:8px;padding:0 13px;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:#1d2939;color:#fff;border-color:#1d2939}.count{margin-left:auto;color:#667085;font-size:13px}.options{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.options label{font-size:12px;font-weight:700;color:#475467}.options select{margin-left:6px;font-weight:400}.list{display:flex;flex-direction:column;gap:9px}.item{display:flex;align-items:center;gap:11px;border:1px solid #e4e7ec;border-radius:11px;padding:11px;background:#fff}.handle{font-size:18px;color:#98a2b3;cursor:grab}.icon{font-size:22px}.name{flex:1;min-width:0}.name b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:11px;color:#667085;margin-top:3px}.remove{height:32px;padding:0 10px;color:#b42318}.status{margin-top:13px;font-size:12px;color:#667085}.hint{margin-top:15px;padding:12px;background:#f8fafc;border-radius:9px;color:#667085;font-size:12px;line-height:1.5}@media(max-width:650px){.count{width:100%;margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<header><h1>📄 PDF + JPG + PNG Merge Tool</h1><div class="muted">Combine PDFs and images into one PDF directly in your browser.</div></header>
+<div class="body">
+<label class="drop" id="drop"><b>Drop PDF, JPG or PNG files here</b><span>or click to select multiple files</span><input id="files" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" multiple></label>
+<div class="options">
+<label>Image page <select id="page"><option value="a4">A4</option><option value="original">Original aspect ratio</option></select></label>
+<label>Image fit <select id="fit"><option value="contain">Fit inside page</option><option value="cover">Fill page</option></select></label>
+<label>Margin <select id="margin"><option value="0">0 mm</option><option value="5">5 mm</option><option value="10">10 mm</option></select></label>
+</div>
+<div class="bar"><button id="add">＋ Add Files</button><button id="clear">Clear All</button><button id="merge" class="primary" disabled>Merge to PDF</button><div class="count" id="count">0 files</div></div>
+<div class="list" id="list"></div>
+<div class="status" id="status">Files stay in your browser session.</div>
+<div class="hint">Drag the ☰ handle to change the order. PDFs keep their original pages. JPG/PNG images become individual PDF pages.</div>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),input=$('files'),drop=$('drop'),list=$('list'),count=$('count'),merge=$('merge'),status=$('status');
+let files=[];
+$('add').onclick=()=>input.click();drop.onclick=()=>input.click();
+input.onchange=e=>addFiles([...e.target.files]);
+drop.ondragover=e=>{e.preventDefault();drop.style.background='#f2f4f7'};
+drop.ondragleave=()=>drop.style.background='#fafafa';
+drop.ondrop=e=>{e.preventDefault();drop.style.background='#fafafa';addFiles([...e.dataTransfer.files])};
+function addFiles(arr){const ok=arr.filter(f=>/^(application\/pdf|image\/jpeg|image\/png)$/.test(f.type)||/\.(pdf|jpe?g|png)$/i.test(f.name));files.push(...ok);render();status.textContent=files.length+' file(s) ready.'}
+function render(){list.innerHTML='';files.forEach((f,i)=>{let r=document.createElement('div');r.className='item';r.draggable=true;r.innerHTML='<span class=handle>☰</span><span class=icon>'+icon(f)+'</span><div class=name><b></b><div class=meta>'+label(f)+' • '+bytes(f.size)+'</div></div><button class=remove>Remove</button>';r.querySelector('b').textContent=f.name;r.querySelector('.remove').onclick=()=>{files.splice(i,1);render()};r.ondragstart=e=>e.dataTransfer.setData('text/plain',i);r.ondragover=e=>e.preventDefault();r.ondrop=e=>{e.preventDefault();let from=+e.dataTransfer.getData('text/plain');if(from===i)return;let x=files.splice(from,1)[0];files.splice(i,0,x);render()};list.appendChild(r)});count.textContent=files.length+' file'+(files.length===1?'':'s');merge.disabled=!files.length}
+$('clear').onclick=()=>{files=[];input.value='';render();status.textContent='All files cleared.'};
+function icon(f){return f.type==='application/pdf'||/\.pdf$/i.test(f.name)?'📄':'🖼️'}
+function label(f){return f.type==='application/pdf'||/\.pdf$/i.test(f.name)?'PDF':'Image'}
+function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
+function loadImage(f){return new Promise((res,rej)=>{let u=URL.createObjectURL(f),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);res(im)};im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('image'))};im.src=u})}
+async function addImagePage(out,f){
+ const im=await loadImage(f), W=595.28,H=841.89,mm=2.8346457,m=+$('margin').value*mm;
+ let pw=W,ph=H;
+ if($('page').value==='original'){const scale=Math.min((W-2*m)/im.naturalWidth,(H-2*m)/im.naturalHeight);pw=Math.max(1,im.naturalWidth*scale);ph=Math.max(1,im.naturalHeight*scale)}
+ const page=out.addPage([pw,ph]);
+ const canvas=document.createElement('canvas'),scale=2;
+ canvas.width=Math.max(1,Math.round(im.naturalWidth*scale));canvas.height=Math.max(1,Math.round(im.naturalHeight*scale));
+ const c=canvas.getContext('2d');c.drawImage(im,0,0,canvas.width,canvas.height);
+ const jpg=await out.embedJpg(canvas.toDataURL('image/jpeg',.94));
+ const availW=pw-2*m,availH=ph-2*m,ir=im.naturalWidth/im.naturalHeight,ar=availW/availH;
+ let dw,dh;
+ if($('fit').value==='cover'){if(ir>ar){dh=availH;dw=dh*ir}else{dw=availW;dh=dw/ir}}else{if(ir>ar){dw=availW;dh=dw/ir}else{dh=availH;dw=dh*ir}}
+ page.drawImage(jpg,{x:(pw-dw)/2,y:(ph-dh)/2,width:dw,height:dh});
+}
+async function doMerge(){
+ if(!files.length||!window.PDFLib)return;
+ merge.disabled=true;$('clear').disabled=true;
+ try{
+  const out=await PDFLib.PDFDocument.create();
+  for(let i=0;i<files.length;i++){
+   const f=files[i];status.textContent='Processing '+(i+1)+' of '+files.length+': '+f.name;
+   if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){
+    const src=await PDFLib.PDFDocument.load(await f.arrayBuffer(),{ignoreEncryption:false});
+    const pages=await out.copyPages(src,src.getPageIndices());pages.forEach(p=>out.addPage(p));
+   }else await addImagePage(out,f);
+  }
+  const b=await out.save(),url=URL.createObjectURL(new Blob([b],{type:'application/pdf'})),a=document.createElement('a');
+  a.href=url;a.download='merged-document.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);status.textContent='Done — merged-document.pdf downloaded.';
+ }catch(e){console.error(e);status.textContent='Merge failed. Check for a damaged/password-protected PDF or unsupported file.'}
+ merge.disabled=false;$('clear').disabled=false;
+}
+merge.onclick=doMerge;render();
+</script></body></html>

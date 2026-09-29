@@ -1,0 +1,155 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KidBank Challan Simulator</title>
+<style>
+body{margin:0;font:15px Arial;background:#eef4f9;color:#203047}header{background:#173b67;color:white;padding:20px 5%;display:flex;justify-content:space-between}.wrap{max-width:1050px;margin:25px auto;padding:15px}.layout{display:grid;grid-template-columns:1.3fr .8fr;gap:20px}.card{background:white;padding:22px;border-radius:18px;box-shadow:0 5px 20px #0001}h1,h2{margin-top:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-weight:bold;font-size:13px;margin:12px 0 5px}input,select{width:100%;padding:11px;border:1px solid #ccd8e5;border-radius:9px;box-sizing:border-box}.section{border-top:1px solid #e5ebf1;margin-top:20px;padding-top:15px}.words{background:#f3f7fb;padding:12px;border-radius:9px}.denom{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dr{display:grid;grid-template-columns:60px 1fr 80px;gap:6px;align-items:center}.dr span{font-weight:bold}.total{margin-top:10px;background:#e9f8f0;padding:12px;border-radius:9px;font-weight:bold}.btn{border:0;padding:11px 16px;border-radius:9px;font-weight:bold;cursor:pointer}.primary{background:#2878d4;color:white}.green{background:#18a76b;color:white}.gray{background:#edf2f7}.actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.preview{border:2px solid #173b67;padding:18px}.line{display:flex;border-bottom:1px dashed #aaa;padding:10px 0;gap:10px}.line b{min-width:135px}.note{background:#fff7df;padding:13px;border-left:4px solid #ffad3d;margin-top:15px}.status{display:none;margin-top:12px;padding:12px;border-radius:9px}@media(max-width:750px){.layout,.grid,.denom{grid-template-columns:1fr}}@media print{
+      @page{size:A4;margin:12mm}
+      body{background:#fff!important}
+      header,.intro,.form,.note,.actions,.status{display:none!important}
+      .wrap{max-width:none;margin:0;padding:0}
+      .layout{display:block}
+      .preview-card{display:block!important;padding:0!important;border:0!important;box-shadow:none!important}
+      .preview-card>h2{display:none}
+      .preview{display:block!important;border:2px solid #000;padding:24px;min-height:0}
+    }
+</style></head><body>
+<header><b>🏦 KidBank • Challan Learning</b><small>EDUCATIONAL DEMO — NOT A REAL BANK FORM</small></header>
+<div class="wrap"><h1>📝 Bank Challan Filling Simulator</h1><p>Learn how to fill a simple cash deposit challan.</p>
+<div class="layout"><div class="card form">
+<h2>Account Details</h2><div class="grid">
+<div><label>Account Holder Name</label><input id="name" placeholder="Enter your name"></div>
+<div><label>Account Number</label><input id="account" inputmode="numeric" placeholder="Demo account number"></div>
+<div><label>Date</label><input id="date" type="date"></div>
+<div><label>Deposit Type</label><select id="type"><option>Cash Deposit</option><option>Cheque Deposit</option></select></div></div>
+<div class="section"><h2>Deposit Amount</h2><label>Amount (₹)</label><input id="amount" type="number" min="0" placeholder="Example: 1250"><label>Amount in Words</label><div class="words" id="words">Zero rupees only</div></div>
+<div class="section"><h2>Cash Denominations</h2><div class="denom" id="denom"></div><div class="total">Denomination total: <span id="dt">₹0</span></div></div>
+<div class="section"><div class="grid"><div><label>Mobile Number</label><input id="mobile" inputmode="numeric" maxlength="10"></div><div><label>Remarks</label><input id="remarks" placeholder="e.g. Savings"></div></div></div>
+<label><input id="confirm" type="checkbox" style="width:auto"> I understand this is a learning simulation.</label>
+<div class="actions"><button class="btn primary" onclick="review()">✓ Review Challan</button><button class="btn green" onclick="printC()">🖨 Print / Save PDF</button><button class="btn gray" onclick="location.reload()">↻ Reset</button></div><div id="status" class="status"></div></div>
+<div class="card"><h2>Challan Preview</h2><div class="preview"><h2>KIDBANK</h2><small>Cash Deposit Challan — DEMO</small>
+<div class="line"><b>Account Holder</b><span id="pn">—</span></div><div class="line"><b>Account Number</b><span id="pa">—</span></div><div class="line"><b>Date</b><span id="pd">—</span></div><div class="line"><b>Deposit Type</b><span id="pt">Cash Deposit</span></div><div class="line"><b>Amount</b><span id="pamt">₹0</span></div><div class="line"><b>Amount in Words</b><span id="pw">—</span></div><div class="line"><b>Mobile</b><span id="pm">—</span></div><div class="line"><b>Remarks</b><span id="pr">—</span></div><p style="margin-top:50px;text-align:right">Depositor Signature<br><br>________________</p><small>EDUCATIONAL SAMPLE • NOT VALID FOR BANKING</small></div><div class="note">💡 Check the account number and amount carefully before submitting a real bank form.</div></div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const D=[500,200,100,50,20,10];
+const box=$('denom');
+
+function buildDenominations(){
+  box.innerHTML='';
+  D.forEach(v=>{
+    const row=document.createElement('div');
+    row.className='dr';
+    row.innerHTML='<span>₹'+v+'</span><input class="q" data-v="'+v+'" type="number" min="0" step="1" value="0"><span class="sub">₹0</span>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll('.q').forEach(i=>i.addEventListener('input',updateAll));
+}
+
+function numberWords(n){
+  n=Math.floor(Number(n)||0);
+  if(n===0)return 'Zero rupees only';
+  const ones=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const tens=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  const under100=x=>x<20?ones[x]:tens[Math.floor(x/10)]+(x%10?' '+ones[x%10]:'');
+  const under1000=x=>x<100?under100(x):ones[Math.floor(x/100)]+' Hundred'+(x%100?' '+under100(x%100):'');
+  let parts=[];
+  if(n>=10000000){parts.push(under1000(Math.floor(n/10000000))+' Crore');n%=10000000}
+  if(n>=100000){parts.push(under1000(Math.floor(n/100000))+' Lakh');n%=100000}
+  if(n>=1000){parts.push(under1000(Math.floor(n/1000))+' Thousand');n%=1000}
+  if(n>0)parts.push(under1000(n));
+  return parts.join(' ')+' rupees only';
+}
+
+function money(n){
+  return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2});
+}
+
+function updateDenomination(){
+  let total=0;
+  document.querySelectorAll('.dr').forEach(row=>{
+    const qty=Math.max(0,parseInt(row.querySelector('.q').value,10)||0);
+    const value=Number(row.querySelector('.q').dataset.v);
+    const rowTotal=qty*value;
+    total+=rowTotal;
+    row.querySelector('.sub').textContent=money(rowTotal);
+  });
+  $('dt').textContent=money(total);
+  return total;
+}
+
+function updatePreview(){
+  const amount=Number($('amount').value)||0;
+  $('pn').textContent=$('name').value.trim()||'—';
+  $('pa').textContent=$('account').value.trim()||'—';
+  $('pd').textContent=$('date').value||'—';
+  $('pt').textContent=$('type').value||'Cash Deposit';
+  $('pamt').textContent=money(amount);
+  $('pw').textContent=numberWords(amount);
+  $('pm').textContent=$('mobile').value.trim()||'—';
+  $('pr').textContent=$('remarks').value.trim()||'—';
+  $('words').textContent=numberWords(amount);
+}
+
+function updateAll(){
+  updateDenomination();
+  updatePreview();
+}
+
+function showStatus(ok,msg){
+  const s=$('status');
+  s.style.display='block';
+  s.style.background=ok?'#e9f8f0':'#fff0f2';
+  s.style.color=ok?'#13784d':'#b4233d';
+  s.textContent=msg;
+}
+
+function review(){
+  updateAll();
+  const name=$('name').value.trim();
+  const account=$('account').value.trim();
+  const amount=Number($('amount').value)||0;
+  const confirmed=$('confirm').checked;
+  const denomTotal=updateDenomination();
+
+  if(!name||!account||amount<=0||!confirmed){
+    showStatus(false,'Please enter your name, account number, amount, and confirm the learning simulation.');
+    return false;
+  }
+
+  if($('type').value==='Cash Deposit' && denomTotal!==amount){
+    showStatus(false,'The cash denominations total '+money(denomTotal)+', but the deposit amount is '+money(amount)+'. Please make them match.');
+    return false;
+  }
+
+  showStatus(true,'✓ Great job! Your demo challan is complete and ready to print.');
+  return true;
+}
+
+function printC(){
+  if(!review()) return;
+  updateAll();
+  setTimeout(function(){
+    window.print();
+  },100);
+}
+function resetForm(){
+  $('name').value='';
+  $('account').value='';
+  $('date').value=new Date().toISOString().slice(0,10);
+  $('type').value='Cash Deposit';
+  $('amount').value='';
+  $('mobile').value='';
+  $('remarks').value='';
+  $('confirm').checked=false;
+  document.querySelectorAll('.q').forEach(i=>i.value=0);
+  $('status').style.display='none';
+  updateAll();
+}
+
+buildDenominations();
+$('date').value=new Date().toISOString().slice(0,10);
+
+['name','account','date','type','amount','mobile','remarks'].forEach(id=>{
+  $(id).addEventListener('input',updateAll);
+  $(id).addEventListener('change',updateAll);
+});
+
+updateAll();
+</script></body></html>

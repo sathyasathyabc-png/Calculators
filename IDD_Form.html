@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Accessible Form</title>
+<style>
+:root{
+  --bg:#f4f6f8;--card:#fff;--text:#18212f;--muted:#5b6675;
+  --primary:#2457d6;--primaryText:#fff;--border:#c8d0db;--focus:#ff8a00;
+  --error:#b42318;--success:#087443;--scale:1;
+}
+*{box-sizing:border-box}
+html{font-size:calc(16px * var(--scale));scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;line-height:1.55
+}
+body.dark{--bg:#10141b;--card:#1b2430;--text:#f5f7fa;--muted:#c3ccd8;--border:#536071}
+body.high-contrast{
+  --bg:#000;--card:#000;--text:#fff;--muted:#fff;
+  --primary:#ffff00;--primaryText:#000;--border:#fff;--focus:#00ffff
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{
+  outline:4px solid var(--focus);outline-offset:3px
+}
+.skip{
+  position:absolute;left:10px;top:-60px;padding:10px 15px;
+  background:#000;color:#fff;z-index:100
+}
+.skip:focus{top:10px}
+header{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:12px 20px
+}
+.header-inner{
+  max-width:900px;margin:auto;display:flex;justify-content:space-between;
+  align-items:center;gap:15px
+}
+.logo{font-weight:800;font-size:1.15rem}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap}
+.tool{
+  min-height:40px;padding:7px 11px;border:1px solid var(--border);
+  border-radius:7px;background:var(--card);color:var(--text)
+}
+main{max-width:650px;margin:45px auto;padding:0 20px}
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:30px
+}
+h1{margin:0 0 8px;font-size:2rem;line-height:1.2}
+.intro{color:var(--muted);margin-bottom:25px}
+.field{margin-bottom:19px}
+label{display:block;font-weight:700;margin-bottom:7px}
+.required{color:var(--error)}
+input,textarea{
+  width:100%;padding:12px;border:2px solid var(--border);
+  border-radius:7px;background:var(--card);color:var(--text)
+}
+textarea{min-height:120px;resize:vertical}
+.help{color:var(--muted);font-size:.9rem;margin-top:5px}
+.error{color:var(--error);font-weight:700;min-height:1.4em;margin-top:5px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.primary,.secondary{
+  padding:11px 18px;border-radius:7px;font-weight:700
+}
+.primary{border:2px solid var(--primary);background:var(--primary);color:var(--primaryText)}
+.secondary{border:2px solid var(--border);background:var(--card);color:var(--text)}
+.message{
+  margin-top:18px;padding:12px;border-radius:7px;
+  border:1px solid var(--border);min-height:1.5em
+}
+footer{max-width:650px;margin:20px auto;padding:0 20px;color:var(--muted);font-size:.9rem}
+@media(max-width:600px){
+  .header-inner{align-items:flex-start;flex-direction:column}
+  main{margin:25px auto}
+  .card{padding:22px}
+}
+</style>
+</head>
+
+<body>
+<a class="skip" href="#form-title">Skip to form</a>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">♿ IDD Accessible Form</div>
+
+    <div class="toolbar" aria-label="Accessibility settings">
+      <button class="tool" id="smaller" aria-label="Decrease text size">A−</button>
+      <button class="tool" id="normal" aria-label="Normal text size">A</button>
+      <button class="tool" id="larger" aria-label="Increase text size">A+</button>
+      <button class="tool" id="contrast">Contrast</button>
+      <button class="tool" id="dark">Dark</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card" aria-labelledby="form-title">
+    <h1 id="form-title">Contact Form</h1>
+    <p class="intro">
+      Please complete the form below. Fields marked with
+      <span class="required" aria-hidden="true">*</span> are required.
+    </p>
+
+    <form id="contactForm" novalidate>
+
+      <div class="field">
+        <label for="name">
+          Full name <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input id="name" name="name" type="text"
+               autocomplete="name" required
+               aria-describedby="nameError">
+        <div id="nameError" class="error" role="alert"></div>
+      </div>
+
+      <div class="field">
+        <label for="email">
+          Email address <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input id="email" name="email" type="email"
+               autocomplete="email" required
+               aria-describedby="emailError">
+        <div id="emailError" class="error" role="alert"></div>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone number</label>
+        <input id="phone" name="phone" type="tel"
+               autocomplete="tel"
+               aria-describedby="phoneHelp">
+        <div id="phoneHelp" class="help">Optional</div>
+      </div>
+
+      <div class="field">
+        <label for="message">
+          Message <span class="required" aria-hidden="true">*</span>
+        </label>
+        <textarea id="message" name="message" required
+                  aria-describedby="messageError"></textarea>
+        <div id="messageError" class="error" role="alert"></div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary">Submit</button>
+        <button type="reset" class="secondary">Clear</button>
+      </div>
+
+      <div id="result" class="message" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+
+<footer>
+  Simple HTML + CSS + JavaScript • Designed with accessibility in mind
+</footer>
+
+<script>
+const root = document.documentElement;
+const body = document.body;
+
+function announce(text){
+  document.getElementById("result").textContent = text;
+}
+
+function setScale(value){
+  root.style.setProperty("--scale", value);
+  localStorage.setItem("iddScale", value);
+}
+
+document.getElementById("smaller").onclick = () => setScale(".9");
+document.getElementById("normal").onclick = () => setScale("1");
+document.getElementById("larger").onclick = () => setScale("1.15");
+
+document.getElementById("contrast").onclick = () => {
+  body.classList.toggle("high-contrast");
+  localStorage.setItem("iddContrast",
+    body.classList.contains("high-contrast"));
+};
+
+document.getElementById("dark").onclick = () => {
+  body.classList.toggle("dark");
+  localStorage.setItem("iddDark",
+    body.classList.contains("dark"));
+};
+
+if(localStorage.getItem("iddScale"))
+  root.style.setProperty("--scale", localStorage.getItem("iddScale"));
+
+if(localStorage.getItem("iddContrast") === "true")
+  body.classList.add("high-contrast");
+
+if(localStorage.getItem("iddDark") === "true")
+  body.classList.add("dark");
+
+const form = document.getElementById("contactForm");
+
+form.addEventListener("submit", function(event){
+  event.preventDefault();
+
+  const name = document.getElementById("name");
+  const email = document.getElementById("email");
+  const message = document.getElementById("message");
+
+  const nameError = document.getElementById("nameError");
+  const emailError = document.getElementById("emailError");
+  const messageError = document.getElementById("messageError");
+
+  nameError.textContent = "";
+  emailError.textContent = "";
+  messageError.textContent = "";
+
+  [name,email,message].forEach(x => x.removeAttribute("aria-invalid"));
+
+  let valid = true;
+
+  if(!name.value.trim()){
+    nameError.textContent = "Please enter your name.";
+    name.setAttribute("aria-invalid","true");
+    valid = false;
+  }
+
+  if(!email.value.trim()){
+    emailError.textContent = "Please enter your email address.";
+    email.setAttribute("aria-invalid","true");
+    valid = false;
+  }else if(!email.validity.valid){
+    emailError.textContent = "Please enter a valid email address.";
+    email.setAttribute("aria-invalid","true");
+    valid = false;
+  }
+
+  if(!message.value.trim()){
+    messageError.textContent = "Please enter your message.";
+    message.setAttribute("aria-invalid","true");
+    valid = false;
+  }
+
+  if(!valid){
+    announce("Please correct the highlighted errors.");
+    const firstError = form.querySelector('[aria-invalid="true"]');
+    if(firstError) firstError.focus();
+    return;
+  }
+
+  announce("Form submitted successfully. This is a demonstration.");
+});
+
+form.addEventListener("reset", function(){
+  setTimeout(() => {
+    document.querySelectorAll(".error").forEach(x => x.textContent = "");
+    document.querySelectorAll("[aria-invalid]")
+      .forEach(x => x.removeAttribute("aria-invalid"));
+    announce("Form cleared.");
+  }, 0);
+});
+</script>
+</body>
+</html>

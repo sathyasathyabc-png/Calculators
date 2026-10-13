@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expense Calculator — Local Storage</title>
+<style>
+:root{--bg:#f3f6fb;--ink:#172033;--muted:#667085;--line:#dce3ed;--blue:#2457d6;--red:#b42318;--green:#087f5b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Arial,sans-serif}header{background:linear-gradient(120deg,#14213d,#2457a7);color:white;padding:25px 16px}.wrap{max-width:1100px;margin:auto;padding:0 16px}h1{font-size:clamp(25px,4vw,35px);margin:0 0 5px}header p{margin:0;color:#dbeafe}main{padding:22px 0 36px}.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:18px}.card{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:17px;box-shadow:0 4px 18px #17203308}h2{font-size:19px;margin:0 0 15px}.grid,.entry{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}label{display:block;font-size:12px;font-weight:700;color:#475467;margin-bottom:5px}input,select{width:100%;min-width:0;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:var(--ink);font:inherit}input:focus,select:focus{outline:2px solid #c7d7ff;border-color:var(--blue)}button{border:0;border-radius:9px;padding:10px 13px;font:700 13px Arial,sans-serif;cursor:pointer}.primary{background:var(--blue);color:#fff}.secondary{background:#edf2fb;color:#243b64}.danger{background:#fff0ef;color:var(--red)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.tabs{display:flex;gap:8px;margin-bottom:15px}.tab{flex:1;background:#edf1f8;color:#475467}.tab.active{background:var(--blue);color:white}.metric{padding:13px;border:1px solid #dce6fa;background:#f0f5ff;border-radius:11px;margin-bottom:10px}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;font-size:24px;margin-top:4px;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left}th{font-size:11px;color:var(--muted)}td:last-child,th:last-child{text-align:right;white-space:nowrap}.full{grid-column:1/-1}.record{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}.record strong{display:block;overflow-wrap:anywhere}.record small{color:var(--muted)}.money{font-weight:800;text-align:right}.expense{color:var(--red)}.income{color:var(--green)}.empty{text-align:center;color:var(--muted);padding:22px 8px;font-size:13px}.note{color:var(--muted);font-size:12px;margin-top:10px}.status{font-size:12px;color:var(--green);min-height:18px}.storage{font-size:12px;background:#e8f7ef;color:#176749;padding:9px 11px;border-radius:9px;margin-bottom:12px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.card{padding:15px}}@media(max-width:420px){.grid,.entry{grid-template-columns:1fr}.full{grid-column:auto}.metric strong{font-size:20px}}
+@media print{body{background:white}.no-print,header p{display:none!important}.layout{display:block}.card{box-shadow:none;break-inside:avoid;border:1px solid #aaa}header{background:white;color:#000;padding:0 0 12px}.metric{background:white}}
+</style></head>
+<body>
+<header><div class="wrap"><h1>Expense & Budget Calculator</h1><p>Track income and expenses, monitor your monthly budget, and keep records in this browser.</p></div></header>
+<main class="wrap"><div class="layout"><section>
+<div class="card"><div class="storage" id="storageStatus">Checking browser storage…</div><h2>Add a transaction</h2>
+<div class="tabs no-print"><button class="tab active" id="expenseTab" type="button">Expense</button><button class="tab" id="incomeTab" type="button">Income</button></div>
+<form id="form"><div class="entry">
+<div><label for="date">Date</label><input id="date" type="date" required></div>
+<div><label for="category">Category</label><select id="category"><option>Food</option><option>Travel</option><option>Shopping</option><option>EMI</option><option>Rent / Housing</option><option>Bills & Utilities</option><option>Health</option><option>Education</option><option>Entertainment</option><option>Fuel</option><option>Family</option><option>Business</option><option>Salary</option><option>Interest / Investment</option><option>Other</option></select></div>
+<div class="full"><label for="description">Description</label><input id="description" maxlength="100" placeholder="e.g. Grocery shopping" required></div>
+<div><label for="amount">Amount (₹)</label><input id="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required></div>
+<div><label for="payment">Payment method</label><select id="payment"><option>UPI</option><option>Cash</option><option>Debit card</option><option>Credit card</option><option>Bank transfer</option><option>Other</option></select></div>
+</div><div class="actions"><button class="primary" type="submit" id="submitBtn">＋ Add expense</button><button class="secondary" type="reset">Clear form</button></div><div class="status" id="status" aria-live="polite"></div></form>
+<p class="note">Transactions and budget settings are saved in your browser's local storage on this device. They remain after closing and reopening the page in the same browser, unless browser data is cleared.</p>
+</div>
+<div class="card"><h2>Transaction history</h2><div class="grid no-print" style="margin-bottom:13px"><div><label for="filterType">Transaction type</label><select id="filterType"><option value="">All types</option><option value="expense">Expenses</option><option value="income">Income</option></select></div><div><label for="filterMonth">Filter month</label><input id="filterMonth" type="month"></div></div><div id="history"></div><div class="actions no-print"><button class="secondary" id="csv" type="button">Download CSV backup</button><button class="secondary" id="jsonBackup" type="button">Download JSON backup</button><button class="secondary" id="jsonRestore" type="button">Restore JSON backup</button><input id="jsonFile" type="file" accept=".json,application/json" hidden><button class="danger" id="clearAll" type="button">Delete all records</button></div></div>
+</section><aside><div class="card"><h2>Monthly overview</h2><div class="grid" style="margin-bottom:12px"><div><label for="month">Summary month</label><input id="month" type="month"></div><div><label for="budget">Expense budget (₹)</label><input id="budget" type="number" min="0" step="100" value="30000"></div></div>
+<div class="metric"><span>Total expenses</span><strong id="totalExpense">₹0</strong></div><div class="metrics"><div class="metric"><span>Total income</span><strong id="totalIncome">₹0</strong></div><div class="metric"><span>Net balance</span><strong id="balance">₹0</strong></div></div><div class="metrics"><div class="metric"><span>Budget remaining</span><strong id="remaining">₹30,000</strong></div><div class="metric"><span>Budget used</span><strong id="used">0%</strong></div></div>
+<h2 style="margin-top:16px">Expenses by category</h2><table><thead><tr><th>Category</th><th>Amount</th></tr></thead><tbody id="categorySummary"><tr><td colspan="2">No expenses this month</td></tr></tbody></table>
+<div class="actions no-print"><button class="primary" id="print" type="button">Print / Save PDF</button><button class="secondary" id="resetBudget" type="button">Reset budget</button></div><p class="note">Budget remaining may be negative if spending exceeds your limit.</p></div></aside></div></main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const STORAGE_KEY='expenseBudgetCalculator.records.v1', SETTINGS_KEY='expenseBudgetCalculator.settings.v1';
+let type='expense',records=[];
+const now=new Date(),monthNow=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'),dateNow=monthNow+'-'+String(now.getDate()).padStart(2,'0');
+$('date').value=dateNow;$('month').value=monthNow;
+const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(n);
+function saveRecords(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(records));$('storageStatus').textContent='✓ Local storage enabled — records are saved in this browser.';$('status').textContent='Saved successfully.';return true}catch(err){$('storageStatus').textContent='⚠ Browser storage is unavailable. Export CSV to keep a backup.';$('status').textContent='Could not save locally. Please download a CSV backup.';return false}}
+function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify({budget:$('budget').value,month:$('month').value}));}catch(err){}}
+function load(){try{const raw=localStorage.getItem(STORAGE_KEY);records=raw?JSON.parse(raw):[];if(!Array.isArray(records))records=[];records=records.filter(r=>r&&typeof r.date==='string'&&typeof r.description==='string'&&Number.isFinite(Number(r.amount))).map(r=>({...r,amount:Number(r.amount)}));const s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');if(s.budget!==undefined)$('budget').value=s.budget;if(s.month)$('month').value=s.month;$('storageStatus').textContent='✓ Local storage enabled — records are saved in this browser.'}catch(err){records=[];$('storageStatus').textContent='⚠ Unable to read local storage. Check browser privacy settings.'}}
+function setType(t){type=t;$('expenseTab').classList.toggle('active',t==='expense');$('incomeTab').classList.toggle('active',t==='income');$('submitBtn').textContent=t==='expense'?'＋ Add expense':'＋ Add income';$('category').value=t==='income'?'Salary':'Food'}
+function render(){
+ const mo=$('month').value||monthNow,list=records.filter(r=>r.date.startsWith(mo)),expense=list.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0),income=list.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0),budget=Math.max(0,Number($('budget').value)||0),remaining=budget-expense;
+ $('totalExpense').textContent=money(expense);$('totalIncome').textContent=money(income);$('balance').textContent=money(income-expense);$('balance').style.color=income-expense<0?'#b42318':'#087f5b';$('remaining').textContent=money(remaining);$('remaining').style.color=remaining<0?'#b42318':'';$('used').textContent=budget?Math.round(expense/budget*100)+'%':(expense?'Budget not set':'0%');
+ const cats={};list.filter(r=>r.type==='expense').forEach(r=>cats[r.category]=(cats[r.category]||0)+r.amount);const tbody=$('categorySummary');tbody.replaceChildren();const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);if(!sorted.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=2;td.textContent='No expenses this month';tr.append(td);tbody.append(tr)}else sorted.forEach(([cat,amt])=>{const tr=document.createElement('tr'),a=document.createElement('td'),b=document.createElement('td');a.textContent=cat;b.textContent=money(amt);tr.append(a,b);tbody.append(tr)});
+ const hist=$('history');hist.replaceChildren();const ft=$('filterType').value,fm=$('filterMonth').value;const rows=records.filter(r=>(!ft||r.type===ft)&&(!fm||r.date.startsWith(fm))).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+ if(!rows.length){const d=document.createElement('div');d.className='empty';d.textContent='No transactions match these filters.';hist.append(d)}
+ rows.forEach(r=>{const row=document.createElement('div');row.className='record';const left=document.createElement('div'),right=document.createElement('div'),title=document.createElement('strong'),meta=document.createElement('small'),amt=document.createElement('div'),del=document.createElement('button');title.textContent=r.description;meta.textContent=r.date+' · '+r.category+' · '+r.payment+' · '+(r.type==='income'?'Income':'Expense');amt.className='money '+r.type;amt.textContent=(r.type==='income'?'+ ':'− ')+money(r.amount);del.type='button';del.className='danger no-print';del.textContent='Remove';del.style.marginTop='7px';del.onclick=()=>{records=records.filter(x=>x.id!==r.id);saveRecords();render()};left.append(title,meta);right.append(amt,del);row.append(left,right);hist.append(row)});
+}
+$('expenseTab').onclick=()=>setType('expense');$('incomeTab').onclick=()=>setType('income');
+$('form').addEventListener('submit',e=>{e.preventDefault();const amount=Number($('amount').value),description=$('description').value.trim();if(!description||!Number.isFinite(amount)||amount<=0)return;records.push({id:Date.now()+Math.random(),type,date:$('date').value,category:$('category').value,description,amount,payment:$('payment').value});saveRecords();$('description').value='';$('amount').value='';$('date').value=dateNow;render()});
+$('form').addEventListener('reset',()=>setTimeout(()=>$('date').value=dateNow,0));
+['filterType','filterMonth'].forEach(id=>$(id).addEventListener('input',render));
+['month','budget'].forEach(id=>$(id).addEventListener('input',()=>{saveSettings();render()}));
+$('clearAll').onclick=()=>{if(records.length&&confirm('Delete all income and expense records from this browser? This cannot be undone.')){records=[];saveRecords();render()}};
+$('resetBudget').onclick=()=>{$('budget').value=30000;$('month').value=monthNow;saveSettings();render()};
+$('print').onclick=()=>window.print();
+$('csv').onclick=()=>{if(!records.length){alert('No records to export yet.');return}const data=[['Date','Type','Category','Description','Amount INR','Payment method'],...records.map(r=>[r.date,r.type,r.category,r.description,r.amount.toFixed(2),r.payment])];const csv=data.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='expense-calculator-backup.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)};
+
+$('jsonBackup').onclick=()=>{
+  const backup={app:'Expense & Budget Calculator',version:1,exportedAt:new Date().toISOString(),records,settings:{budget:$('budget').value,month:$('month').value}};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='expense-calculator-backup.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  $('status').textContent='JSON backup downloaded.';
+};
+$('jsonRestore').onclick=()=>{$('jsonFile').click()};
+$('jsonFile').addEventListener('change',async()=>{
+  const file=$('jsonFile').files&&$('jsonFile').files[0];if(!file)return;
+  try{
+    const parsed=JSON.parse(await file.text());
+    const incoming=Array.isArray(parsed)?parsed:parsed.records;
+    if(!Array.isArray(incoming))throw new Error('This JSON file does not contain a records array.');
+    const clean=incoming.map((r,i)=>{
+      if(!r||typeof r!=='object'||typeof r.date!=='string'||typeof r.description!=='string'||!Number.isFinite(Number(r.amount))||Number(r.amount)<=0)throw new Error('Invalid transaction at item '+(i+1)+'.');
+      if(!['expense','income'].includes(r.type))throw new Error('Invalid transaction type at item '+(i+1)+'.');
+      return {id:Number(r.id)||Date.now()+Math.random()+i,type:r.type,date:r.date,category:String(r.category||'Other'),description:r.description,amount:Number(r.amount),payment:String(r.payment||'Other')};
+    });
+    if(!confirm('Restore '+clean.length+' transaction(s)? Choose OK to replace current records, or Cancel to keep them.'))return;
+    records=clean;
+    if(parsed.settings&&typeof parsed.settings==='object'){
+      if(parsed.settings.budget!==undefined)$('budget').value=parsed.settings.budget;
+      if(parsed.settings.month)$('month').value=parsed.settings.month;
+      saveSettings();
+    }
+    saveRecords();render();$('status').textContent='JSON backup restored successfully.';
+  }catch(err){alert('Could not restore JSON backup: '+err.message);}
+  finally{$('jsonFile').value='';}
+});
+
+load();render();
+})();
+</script></body></html>

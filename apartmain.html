@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apartment Maintenance Manager</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#17263d;--line:#2b3c56;--text:#eef4ff;--muted:#a9b8cf;--cyan:#48d7e8;--green:#53dfa0;--orange:#ffbd69;--red:#ff7c86}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#080e19,#101d31);color:var(--text);font:15px/1.45 Arial,Helvetica,sans-serif}
+header{padding:24px clamp(16px,4vw,42px);border-bottom:1px solid var(--line);background:#0c1627}
+header h1{margin:0;font-size:clamp(24px,4vw,34px)}header p{margin:7px 0 0;color:var(--muted)}
+main{max-width:1400px;margin:auto;padding:22px clamp(12px,3vw,30px) 44px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.tab.active{background:var(--cyan);color:#06111e;border-color:var(--cyan)}
+.panel{background:rgba(18,29,48,.96);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:18px;box-shadow:0 12px 30px #0002}.panel h2{font-size:19px;margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}.metric{background:var(--panel2);border:1px solid var(--line);padding:16px;border-radius:14px}.metric small{color:var(--muted);display:block}.metric strong{display:block;font-size:25px;margin-top:8px}.cyan{color:var(--cyan)}.green{color:var(--green)}.orange{color:var(--orange)}.red{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.field{grid-column:span 3;min-width:0}.field.wide{grid-column:span 6}.field.full{grid-column:1/-1}
+label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:9px;border:1px solid #3a4c68;background:#0b1525;color:var(--text);font:inherit;min-height:42px}textarea{min-height:76px;resize:vertical}
+button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--cyan);color:#06111e}button.secondary{background:#243651;color:var(--text);border:1px solid #405573}button.danger{background:#512a37;color:#ffe8eb;border:1px solid #814454}button.success{background:#174c40;color:#d8fff0;border:1px solid #287c67}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;color:var(--muted);background:#0e192a;position:sticky;top:0}td{font-size:14px}tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:3px 8px;border-radius:99px;font-size:12px;font-weight:bold}.paid{background:#174c40;color:#a8ffe0}.due{background:#563d20;color:#ffdda4}.empty{padding:22px;color:var(--muted);text-align:center}.hint{color:var(--muted);font-size:12px;margin-top:8px}.hidden{display:none!important}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.section-head h2{margin-bottom:0}
+@media(max-width:760px){.field{grid-column:span 6}.field.wide{grid-column:1/-1}.panel{padding:13px}.metric strong{font-size:22px}}
+@media(max-width:430px){.field{grid-column:1/-1}}
+@media print{body{background:white;color:#111}header{background:white;color:#111;padding:10px}header p,.no-print,nav,.actions{display:none!important}main{padding:0;max-width:none}.panel,.metric{background:white;color:#111;border:1px solid #ccc;box-shadow:none;break-inside:avoid}.metric small,th{color:#333}input,select,textarea{border:0;background:white;color:#111;padding:0}.table-wrap{overflow:visible}table{min-width:0}th,td{padding:6px;font-size:11px}th{position:static}.hidden{display:none!important}}
+</style>
+</head>
+<body>
+<header><h1>🏢 Apartment Maintenance Manager</h1><p>Track flats, monthly bills, collections and shared expenses — saved on this device.</p></header>
+<main>
+<nav class="no-print">
+<button class="tab active" data-tab="dashboard">Dashboard</button><button class="tab" data-tab="flats">Flats & Residents</button><button class="tab" data-tab="bills">Maintenance Bills</button><button class="tab" data-tab="payments">Payments</button><button class="tab" data-tab="expenses">Expenses</button><button class="tab" data-tab="backup">Backup & Settings</button>
+</nav>
+<section id="dashboard" class="page">
+<div class="cards">
+<div class="metric"><small>Total flats</small><strong class="cyan" id="mFlats">0</strong></div>
+<div class="metric"><small>Bills generated</small><strong id="mBilled">₹0</strong></div>
+<div class="metric"><small>Payments collected</small><strong class="green" id="mPaid">₹0</strong></div>
+<div class="metric"><small>Outstanding balance</small><strong class="orange" id="mDue">₹0</strong></div>
+<div class="metric"><small>Recorded expenses</small><strong class="red" id="mExpenses">₹0</strong></div>
+</div>
+<div class="panel"><div class="section-head"><h2>Generate monthly maintenance</h2><span class="hint">Creates one bill per active flat for the selected month.</span></div>
+<div class="grid" style="margin-top:14px"><div class="field"><label for="billMonth">Billing month</label><input type="month" id="billMonth"></div><div class="field"><label for="defaultRate">Default monthly amount (₹)</label><input type="number" id="defaultRate" min="0" step="0.01" value="2500"></div></div>
+<div class="actions no-print"><button id="generateBills">Generate bills</button><button class="secondary" id="printDashboard">Print dashboard</button></div><p class="hint">Existing bills for the same flat and month are skipped. You can edit individual flat rates in the Flats section.</p></div>
+<div class="panel"><h2>Outstanding bills</h2><div id="dueTable"></div></div>
+<div class="panel"><h2>Recent payments</h2><div id="recentPayments"></div></div>
+</section>
+<section id="flats" class="page hidden">
+<div class="panel"><h2 id="flatFormTitle">Add flat / resident</h2><form id="flatForm"><input type="hidden" id="flatId"><div class="grid">
+<div class="field"><label for="flatNo">Flat number *</label><input id="flatNo" required placeholder="A-101"></div>
+<div class="field"><label for="resident">Resident / owner name *</label><input id="resident" required placeholder="Resident name"></div>
+<div class="field"><label for="phone">Phone (optional)</label><input id="phone" inputmode="tel" placeholder="Phone number"></div>
+<div class="field"><label for="flatRate">Monthly maintenance (₹) *</label><input id="flatRate" type="number" min="0" step="0.01" value="2500" required></div>
+<div class="field"><label for="area">Flat area (sq. ft., optional)</label><input id="area" type="number" min="0" step="0.01"></div>
+<div class="field"><label for="flatStatus">Status</label><select id="flatStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+</div><div class="actions"><button type="submit">Save flat</button><button type="button" class="secondary" id="cancelFlat">Clear form</button></div></form></div>
+<div class="panel"><div class="section-head"><h2>Flats & residents</h2><input id="flatSearch" style="max-width:260px" placeholder="Search flat or resident"></div><div id="flatsTable" style="margin-top:14px"></div></div>
+</section>
+<section id="bills" class="page hidden">
+<div class="panel"><h2>Add / edit maintenance bill</h2><form id="billForm"><input type="hidden" id="billId"><div class="grid">
+<div class="field"><label for="billFlat">Flat *</label><select id="billFlat" required></select></div><div class="field"><label for="billPeriod">Month *</label><input type="month" id="billPeriod" required></div><div class="field"><label for="billAmount">Bill amount (₹) *</label><input type="number" id="billAmount" min="0" step="0.01" required></div><div class="field"><label for="billDueDate">Due date</label><input type="date" id="billDueDate"></div><div class="field full"><label for="billNote">Note (optional)</label><input id="billNote" placeholder="Water charges, parking, adjustment…"></div>
+</div><div class="actions"><button type="submit">Save bill</button><button type="button" class="secondary" id="cancelBill">Clear form</button></div></form></div>
+<div class="panel"><div class="section-head"><h2>Maintenance bills</h2><div class="actions" style="margin:0"><input id="billFilterMonth" type="month" aria-label="Filter bills by month"><select id="billFilterStatus" aria-label="Filter bills by status"><option value="all">All statuses</option><option value="due">Outstanding</option><option value="paid">Fully paid</option></select></div></div><div id="billsTable" style="margin-top:14px"></div></div>
+</section>
+<section id="payments" class="page hidden">
+<div class="panel"><h2>Record payment</h2><form id="paymentForm"><div class="grid">
+<div class="field"><label for="paymentBill">Bill / flat *</label><select id="paymentBill" required></select></div><div class="field"><label for="paymentDate">Payment date *</label><input type="date" id="paymentDate" required></div><div class="field"><label for="paymentAmount">Amount received (₹) *</label><input type="number" id="paymentAmount" min="0.01" step="0.01" required></div><div class="field"><label for="paymentMode">Payment method</label><select id="paymentMode"><option>UPI</option><option>Bank transfer</option><option>Cash</option><option>Cheque</option><option>Other</option></select></div><div class="field"><label for="paymentRef">Transaction / receipt reference</label><input id="paymentRef" placeholder="Optional reference"></div><div class="field wide"><label for="paymentNote">Note</label><input id="paymentNote" placeholder="Optional note"></div>
+</div><div class="actions"><button type="submit">Record payment</button></div><p class="hint">Payments are linked to a specific bill. Partial payments are supported.</p></form></div>
+<div class="panel"><div class="section-head"><h2>Payment history</h2><button class="secondary no-print" id="printPayments">Print payments</button></div><div id="paymentsTable" style="margin-top:14px"></div></div>
+</section>
+<section id="expenses" class="page hidden">
+<div class="panel"><h2>Add shared apartment expense</h2><form id="expenseForm"><input type="hidden" id="expenseId"><div class="grid">
+<div class="field"><label for="expenseDate">Date *</label><input id="expenseDate" type="date" required></div><div class="field"><label for="expenseCategory">Category *</label><select id="expenseCategory"><option>Security</option><option>Cleaning</option><option>Lift maintenance</option><option>Water</option><option>Electricity - common area</option><option>Repairs</option><option>Gardening</option><option>Plumbing</option><option>Other</option></select></div><div class="field"><label for="expenseAmount">Amount (₹) *</label><input id="expenseAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label for="expenseVendor">Vendor / paid to</label><input id="expenseVendor" placeholder="Vendor or person"></div><div class="field full"><label for="expenseDescription">Description *</label><input id="expenseDescription" required placeholder="What was the expense for?"></div><div class="field"><label for="expenseRef">Receipt / reference</label><input id="expenseRef" placeholder="Optional"></div></div><div class="actions"><button type="submit">Save expense</button><button type="button" class="secondary" id="cancelExpense">Clear form</button></div></form></div>
+<div class="panel"><div class="section-head"><h2>Expense register</h2><button class="secondary no-print" id="printExpenses">Print expenses</button></div><div id="expensesTable" style="margin-top:14px"></div></div>
+</section>
+<section id="backup" class="page hidden">
+<div class="panel"><h2>Data backup & restore</h2><p>All data is stored in this browser on this device. Export a JSON backup regularly, especially before clearing browser data or changing devices.</p><div class="actions"><button id="exportJson">Download JSON backup</button><button class="secondary" id="exportCsv">Export bills CSV</button><button class="secondary" id="exportExpensesCsv">Export expenses CSV</button></div><div class="grid" style="margin-top:16px"><div class="field wide"><label for="importFile">Restore from JSON backup</label><input id="importFile" type="file" accept=".json,application/json"></div></div><div class="actions"><button id="importJson" class="success">Restore backup</button><button id="clearAll" class="danger">Delete all app data</button></div><p class="hint">Restoring replaces current app data. Download a backup first. Do not share backup files containing resident contact details publicly.</p></div>
+<div class="panel"><h2>Apartment details</h2><div class="grid"><div class="field wide"><label for="apartmentName">Apartment / association name</label><input id="apartmentName" placeholder="Apartment name"></div><div class="field"><label for="managerName">Manager / treasurer</label><input id="managerName" placeholder="Name"></div><div class="field"><label for="currency">Currency</label><select id="currency"><option value="INR">Indian Rupee (₹)</option></select></div></div><div class="actions"><button id="saveSettings">Save settings</button></div></div>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+const KEY='apartmentMaintenanceManager_v1';
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const monthNow=()=>today().slice(0,7);
+let db={flats:[],bills:[],payments:[],expenses:[],settings:{name:'',manager:'',currency:'INR'}};
+let importedFile=null;
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){const parsed=JSON.parse(raw);db={...db,...parsed};db.settings={...{name:'',manager:'',currency:'INR'},...(db.settings||{})}}}catch(e){alert('Saved data could not be read. You can restore a JSON backup from Backup & Settings.')} }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db));return true}catch(e){alert('Could not save data in browser storage. Export a backup and free some browser storage.');return false}}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function money(v){return '₹'+(Number(v)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function flat(id){return db.flats.find(x=>x.id===id)}
+function bill(id){return db.bills.find(x=>x.id===id)}
+function paidFor(bid){return db.payments.filter(p=>p.billId===bid).reduce((s,p)=>s+Number(p.amount||0),0)}
+function balance(b){return Math.max(0,Number(b.amount||0)-paidFor(b.id))}
+function status(b){return balance(b)<0.005?'paid':'due'}
+function table(headers,rows,empty='No records yet.'){if(!rows.length)return '<div class="empty">'+esc(empty)+'</div>';return '<div class="table-wrap"><table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>'}
+function setOptions(select,items,placeholder){const old=$(select).value;$(select).innerHTML=(placeholder?'<option value="">'+esc(placeholder)+'</option>':'')+items.map(x=>'<option value="'+esc(x.value)+'">'+esc(x.label)+'</option>').join('');if(items.some(x=>x.value===old))$(select).value=old}
+function refreshOptions(){
+ setOptions('billFlat',db.flats.filter(f=>f.status==='active').map(f=>({value:f.id,label:f.flatNo+' — '+f.resident})), 'Select flat');
+ setOptions('paymentBill',db.bills.map(b=>({value:b.id,label:(flat(b.flatId)?.flatNo||'Unknown flat')+' · '+b.period+' · Due '+money(balance(b))})).filter((x,i)=>true), 'Select bill');
+}
+function render(){
+ refreshOptions();
+ $('mFlats').textContent=db.flats.filter(f=>f.status==='active').length;
+ $('mBilled').textContent=money(db.bills.reduce((s,b)=>s+Number(b.amount||0),0));
+ $('mPaid').textContent=money(db.payments.reduce((s,p)=>s+Number(p.amount||0),0));
+ $('mDue').textContent=money(db.bills.reduce((s,b)=>s+balance(b),0));
+ $('mExpenses').textContent=money(db.expenses.reduce((s,e)=>s+Number(e.amount||0),0));
+ const dues=db.bills.filter(b=>balance(b)>0.004).sort((a,b)=>a.period.localeCompare(b.period));
+ $('dueTable').innerHTML=table(['Flat','Resident','Month','Bill','Paid','Balance','Due date'],dues.map(b=>'<tr><td>'+esc(flat(b.flatId)?.flatNo||'Deleted flat')+'</td><td>'+esc(flat(b.flatId)?.resident||'—')+'</td><td>'+esc(b.period)+'</td><td>'+money(b.amount)+'</td><td>'+money(paidFor(b.id))+'</td><td class="orange">'+money(balance(b))+'</td><td>'+esc(b.dueDate||'—')+'</td></tr>'),'No outstanding bills. Great!');
+ const recent=[...db.payments].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+ $('recentPayments').innerHTML=table(['Date','Flat','Month','Amount','Method','Reference'],recent.map(p=>{const b=bill(p.billId);return '<tr><td>'+esc(p.date)+'</td><td>'+esc(flat(b?.flatId)?.flatNo||'—')+'</td><td>'+esc(b?.period||'—')+'</td><td class="green">'+money(p.amount)+'</td><td>'+esc(p.mode||'—')+'</td><td>'+esc(p.ref||'—')+'</td></tr>'}),'No payments recorded.');
+ const q=$('flatSearch').value.toLowerCase();
+ $('flatsTable').innerHTML=table(['Flat','Resident','Phone','Area','Monthly rate','Status','Actions'],db.flats.filter(f=>(f.flatNo+' '+f.resident+' '+(f.phone||'')).toLowerCase().includes(q)).map(f=>'<tr><td><b>'+esc(f.flatNo)+'</b></td><td>'+esc(f.resident)+'</td><td>'+esc(f.phone||'—')+'</td><td>'+esc(f.area||'—')+'</td><td>'+money(f.rate)+'</td><td><span class="pill '+(f.status==='active'?'paid':'due')+'">'+esc(f.status)+'</span></td><td><button class="secondary" data-edit-flat="'+f.id+'">Edit</button> <button class="danger" data-del-flat="'+f.id+'">Delete</button></td></tr>'));
+ const bm=$('billFilterMonth').value, bs=$('billFilterStatus').value;
+ const bills=[...db.bills].filter(b=>(!bm||b.period===bm)&&(bs==='all'||status(b)===bs)).sort((a,b)=>b.period.localeCompare(a.period));
+ $('billsTable').innerHTML=table(['Flat','Resident','Month','Amount','Paid','Balance','Status','Due date','Note','Actions'],bills.map(b=>'<tr><td>'+esc(flat(b.flatId)?.flatNo||'Deleted flat')+'</td><td>'+esc(flat(b.flatId)?.resident||'—')+'</td><td>'+esc(b.period)+'</td><td>'+money(b.amount)+'</td><td>'+money(paidFor(b.id))+'</td><td>'+money(balance(b))+'</td><td><span class="pill '+(status(b)==='paid'?'paid':'due')+'">'+(status(b)==='paid'?'Paid':'Outstanding')+'</span></td><td>'+esc(b.dueDate||'—')+'</td><td>'+esc(b.note||'—')+'</td><td><button class="secondary" data-edit-bill="'+b.id+'">Edit</button> <button class="danger" data-del-bill="'+b.id+'">Delete</button></td></tr>'));
+ $('paymentsTable').innerHTML=table(['Date','Flat','Month','Amount','Method','Reference','Note','Action'],[...db.payments].sort((a,b)=>b.date.localeCompare(a.date)).map(p=>{const b=bill(p.billId);return '<tr><td>'+esc(p.date)+'</td><td>'+esc(flat(b?.flatId)?.flatNo||'—')+'</td><td>'+esc(b?.period||'—')+'</td><td>'+money(p.amount)+'</td><td>'+esc(p.mode||'—')+'</td><td>'+esc(p.ref||'—')+'</td><td>'+esc(p.note||'—')+'</td><td><button class="danger" data-del-payment="'+p.id+'">Delete</button></td></tr>'}));
+ $('expensesTable').innerHTML=table(['Date','Category','Description','Vendor','Amount','Reference','Actions'],[...db.expenses].sort((a,b)=>b.date.localeCompare(a.date)).map(e=>'<tr><td>'+esc(e.date)+'</td><td>'+esc(e.category)+'</td><td>'+esc(e.description)+'</td><td>'+esc(e.vendor||'—')+'</td><td>'+money(e.amount)+'</td><td>'+esc(e.ref||'—')+'</td><td><button class="secondary" data-edit-expense="'+e.id+'">Edit</button> <button class="danger" data-del-expense="'+e.id+'">Delete</button></td></tr>'));
+ $('apartmentName').value=db.settings.name||'';$('managerName').value=db.settings.manager||'';
+}
+function clearFlat(){$('flatForm').reset();$('flatId').value='';$('flatRate').value=$('defaultRate').value||2500;$('flatFormTitle').textContent='Add flat / resident'}
+function clearBill(){$('billForm').reset();$('billId').value='';$('billPeriod').value=monthNow();$('billAmount').value='';$('billDueDate').value='';}
+function clearExpense(){$('expenseForm').reset();$('expenseId').value='';$('expenseDate').value=today()}
+function showTab(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!==name));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.tab)));
+$('flatForm').addEventListener('submit',e=>{e.preventDefault();const fid=$('flatId').value;const item={id:fid||id(),flatNo:$('flatNo').value.trim(),resident:$('resident').value.trim(),phone:$('phone').value.trim(),rate:Number($('flatRate').value),area:Number($('area').value)||'',status:$('flatStatus').value};if(db.flats.some(f=>f.flatNo.toLowerCase()===item.flatNo.toLowerCase()&&f.id!==fid)){alert('That flat number already exists.');return}if(fid)db.flats=db.flats.map(f=>f.id===fid?item:f);else db.flats.push(item);save();clearFlat();render()});
+$('cancelFlat').onclick=clearFlat;$('flatSearch').addEventListener('input',render);
+$('generateBills').onclick=()=>{const period=$('billMonth').value,rate=Number($('defaultRate').value);if(!period){alert('Choose a billing month.');return}const active=db.flats.filter(f=>f.status==='active');if(!active.length){alert('Add active flats first.');return}let count=0;active.forEach(f=>{if(!db.bills.some(b=>b.flatId===f.id&&b.period===period)){db.bills.push({id:id(),flatId:f.id,period,amount:Number(f.rate??rate),dueDate:period+'-10',note:''});count++}});save();render();alert(count+' bill(s) generated. Existing bills were skipped.');showTab('bills');$('billFilterMonth').value=period;render()};
+$('billForm').addEventListener('submit',e=>{e.preventDefault();const bid=$('billId').value;const item={id:bid||id(),flatId:$('billFlat').value,period:$('billPeriod').value,amount:Number($('billAmount').value),dueDate:$('billDueDate').value,note:$('billNote').value.trim()};if(!item.flatId){alert('Add a flat before creating a bill.');return}if(db.bills.some(b=>b.flatId===item.flatId&&b.period===item.period&&b.id!==bid)){alert('A bill already exists for this flat and month. Edit the existing bill instead.');return}if(bid){const collected=paidFor(bid);if(item.amount<collected){alert('Bill amount cannot be less than payments already recorded ('+money(collected)+').');return}db.bills=db.bills.map(b=>b.id===bid?item:b)}else db.bills.push(item);save();clearBill();render()});
+$('cancelBill').onclick=clearBill;$('billFilterMonth').addEventListener('change',render);$('billFilterStatus').addEventListener('change',render);
+$('paymentForm').addEventListener('submit',e=>{e.preventDefault();const b=bill($('paymentBill').value),amount=Number($('paymentAmount').value);if(!b){alert('Select a bill first.');return}if(amount<=0){alert('Enter an amount greater than zero.');return}if(amount>balance(b)+0.005&&!confirm('This payment is greater than the current balance. Record it anyway?'))return;db.payments.push({id:id(),billId:b.id,date:$('paymentDate').value,amount,mode:$('paymentMode').value,ref:$('paymentRef').value.trim(),note:$('paymentNote').value.trim()});save();$('paymentForm').reset();$('paymentDate').value=today();render()});
+$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const eid=$('expenseId').value;const item={id:eid||id(),date:$('expenseDate').value,category:$('expenseCategory').value,amount:Number($('expenseAmount').value),vendor:$('expenseVendor').value.trim(),description:$('expenseDescription').value.trim(),ref:$('expenseRef').value.trim()};if(eid)db.expenses=db.expenses.map(x=>x.id===eid?item:x);else db.expenses.push(item);save();clearExpense();render()});$('cancelExpense').onclick=clearExpense;
+document.addEventListener('click',e=>{const t=e.target;
+if(t.dataset.editFlat){const f=flat(t.dataset.editFlat);if(!f)return;$('flatId').value=f.id;$('flatNo').value=f.flatNo;$('resident').value=f.resident;$('phone').value=f.phone||'';$('flatRate').value=f.rate;$('area').value=f.area||'';$('flatStatus').value=f.status;$('flatFormTitle').textContent='Edit flat / resident';showTab('flats');window.scrollTo({top:0,behavior:'smooth'})}
+if(t.dataset.delFlat){const f=flat(t.dataset.delFlat);if(db.bills.some(b=>b.flatId===f.id)){alert('This flat has bills. Keep it and change its status to Inactive so financial history stays linked.');return}if(confirm('Delete flat '+f.flatNo+'?')){db.flats=db.flats.filter(x=>x.id!==f.id);save();render()}}
+if(t.dataset.editBill){const b=bill(t.dataset.editBill);if(!b)return;$('billId').value=b.id;$('billFlat').value=b.flatId;$('billPeriod').value=b.period;$('billAmount').value=b.amount;$('billDueDate').value=b.dueDate||'';$('billNote').value=b.note||'';showTab('bills');window.scrollTo({top:0,behavior:'smooth'})}
+if(t.dataset.delBill){const b=bill(t.dataset.delBill);if(db.payments.some(p=>p.billId===b.id)){alert('This bill has payments. Delete its payment records first if you really need to remove it.');return}if(confirm('Delete this bill?')){db.bills=db.bills.filter(x=>x.id!==b.id);save();render()}}
+if(t.dataset.delPayment){if(confirm('Delete this payment record? The bill balance will increase.')){db.payments=db.payments.filter(p=>p.id!==t.dataset.delPayment);save();render()}}
+if(t.dataset.editExpense){const x=db.expenses.find(y=>y.id===t.dataset.editExpense);if(!x)return;$('expenseId').value=x.id;$('expenseDate').value=x.date;$('expenseCategory').value=x.category;$('expenseAmount').value=x.amount;$('expenseVendor').value=x.vendor||'';$('expenseDescription').value=x.description;$('expenseRef').value=x.ref||'';showTab('expenses');window.scrollTo({top:0,behavior:'smooth'})}
+if(t.dataset.delExpense&&confirm('Delete this expense record?')){db.expenses=db.expenses.filter(x=>x.id!==t.dataset.delExpense);save();render()}
+});
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+$('exportJson').onclick=()=>download('apartment-maintenance-backup-'+today()+'.json',JSON.stringify(db,null,2),'application/json');
+function csvCell(x){return '"'+String(x??'').replace(/"/g,'""')+'"'}
+$('exportCsv').onclick=()=>{const rows=[['Flat','Resident','Month','Bill Amount','Paid','Balance','Status','Due Date','Note']];db.bills.forEach(b=>rows.push([flat(b.flatId)?.flatNo,flat(b.flatId)?.resident,b.period,b.amount,paidFor(b.id),balance(b),status(b),b.dueDate,b.note]));download('maintenance-bills-'+today()+'.csv','\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8')};
+$('exportExpensesCsv').onclick=()=>{const rows=[['Date','Category','Description','Vendor','Amount','Reference']];db.expenses.forEach(x=>rows.push([x.date,x.category,x.description,x.vendor,x.amount,x.ref]));download('apartment-expenses-'+today()+'.csv','\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8')};
+$('importFile').addEventListener('change',e=>{importedFile=e.target.files[0]||null});
+$('importJson').onclick=()=>{if(!importedFile){alert('Choose a JSON backup file first.');return}const reader=new FileReader();reader.onload=()=>{try{const x=JSON.parse(reader.result);if(!x||!Array.isArray(x.flats)||!Array.isArray(x.bills)||!Array.isArray(x.payments)||!Array.isArray(x.expenses))throw new Error('Invalid backup structure');if(!confirm('Restore this backup and replace all current app data? Download a backup first if needed.'))return;db={...db,...x,settings:{...db.settings,...(x.settings||{})}};save();render();alert('Backup restored successfully.')}catch(err){alert('Could not restore this file. Please select a valid backup exported by this app.')}};reader.readAsText(importedFile)};
+$('clearAll').onclick=()=>{if(prompt('This permanently deletes all app data in this browser. Type DELETE to confirm:')==='DELETE'){db={flats:[],bills:[],payments:[],expenses:[],settings:{name:'',manager:'',currency:'INR'}};save();render();clearFlat();clearBill();clearExpense();alert('All app data deleted.')}};
+$('saveSettings').onclick=()=>{db.settings.name=$('apartmentName').value.trim();db.settings.manager=$('managerName').value.trim();save();alert('Apartment details saved.')};
+$('printDashboard').onclick=()=>{showTab('dashboard');window.print()};$('printPayments').onclick=()=>window.print();$('printExpenses').onclick=()=>window.print();
+$('billMonth').value=monthNow();$('billPeriod').value=monthNow();$('paymentDate').value=today();$('expenseDate').value=today();$('billFilterMonth').value='';
+load();render();clearFlat();clearBill();clearExpense();
+})();
+</script>
+</body>
+</html>

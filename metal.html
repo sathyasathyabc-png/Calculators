@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metal Weight to Wire & Pipe Calculator</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--text:#182230;--muted:#667085;--line:#d8e0eb;--accent:#175cd3;--green:#067647}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,Segoe UI,Arial,sans-serif}
+main{max-width:1000px;margin:auto;padding:24px 16px 40px}header{padding:24px;border-radius:18px;background:linear-gradient(125deg,#102a56,#1767b2);color:#fff;margin-bottom:18px}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,4vw,2.3rem)}header p{margin:0;color:#e1edff}.layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 5px 18px #13294b0b}h2{font-size:1.2rem;margin:0 0 14px}
+label{display:block;font-weight:650;font-size:.92rem;margin:12px 0 5px}input,select{width:100%;padding:11px 12px;border:1px solid #b8c4d6;border-radius:9px;background:#fff;color:var(--text);font:inherit}
+input:focus,select:focus{outline:3px solid #bfdbfe;border-color:var(--accent)}.hint,.notice{font-size:.86rem;color:var(--muted)}.hint{margin:5px 0 0}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{flex:1;border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;font-weight:700;cursor:pointer}
+.tab[aria-pressed="true"]{background:#eaf2ff;border-color:var(--accent);color:var(--accent)}
+.result{background:#eefbf4;border:1px solid #a6f4c5;border-radius:12px;padding:16px;margin-top:16px}.big{font-size:clamp(1.8rem,5vw,2.4rem);font-weight:800;color:var(--green);line-height:1.2;overflow-wrap:anywhere}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.metric{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px}.metric small{display:block;color:var(--muted)}.metric strong{font-size:1.05rem;overflow-wrap:anywhere}
+.formula{background:#f8fafc;border-radius:10px;padding:12px;margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:.9rem;overflow-wrap:anywhere}
+button.action{padding:10px 14px;border:0;border-radius:9px;background:var(--accent);color:white;font:inherit;font-weight:700;cursor:pointer}button.secondary{background:#e8eef7;color:#23324a}
+button:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.hidden{display:none!important}
+footer{color:var(--muted);font-size:.85rem;text-align:center;margin-top:20px}@media(max-width:700px){.layout{grid-template-columns:1fr}.card{padding:16px}}
+
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff!important;color:#000!important;font-size:11pt}
+  body *{visibility:hidden!important}
+  #quotationCard,#quotationCard *{visibility:visible!important}
+  #quotationCard{position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:#fff!important}
+  #quotationCard h2,.quote-controls{display:none!important}
+  #quotePrint{display:block!important}
+  #quotePrint .notice{color:#333!important}
+  #quotePrint table{page-break-inside:avoid}
+  #quotePrint tr{page-break-inside:avoid}
+  #quotePrint th,#quotePrint td{border:1px solid #555!important}
+  input,select,button{display:none!important}
+}
+
+</style></head>
+<body><main>
+<header><h1>Metal Weight → Wire & Pipe Calculator</h1><p>Estimate how many metres you can make from a chosen metal weight using material density and cross-sectional area.</p></header>
+<div class="layout">
+<section class="card"><h2>1. Material and quantity</h2>
+<label for="material">Material</label><select id="material">
+<option value="8.96">Copper — 8.96 g/cm³</option><option value="2.70">Aluminium — 2.70 g/cm³</option><option value="7.85">Carbon steel — 7.85 g/cm³</option><option value="7.14">Zinc — 7.14 g/cm³</option><option value="10.49">Silver — 10.49 g/cm³</option><option value="19.32">Gold — 19.32 g/cm³</option><option value="7.30">Tin — 7.30 g/cm³</option><option value="custom">Custom density</option></select>
+<div id="customWrap" class="hidden"><label for="customDensity">Custom density (g/cm³)</label><input id="customDensity" type="number" min="0.001" step="any" value="8.96"></div>
+<div class="row"><div><label for="weight">Available weight</label><input id="weight" type="number" min="0.001" step="any" value="1"></div>
+<div><label for="weightUnit">Weight unit</label><select id="weightUnit"><option value="kg">kg</option><option value="g">grams</option><option value="tonne">metric tonnes</option></select></div></div>
+<label for="loss">Manufacturing loss (%)</label><input id="loss" type="number" min="0" max="99.9" step="any" value="2"><p class="hint">Set to 0% for a theoretical estimate without loss.</p>
+</section>
+<section class="card"><h2>2. Choose product shape</h2>
+<div class="tabs" role="group" aria-label="Product shape"><button class="tab" id="wireTab" type="button" aria-pressed="true">Solid wire / rod</button><button class="tab" id="pipeTab" type="button" aria-pressed="false">Hollow pipe</button></div>
+<div id="wireFields"><label for="wireDia">Wire diameter (mm)</label><input id="wireDia" type="number" min="0.001" step="any" value="2"><p class="hint">Diameter of the solid circular wire.</p></div>
+<div id="pipeFields" class="hidden"><div class="row"><div><label for="outerDia">Outside diameter (mm)</label><input id="outerDia" type="number" min="0.001" step="any" value="12"></div><div><label for="wall">Wall thickness (mm)</label><input id="wall" type="number" min="0.001" step="any" value="1"></div></div><p class="hint">Inside diameter = outside diameter − 2 × wall thickness.</p></div>
+<div class="result" aria-live="polite"><div id="resultLabel">Estimated wire length</div><div class="big" id="length">35.52 m</div><p id="resultSub">Estimated length after manufacturing loss.</p>
+<div class="metrics"><div class="metric"><small>Usable metal mass</small><strong id="usableMass">0.98 kg</strong></div><div class="metric"><small>Metal volume</small><strong id="volume">109.38 cm³</strong></div><div class="metric"><small>Metal cross-section</small><strong id="area">3.1416 mm²</strong></div><div class="metric"><small>Inside diameter</small><strong id="inside">—</strong></div></div></div>
+<div id="error" role="alert" class="notice"></div><div class="actions"><button class="action" id="reset" type="button">Reset defaults</button><button class="action secondary" id="copy" type="button">Copy result</button></div>
+</section></div>
+<section class="card" style="margin-top:18px">
+<h2>3. Estimated material and making cost (₹)</h2>
+<p class="hint">Enter your local material rate and the fabricator’s charge. These are your inputs, not live market prices.</p>
+<div class="row">
+<div><label for="priceKg">Material price per kg (₹)</label><input id="priceKg" type="number" min="0" step="any" value="900"></div>
+<div><label for="chargeMode">Making charge calculated by</label><select id="chargeMode"><option value="kg">₹ per kg of input metal</option><option value="meter">₹ per metre produced</option><option value="percent">% of material cost</option><option value="fixed">Fixed job charge</option></select></div>
+</div>
+<div class="row">
+<div><label for="chargeRate" id="chargeRateLabel">Making charge (₹/kg)</label><input id="chargeRate" type="number" min="0" step="any" value="100"></div>
+<div><label for="setupCharge">Additional setup / tooling charge (₹)</label><input id="setupCharge" type="number" min="0" step="any" value="0"></div>
+</div>
+<div class="result" aria-live="polite">
+<div>Estimated total production cost</div><div class="big" id="totalCost">₹1,000.00</div>
+<div class="metrics">
+<div class="metric"><small>Material cost</small><strong id="materialCost">₹900.00</strong></div>
+<div class="metric"><small>Making charge</small><strong id="makingCost">₹100.00</strong></div>
+<div class="metric"><small>Setup / tooling</small><strong id="setupCost">₹0.00</strong></div>
+<div class="metric"><small>Cost per metre</small><strong id="costPerMeter">₹28.17/m</strong></div>
+</div>
+<p class="notice" id="costNote">Illustrative estimate only. Enter actual supplier and fabricator rates.</p>
+</div>
+</section>
+
+<section class="card" id="quotationCard" style="margin-top:18px">
+<h2>4. Print quotation</h2>
+<div class="quote-controls">
+<p class="hint">Enter the quotation details, then click Print quotation. In the print dialog, choose a printer or Save as PDF.</p>
+<div class="row">
+<div><label for="sellerName">Your business / supplier name</label><input id="sellerName" type="text" value="White Ciger" placeholder="Business name"></div>
+<div><label for="quoteNumber">Quotation number</label><input id="quoteNumber" type="text" placeholder="e.g. QTN-001"></div>
+</div>
+<div class="row">
+<div><label for="customerName">Customer name</label><input id="customerName" type="text" placeholder="Customer / company"></div>
+<div><label for="quoteDate">Quotation date</label><input id="quoteDate" type="date"></div>
+</div>
+<div class="row">
+<div><label for="gstRate">GST rate (%)</label><input id="gstRate" type="number" min="0" max="100" step="any" value="18"></div>
+<div><label for="quoteValidity">Quotation validity (days)</label><input id="quoteValidity" type="number" min="1" step="1" value="15"></div>
+</div>
+<label for="quoteNotes">Notes / terms (optional)</label><input id="quoteNotes" type="text" placeholder="Validity, delivery, payment terms, etc.">
+<div class="actions"><button class="action" id="printQuote" type="button">Print quotation</button><button class="action secondary" id="refreshQuote" type="button">Refresh quotation preview</button></div>
+</div>
+<div id="quotePrint">
+<div style="border-bottom:2px solid #182230;padding-bottom:12px;margin-bottom:16px">
+<div style="font-size:1.6rem;font-weight:800">QUOTATION</div>
+<div id="qSeller" style="font-size:1.1rem;font-weight:700">Your Business Name</div>
+<div class="notice">Quotation No: <span id="qNumber">—</span> &nbsp; | &nbsp; Date: <span id="qDate">—</span></div>
+<div>Prepared for: <strong id="qCustomer">Customer name</strong></div>
+</div>
+<h3 style="margin:10px 0">Product and cost estimate</h3>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 16px">
+<thead><tr><th style="text-align:left;border:1px solid #aab4c2;padding:9px">Description</th><th style="text-align:right;border:1px solid #aab4c2;padding:9px">Details / amount</th></tr></thead>
+<tbody>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Material</td><td id="qMaterial" style="text-align:right;border:1px solid #aab4c2;padding:9px">Copper</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Product / dimensions</td><td id="qDimensions" style="text-align:right;border:1px solid #aab4c2;padding:9px">Solid wire, 2 mm</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Input metal weight</td><td id="qWeight" style="text-align:right;border:1px solid #aab4c2;padding:9px">1 kg</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Estimated finished length</td><td id="qLength" style="text-align:right;border:1px solid #aab4c2;padding:9px">35.5 m</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Manufacturing loss</td><td id="qLoss" style="text-align:right;border:1px solid #aab4c2;padding:9px">2%</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Material cost</td><td id="qMaterialCost" style="text-align:right;border:1px solid #aab4c2;padding:9px">₹900.00</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Making charge</td><td id="qMaking" style="text-align:right;border:1px solid #aab4c2;padding:9px">₹100.00</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Setup / tooling</td><td id="qSetup" style="text-align:right;border:1px solid #aab4c2;padding:9px">₹0.00</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px;font-weight:700">Subtotal before GST</td><td id="qSubtotal" style="text-align:right;border:1px solid #aab4c2;padding:9px;font-weight:700">₹1,000.00</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">GST (<span id="qGstRate">18</span>%)</td><td id="qGST" style="text-align:right;border:1px solid #aab4c2;padding:9px">₹180.00</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px;font-weight:800">Grand total including GST</td><td id="qTotal" style="text-align:right;border:1px solid #aab4c2;padding:9px;font-weight:800">₹1,180.00</td></tr>
+<tr><td style="border:1px solid #aab4c2;padding:9px">Estimated cost per metre (incl. GST)</td><td id="qPerM" style="text-align:right;border:1px solid #aab4c2;padding:9px">₹28.17/m</td></tr>
+</tbody></table>
+<p><strong>Notes / terms:</strong> <span id="qNotes">—</span></p>
+<p><strong>Validity:</strong> <span id="qValidity">15</span> days from quotation date, unless otherwise agreed.</p>
+<p class="notice">This is an estimate based on entered rates and dimensions. GST is calculated at the editable rate shown above. Confirm applicable GST classification/rate with your tax adviser. Final quantity and charges may vary with actual production.</p>
+<div style="display:flex;justify-content:space-between;gap:24px;margin-top:36px"><div>Customer acceptance: ____________________</div><div>Authorized signature: ____________________</div></div>
+</div>
+</section>
+
+<section class="card" style="margin-top:18px"><h2>How the calculation works</h2>
+<p><strong>1. Convert weight to grams.</strong> For example, 1 kg = 1,000 g.</p><p><strong>2. Calculate volume:</strong> volume (cm³) = mass (g) ÷ density (g/cm³).</p>
+<p><strong>3. Calculate metal cross-sectional area.</strong> Solid wire: π × diameter² ÷ 4. Hollow pipe: π × (outside diameter² − inside diameter²) ÷ 4.</p>
+<p><strong>4. Calculate length:</strong> length (m) = volume (cm³) × 1,000 ÷ area (mm²) ÷ 1,000.</p><div class="formula" id="formula">Length = usable volume ÷ cross-sectional area</div>
+<p class="notice">Densities are typical approximations and alloys vary. Estimates exclude process effects, dimensional tolerances and any losses beyond the percentage entered.</p></section>
+<footer>Standalone calculator · Works locally in your browser · No data is uploaded</footer>
+</main>
+<script>
+(()=>{const $=id=>document.getElementById(id);let shape='wire';
+const ids=['material','customDensity','weight','weightUnit','loss','wireDia','outerDia','wall','priceKg','chargeMode','chargeRate','setupCharge'];
+const n=id=>Number($(id).value),fmt=(v,d=3)=>Number(v).toLocaleString(undefined,{maximumFractionDigits:d});
+function setShape(s){shape=s;$('wireTab').setAttribute('aria-pressed',String(s==='wire'));$('pipeTab').setAttribute('aria-pressed',String(s==='pipe'));$('wireFields').classList.toggle('hidden',s!=='wire');$('pipeFields').classList.toggle('hidden',s!=='pipe');$('resultLabel').textContent=s==='wire'?'Estimated wire length':'Estimated pipe length';calc()}
+function calc(){
+ $('customWrap').classList.toggle('hidden',$('material').value!=='custom');
+ const density=$('material').value==='custom'?n('customDensity'):n('material'),w=n('weight'),unit=$('weightUnit').value,loss=n('loss');
+ const mass=w*(unit==='kg'?1000:unit==='tonne'?1000000:1),usable=mass*(1-loss/100);let area=0,inside=null,errors=[];
+ if(!Number.isFinite(density)||density<=0)errors.push('Density must be greater than zero.');
+ if(!Number.isFinite(w)||w<=0)errors.push('Weight must be greater than zero.');
+ if(!Number.isFinite(loss)||loss<0||loss>=100)errors.push('Loss must be at least 0% and below 100%.');
+ if(shape==='wire'){const d=n('wireDia');if(!Number.isFinite(d)||d<=0)errors.push('Wire diameter must be greater than zero.');area=Math.PI*d*d/4}
+ else{const od=n('outerDia'),wall=n('wall');inside=od-2*wall;if(!Number.isFinite(od)||od<=0)errors.push('Outside diameter must be greater than zero.');if(!Number.isFinite(wall)||wall<=0)errors.push('Wall thickness must be greater than zero.');if(wall*2>=od)errors.push('Wall thickness must be less than half the outside diameter.');area=Math.PI*(od*od-inside*inside)/4}
+ if(errors.length){$('error').textContent=errors.join(' ');['length','usableMass','volume','area','inside'].forEach(id=>$(id).textContent='—');$('formula').textContent='Correct the inputs to calculate the length.';return}
+ $('error').textContent='';const vol=usable/density, len=vol*1000/area/1000;
+ $('length').textContent=len>=1000?fmt(len/1000,4)+' km ('+fmt(len,2)+' m)':fmt(len,3)+' m';
+ $('resultSub').textContent='Estimated length after '+fmt(loss,2)+'% manufacturing loss.';
+ $('usableMass').textContent=fmt(usable/1000,4)+' kg ('+fmt(usable,2)+' g)';$('volume').textContent=fmt(vol,3)+' cm³';$('area').textContent=fmt(area,4)+' mm²';$('inside').textContent=shape==='pipe'?fmt(inside,3)+' mm':'Not applicable';
+ $('formula').textContent=shape==='wire'?'Area = π × '+fmt(n('wireDia'),4)+'² ÷ 4 = '+fmt(area,4)+' mm². Length = ('+fmt(vol,3)+' × 1,000) ÷ '+fmt(area,4)+' ÷ 1,000 = '+fmt(len,3)+' m.':'Area = π × ('+fmt(n('outerDia'),4)+'² − '+fmt(inside,4)+'²) ÷ 4 = '+fmt(area,4)+' mm². Length = ('+fmt(vol,3)+' × 1,000) ÷ '+fmt(area,4)+' ÷ 1,000 = '+fmt(len,3)+' m.';
+ // Cost estimate: raw material is costed on input weight; making charge follows selected basis.
+ const priceKg=n('priceKg'), rate=n('chargeRate'), setup=n('setupCharge'), inputKg=mass/1000;
+ const mode=$('chargeMode').value, materialCost=inputKg*priceKg;
+ let making=mode==='kg'?inputKg*rate:mode==='meter'?len*rate:mode==='percent'?materialCost*rate/100:rate;
+ $('chargeRateLabel').textContent=mode==='kg'?'Making charge (₹/kg)':mode==='meter'?'Making charge (₹/metre)':mode==='percent'?'Making charge (% of material cost)':'Fixed making charge (₹)';
+ const money=v=>'₹'+fmt(v,2);
+ const total=materialCost+making+setup;
+ $('materialCost').textContent=money(materialCost);$('makingCost').textContent=money(making);$('setupCost').textContent=money(setup);$('totalCost').textContent=money(total);$('costPerMeter').textContent=len>0?money(total/len)+'/m':'—';
+ $('costNote').textContent='Material cost uses the full input weight ('+fmt(inputKg,4)+' kg). Making charge basis: '+(mode==='kg'?'input kg':mode==='meter'?'estimated metres':mode==='percent'?'percentage of material cost':'fixed job charge')+'. Scrap resale value, taxes and transport are not included.';
+}
+ids.forEach(id=>$(id).addEventListener('input',calc));$('material').addEventListener('change',calc);$('weightUnit').addEventListener('change',calc);$('chargeMode').addEventListener('change',calc);
+$('wireTab').addEventListener('click',()=>setShape('wire'));$('pipeTab').addEventListener('click',()=>setShape('pipe'));
+$('reset').addEventListener('click',()=>{$('material').value='8.96';$('customDensity').value='8.96';$('weight').value='1';$('weightUnit').value='kg';$('loss').value='2';$('wireDia').value='2';$('outerDia').value='12';$('wall').value='1';$('priceKg').value='900';$('chargeMode').value='kg';$('chargeRate').value='100';$('setupCharge').value='0';setShape('wire')});
+$('copy').addEventListener('click',async()=>{const txt=$('error').textContent||$('resultLabel').textContent+': '+$('length').textContent+'\\nMaterial: '+$('material').selectedOptions[0].text+'\\nWeight: '+$('weight').value+' '+$('weightUnit').value+'\\nLoss: '+$('loss').value+'%\\n'+$('formula').textContent;try{await navigator.clipboard.writeText(txt)}catch(e){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}$('copy').textContent='Copied!';setTimeout(()=>$('copy').textContent='Copy result',1400)});
+
+function updateQuote(){
+ const material=$('material').value==='custom'?'Custom density ('+fmt(n('customDensity'),3)+' g/cm³)':$('material').selectedOptions[0].text;
+ const weight=n('weight')+' '+$('weightUnit').value;
+ const dimensions=shape==='wire'?'Solid wire / rod — diameter '+fmt(n('wireDia'),3)+' mm':'Hollow pipe — OD '+fmt(n('outerDia'),3)+' mm, wall '+fmt(n('wall'),3)+' mm, ID '+fmt(n('outerDia')-2*n('wall'),3)+' mm';
+ const val=id=>$(id).textContent||'—';
+ const money=v=>'₹'+fmt(v,2);
+ const inputKg=n('weight')*($('weightUnit').value==='kg'?1:$('weightUnit').value==='g'?0.001:1000);
+ const density=$('material').value==='custom'?n('customDensity'):n('material');
+ const usableG=inputKg*1000*(1-n('loss')/100);
+ const volumeCm3=usableG/density;
+ const crossArea=shape==='wire'?Math.PI*n('wireDia')*n('wireDia')/4:Math.PI*(n('outerDia')*n('outerDia')-(n('outerDia')-2*n('wall'))*(n('outerDia')-2*n('wall')))/4;
+ const exactLengthM=(volumeCm3*1000/crossArea)/1000;
+ const materialCostExact=inputKg*n('priceKg');
+ const makingExact=$('chargeMode').value==='kg'?inputKg*n('chargeRate'):
+   $('chargeMode').value==='meter'?exactLengthM*n('chargeRate'):
+   $('chargeMode').value==='percent'?materialCostExact*n('chargeRate')/100:n('chargeRate');
+ const subtotal=materialCostExact+makingExact+n('setupCharge');
+ const gstRate=Number($('gstRate').value)||0;
+ const gst=subtotal*gstRate/100;
+ const grand=subtotal+gst;
+ $('qSeller').textContent=$('sellerName').value.trim()||'White Ciger';
+ $('qNumber').textContent=$('quoteNumber').value.trim()||'—';
+ $('qDate').textContent=$('quoteDate').value||new Date().toLocaleDateString();
+ $('qCustomer').textContent=$('customerName').value.trim()||'Customer name';
+ $('qNotes').textContent=$('quoteNotes').value.trim()||'Standard terms: final quantity and delivery schedule to be confirmed; payment terms by mutual agreement.';
+ $('qMaterial').textContent=material;
+ $('qDimensions').textContent=dimensions;
+ $('qWeight').textContent=weight;
+ $('qLength').textContent=val('length');
+ $('qLoss').textContent=$('loss').value+'%';
+ $('qMaterialCost').textContent=val('materialCost');
+ $('qMaking').textContent=val('makingCost');
+ $('qSetup').textContent=val('setupCost');
+ $('qSubtotal').textContent=money(subtotal);
+ $('qGstRate').textContent=fmt(gstRate,2);
+ $('qGST').textContent=money(gst);
+ $('qTotal').textContent=money(grand);
+ $('qPerM').textContent=money(exactLengthM>0?grand/exactLengthM:0)+'/m';
+ $('qValidity').textContent=$('quoteValidity').value||15;
+}
+['sellerName','quoteNumber','customerName','quoteDate','quoteNotes','gstRate','quoteValidity'].forEach(id=>$(id).addEventListener('input',updateQuote));
+$('refreshQuote').addEventListener('click',updateQuote);
+$('printQuote').addEventListener('click',()=>{updateQuote();window.print()});
+const dateInput=$('quoteDate'); if(dateInput&&!dateInput.value){const now=new Date();dateInput.value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+const quoteNum=$('quoteNumber'); if(quoteNum&&!quoteNum.value){quoteNum.value='WC-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6)}
+const oldCalc=calc;
+calc=function(){oldCalc();updateQuote()};
+calc();
+})(); 
+</script></body></html>

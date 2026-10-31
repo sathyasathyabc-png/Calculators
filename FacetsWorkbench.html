@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FACETS Claims Training Workbench</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#182230;--muted:#657386;--line:#dce4ee;--blue:#2457c5;--green:#16804a;--red:#bd3434;--amber:#a96508}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Segoe UI,Arial,sans-serif}
+header{background:#172b4d;color:#fff;padding:22px max(18px,calc((100% - 1120px)/2))}
+header h1{margin:0;font-size:25px}header p{margin:5px 0 0;color:#d9e5f8}
+main{max-width:1120px;margin:22px auto;padding:0 16px 40px}.notice{background:#fff8e8;border:1px solid #f0d49a;padding:12px 14px;border-radius:10px;margin-bottom:16px;color:#68450b}
+.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}.toolbar button,button{border:0;border-radius:8px;padding:10px 14px;background:var(--blue);color:white;font-weight:600;cursor:pointer}.toolbar button.secondary{background:#e7edf7;color:#23344d}.toolbar button.green{background:var(--green)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:17px;box-shadow:0 3px 12px #1b35500b}.card h2{font-size:18px;margin:0 0 13px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:4px}.field.full{grid-column:1/-1}label{font-size:12px;color:var(--muted);font-weight:700}input,select{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:7px;font:inherit;background:#fff;color:var(--ink)}.lines{width:100%;border-collapse:collapse;font-size:14px}.lines th,.lines td{border-bottom:1px solid var(--line);padding:8px 5px;text-align:left}.lines input{min-width:80px;padding:7px}.lines button{padding:6px 9px;background:#fce8e8;color:#9b2424}.line-actions{margin-top:10px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:#f5f8fc;border:1px solid var(--line);border-radius:9px;padding:11px}.metric small{display:block;color:var(--muted)}.metric strong{font-size:20px}.result{margin-top:14px;padding:13px;border-radius:9px;background:#eef7f1;border:1px solid #cce8d5}.result.fail{background:#fff0f0;border-color:#f0caca}.result.warn{background:#fff8e8;border-color:#f0d49a}.pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;background:#e8eef8;color:#28456e}.pass{background:#e2f5e9;color:#12663b}.failpill{background:#fde6e6;color:#a12626}.log{padding-left:20px;margin:8px 0}.muted{color:var(--muted);font-size:13px}.footer{color:var(--muted);font-size:12px;margin-top:18px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.fields{grid-template-columns:1fr 1fr}.summary{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><h1>FACETS Claims Training Workbench</h1><p>Edit claim data in the form, download your own JSON scenario, import it again and run checks</p></header>
+<main>
+
+<div class="card" style="margin:18px auto 14px;max-width:1120px">
+<h2>Build your own scenario — no separate mock-data files needed</h2>
+<p class="muted">Edit the member, provider, dates, benefits, authorization and service-line values in the form. Then download that exact form data as JSON. Later, import the JSON into this same page; it will populate the form and automatically run the checks.</p>
+<div class="toolbar" style="margin-bottom:0">
+<button class="green" onclick="downloadJSON()">1. Download my edited scenario JSON</button>
+<button class="secondary" onclick="document.getElementById('jsonFile').click()">2. Import my saved scenario JSON</button>
+<button onclick="runClaim()">3. Run checks</button>
+</div>
+</div>
+<div class="notice"><b>Training simulator only:</b> This is a generic educational example, not the actual FACETS application. Real payer rules, edit IDs, claim statuses and payment calculations vary by configuration.</div>
+<div class="toolbar">
+<button onclick="runClaim()">Run claim simulation</button>
+<button class="secondary" onclick="loadScenario('clean')">Clean paid example</button>
+<button class="secondary" onclick="loadScenario('inactive')">Inactive member</button>
+<button class="secondary" onclick="loadScenario('duplicate')">Duplicate claim</button>
+<button class="secondary" onclick="loadScenario('auth')">Missing authorization</button>
+<button class="secondary" onclick="loadScenario('noncovered')">Non-covered service</button>
+<button class="green" onclick="downloadJSON()">Download JSON</button>
+<button class="secondary" onclick="document.getElementById('jsonFile').click()">Import JSON</button>
+<input id="jsonFile" type="file" accept=".json,application/json" hidden onchange="importJSON(event)">
+<button class="secondary" onclick="saveLocal()">Save in this browser</button>
+<button class="secondary" onclick="restoreLocal()">Restore saved</button>
+</div>
+<div class="layout">
+<section class="card">
+<h2>1. Claim and member details</h2>
+<div class="fields">
+<div class="field"><label>Claim ID</label><input id="claimId" value="CLM3001"></div>
+<div class="field"><label>Member ID</label><input id="memberId" value="MEM5001"></div>
+<div class="field"><label>Member name</label><input id="memberName" value="David"></div>
+<div class="field"><label>Member status</label><select id="memberStatus"><option>Active</option><option>Inactive</option></select></div>
+<div class="field"><label>Coverage start</label><input id="coverageStart" type="date" value="2026-01-01"></div>
+<div class="field"><label>Coverage end</label><input id="coverageEnd" type="date" value="2026-12-31"></div>
+<div class="field"><label>Date of service</label><input id="serviceDate" type="date" value="2026-10-20"></div>
+<div class="field"><label>Claim received date</label><input id="receivedDate" type="date" value="2026-10-25"></div>
+<div class="field"><label>Provider ID</label><input id="providerId" value="PRV5001"></div>
+<div class="field"><label>Provider status</label><select id="providerStatus"><option>Active</option><option>Terminated</option></select></div>
+<div class="field"><label>Network status</label><select id="networkStatus"><option>In-network</option><option>Out-of-network</option></select></div>
+<div class="field"><label>Benefit coverage</label><select id="benefit"><option>Covered</option><option>Not covered</option></select></div>
+<div class="field"><label>Authorization required?</label><select id="authRequired"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+<div class="field"><label>Authorization status</label><select id="authStatus"><option>Approved</option><option>Missing</option><option>Pending</option><option>Denied</option></select></div>
+<div class="field"><label>Duplicate claim?</label><select id="duplicate"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+<div class="field"><label>Timely filing limit (days)</label><input id="filingLimit" type="number" min="1" value="90"></div>
+</div>
+</section>
+<section class="card">
+<h2>2. Service lines</h2>
+<table class="lines"><thead><tr><th>Service / procedure</th><th>Billed ($)</th><th>Allowed ($)</th><th>Copay ($)</th><th></th></tr></thead><tbody id="lineBody"></tbody></table>
+<div class="line-actions"><button class="secondary" onclick="addLine()">+ Add service line</button></div>
+<p class="muted">Each service line can be assessed separately. This simple simulator uses the amounts entered here.</p>
+<h2 style="margin-top:20px">3. Training rule settings</h2>
+<div class="fields">
+<div class="field"><label>Duplicate detection</label><select id="ruleDuplicate"><option value="Yes">Enabled</option><option value="No">Disabled</option></select></div>
+<div class="field"><label>Timely filing rule</label><select id="ruleTimely"><option value="Yes">Enabled</option><option value="No">Disabled</option></select></div>
+<div class="field"><label>Provider validation</label><select id="ruleProvider"><option value="Yes">Enabled</option><option value="No">Disabled</option></select></div>
+<div class="field"><label>Eligibility validation</label><select id="ruleEligibility"><option value="Yes">Enabled</option><option value="No">Disabled</option></select></div>
+</div>
+</section>
+</div>
+<section class="card" style="margin-top:16px">
+<h2>4. Simulation result</h2>
+<div id="result" class="muted">Select a scenario or click <b>Run claim simulation</b> to see the checks and result.</div>
+</section>
+<p class="footer">Educational use only. Dates, pricing, benefit and authorization rules are simplified. Do not use this tool for real claims or payment decisions.</p>
+</main>
+<script>
+const ids=['claimId','memberId','memberName','memberStatus','coverageStart','coverageEnd','serviceDate','receivedDate','providerId','providerStatus','networkStatus','benefit','authRequired','authStatus','duplicate','filingLimit','ruleDuplicate','ruleTimely','ruleProvider','ruleEligibility'];
+function val(id){return document.getElementById(id).value}
+function set(id,v){document.getElementById(id).value=v}
+function addLine(name='Doctor consultation',billed=1200,allowed=900,copay=50){
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<td><input aria-label="Service" value="${name.replaceAll('"','&quot;')}"></td><td><input aria-label="Billed" type="number" min="0" step=".01" value="${billed}"></td><td><input aria-label="Allowed" type="number" min="0" step=".01" value="${allowed}"></td><td><input aria-label="Copay" type="number" min="0" step=".01" value="${copay}"></td><td><button onclick="this.closest('tr').remove()">Remove</button></td>`;
+ document.getElementById('lineBody').appendChild(tr);
+}
+function getLines(){return [...document.querySelectorAll('#lineBody tr')].map(tr=>{let x=tr.querySelectorAll('input');return {service:x[0].value,billed:+x[1].value||0,allowed:+x[2].value||0,copay:+x[3].value||0}})}
+function getData(){let d={};ids.forEach(id=>d[id]=val(id));d.lines=getLines();return d}
+function setData(d){ids.forEach(id=>{if(d[id]!==undefined)set(id,d[id])});document.getElementById('lineBody').innerHTML='';(d.lines||[]).forEach(x=>addLine(x.service,x.billed,x.allowed,x.copay));}
+function runClaim(){
+ const d=getData(),checks=[],issues=[];
+ const date=new Date(d.serviceDate+'T00:00:00'),start=new Date(d.coverageStart+'T00:00:00'),end=new Date(d.coverageEnd+'T00:00:00');
+ let eligible=d.ruleEligibility==='No'||(d.memberStatus==='Active'&&date>=start&&date<=end);
+ checks.push(['Member eligibility',eligible,eligible?'Coverage is active on the service date.':'Coverage/status does not support eligibility on the service date.']);
+ let provider=d.ruleProvider==='No'||d.providerStatus==='Active';
+ checks.push(['Provider validation',provider,provider?'Provider record is active.':'Provider record is terminated or inactive.']);
+ let benefit=d.benefit==='Covered';checks.push(['Benefits',benefit,benefit?'Service is marked covered.':'Service is marked not covered.']);
+ let auth=d.authRequired==='No'||d.authStatus==='Approved';checks.push(['Authorization',auth,auth?(d.authRequired==='No'?'Authorization is not required.':'Required authorization is approved.'):'Required authorization is not approved or is missing.']);
+ let duplicate=d.ruleDuplicate==='No'||d.duplicate==='No';checks.push(['Duplicate check',duplicate,duplicate?'No duplicate indicator found.':'Possible duplicate submission identified.']);
+ let days=(new Date(d.receivedDate+'T00:00:00')-date)/86400000, timely=d.ruleTimely==='No'||(days>=0&&days<=Number(d.filingLimit));checks.push(['Timely filing',timely,timely?'Claim received within the configured training limit.':'Claim is outside the configured filing window.']);
+ checks.forEach(c=>{if(!c[1])issues.push(c[0])});
+ const lines=d.lines;let billed=lines.reduce((s,l)=>s+l.billed,0),allowed=lines.reduce((s,l)=>s+l.allowed,0),copay=lines.reduce((s,l)=>s+Math.min(l.copay,l.allowed),0);
+ let status=issues.length?'PENDED / REVIEW':'PAID (TRAINING EXAMPLE)',payment=Math.max(0,allowed-copay);
+ if(!benefit&&!issues.length){status='DENIED / NON-COVERED (TRAINING EXAMPLE)';payment=0}
+ let html=`<div class="summary"><div class="metric"><small>Total billed</small><strong>$${billed.toFixed(2)}</strong></div><div class="metric"><small>Total allowed</small><strong>$${allowed.toFixed(2)}</strong></div><div class="metric"><small>Estimated plan payment</small><strong>$${payment.toFixed(2)}</strong></div></div><div class="result ${issues.length?'warn':''}"><b>Overall training outcome: ${status}</b><ul class="log">${checks.map(c=>`<li><b>${c[0]}:</b> <span class="pill ${c[1]?'pass':'failpill'}">${c[1]?'PASS':'ISSUE'}</span> — ${c[2]}</li>`).join('')}</ul>${issues.length?'<p><b>Items needing review:</b> '+issues.join(', ')+'. The simulator does not determine a real payer denial automatically.</p>':''}<p><b>Estimated patient copay:</b> $${copay.toFixed(2)} &nbsp; <b>Estimated plan payment:</b> $${payment.toFixed(2)}</p></div><p class="muted">This is a simplified training calculation. It does not model deductibles, coinsurance, coordination of benefits, line-level edits, contract pricing logic or actual FACETS configuration.</p>`;
+ document.getElementById('result').innerHTML=html;
+}
+function loadScenario(s){
+ const base={claimId:'CLM3001',memberId:'MEM5001',memberName:'David',memberStatus:'Active',coverageStart:'2026-01-01',coverageEnd:'2026-12-31',serviceDate:'2026-10-20',receivedDate:'2026-10-25',providerId:'PRV5001',providerStatus:'Active',networkStatus:'In-network',benefit:'Covered',authRequired:'No',authStatus:'Approved',duplicate:'No',filingLimit:90,ruleDuplicate:'Yes',ruleTimely:'Yes',ruleProvider:'Yes',ruleEligibility:'Yes',lines:[{service:'Doctor consultation',billed:1200,allowed:900,copay:50}]};
+ if(s==='inactive'){base.claimId='CLM3002';base.coverageEnd='2026-09-30'}
+ if(s==='duplicate'){base.claimId='CLM3003';base.duplicate='Yes'}
+ if(s==='auth'){base.claimId='CLM3004';base.authRequired='Yes';base.authStatus='Missing';base.lines=[{service:'Knee surgery',billed:5000,allowed:4000,copay:100}]}
+ if(s==='noncovered'){base.claimId='CLM3005';base.benefit='Not covered';base.lines=[{service:'Cosmetic procedure',billed:3000,allowed:0,copay:0}]}
+ setData(base);runClaim();
+}
+function downloadJSON(){const data=getData();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=(val('claimId')||'my-claim')+'_scenario.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||typeof data!=='object'||!Array.isArray(data.lines))throw new Error('This file is not a scenario JSON exported by this workbench.');setData(data);runClaim();alert('Scenario imported into the form and checks have been run.')}catch(err){alert('Could not import this scenario JSON.\n'+err.message)}};r.readAsText(f);e.target.value=''}
+function saveLocal(){localStorage.setItem('facetsTrainingWorkbench',JSON.stringify(getData()));alert('Training data saved in this browser.')}
+function restoreLocal(){const s=localStorage.getItem('facetsTrainingWorkbench');if(!s){alert('No saved training data found in this browser.');return}try{setData(JSON.parse(s));runClaim()}catch(e){alert('Saved data could not be read.')}}
+addLine();
+</script>
+</body>
+</html>

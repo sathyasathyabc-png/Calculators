@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1524">
+<meta name="description" content="Academic research portfolio of Ananda Ayyappan Jaguva Vasudevan, Ph.D.">
+<title>Ananda A. Jaguva Vasudevan, Ph.D. | Research Portfolio</title>
+<style>
+:root{--navy:#0b1524;--navy2:#13243a;--ink:#172235;--muted:#65748a;--paper:#f5f7fb;--white:#fff;--line:#e3e9f1;--teal:#21b6a8;--cyan:#79d8df;--gold:#e8b968;--shadow:0 18px 55px rgba(14,30,52,.10);--radius:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}button{font:inherit}.wrap{width:min(1160px,calc(100% - 44px));margin:auto}
+header{position:sticky;top:0;z-index:20;background:rgba(11,21,36,.94);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#fff}.brand{font-weight:800;letter-spacing:.02em;font-size:15px}.brand span{color:var(--teal)}nav{display:flex;gap:23px;align-items:center}nav a{font-size:12px;color:#c4d0df;font-weight:650;letter-spacing:.06em;text-transform:uppercase}nav a:hover{color:var(--cyan)}.menu{display:none;background:none;border:1px solid #40516a;color:white;border-radius:10px;padding:8px 11px}
+.hero{background:radial-gradient(ellipse at 80% 15%,rgba(33,182,168,.22),transparent 32%),radial-gradient(ellipse at 10% 90%,rgba(121,216,223,.13),transparent 35%),linear-gradient(125deg,#0b1524,#132b43 65%,#102a3a);color:white;padding:92px 0 86px;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:420px;height:420px;border:1px solid rgba(121,216,223,.15);border-radius:50%;right:-140px;bottom:-230px;box-shadow:0 0 0 45px rgba(121,216,223,.025),0 0 0 95px rgba(121,216,223,.02)}
+.hero-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:60px;align-items:center;position:relative;z-index:1}.eyebrow{color:var(--cyan);font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:800}.hero h1{font-size:clamp(38px,5.5vw,66px);line-height:1.06;letter-spacing:-.045em;margin:18px 0 20px;max-width:780px}.hero h1 span{color:var(--cyan)}.hero p{font-size:18px;color:#c5d2df;max-width:690px;margin:0 0 28px}.actions{display:flex;gap:12px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:999px;font-weight:750;font-size:13px;transition:.2s}.btn-primary{background:var(--teal);color:#062a2a}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 25px #21b6a844}.btn-outline{border:1px solid #60758d;color:#fff}.btn-outline:hover{border-color:var(--cyan);color:var(--cyan)}.hero-card{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border-radius:24px;padding:26px}.hero-card .small{color:#a9bdcf;font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}.hero-card strong{display:block;font-size:21px;line-height:1.25;margin:9px 0 7px}.hero-card p{font-size:13px;margin:0;color:#c5d2df}.hero-card hr{border:0;border-top:1px solid #ffffff20;margin:20px 0}.hero-card a{color:var(--cyan);font-size:13px;overflow-wrap:anywhere}
+.metrics{margin-top:-30px;position:relative;z-index:2}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.metric{background:white;border:1px solid var(--line);border-radius:17px;padding:20px 22px;box-shadow:var(--shadow)}.metric b{font-size:28px;letter-spacing:-.04em;color:#0e263c;display:block}.metric span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:750}
+section{padding:82px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:30px}.kicker{font-size:11px;color:#148f88;text-transform:uppercase;letter-spacing:.18em;font-weight:850}.section-head h2{font-size:clamp(28px,3.5vw,40px);line-height:1.12;letter-spacing:-.04em;margin:8px 0 0}.section-head p{max-width:490px;color:var(--muted);margin:0;font-size:14px}
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:26px}.panel{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:30px;box-shadow:0 8px 28px rgba(14,30,52,.04)}.panel p{color:#56657a;margin:0 0 14px}.panel p:last-child{margin-bottom:0}.focus-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.focus{padding:14px;border-radius:14px;background:#f2f8f8;border:1px solid #dcefed;font-size:13px;font-weight:700;color:#174b50}.focus i{display:block;width:7px;height:7px;background:var(--teal);border-radius:50%;margin-bottom:10px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.research-card{background:white;border:1px solid var(--line);border-radius:19px;padding:24px;min-height:220px;transition:.2s}.research-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}.icon{width:42px;height:42px;border-radius:13px;background:#e6f7f5;color:#087f79;display:grid;place-items:center;font-size:20px;margin-bottom:17px}.research-card h3{margin:0 0 9px;font-size:17px}.research-card p{margin:0;color:var(--muted);font-size:13px}
+.timeline{position:relative;margin-left:8px;padding-left:28px;border-left:2px solid #d9e8e8}.timeline-item{position:relative;padding:0 0 30px 14px}.timeline-item:last-child{padding-bottom:0}.timeline-item:before{content:"";position:absolute;left:-37px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--teal);border:4px solid #e1f4f2;box-shadow:0 0 0 1px #9edbd5}.date{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#118a83;font-weight:850}.timeline h3{font-size:18px;margin:5px 0 2px}.org{color:#64748a;font-size:13px;font-weight:650}.timeline ul{margin:10px 0 0;padding-left:18px;color:#56657a;font-size:13px}.timeline li{margin:4px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}.info-card{background:white;border:1px solid var(--line);border-radius:18px;padding:24px}.info-card h3{margin:0 0 16px;font-size:17px}.info-row{padding:12px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:100px 1fr;gap:15px}.info-row:first-of-type{border-top:0}.info-row b{font-size:12px;color:#118a83}.info-row span{font-size:13px;color:#536278}
+.pub-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}.search{flex:1;min-width:210px;border:1px solid var(--line);border-radius:999px;background:white;padding:12px 17px;outline:none}.search:focus{border-color:var(--teal);box-shadow:0 0 0 3px #21b6a81c}.filter{border:1px solid var(--line);background:white;border-radius:999px;padding:11px 15px;color:#526176;font-size:12px;font-weight:750;cursor:pointer}.filter.active{background:#0f2c3e;color:white;border-color:#0f2c3e}.pub-list{display:grid;gap:10px}.pub{background:white;border:1px solid var(--line);border-radius:14px;padding:17px 19px;display:grid;grid-template-columns:42px 1fr;gap:15px}.pub-num{font-size:12px;color:#168f88;font-weight:850;padding-top:2px}.pub h3{font-size:14px;line-height:1.45;margin:0 0 5px}.pub p{font-size:12px;color:#6b788b;margin:0}.pub .journal{color:#168f88;font-weight:700}.pub.hidden{display:none}.pub-count{font-size:12px;color:var(--muted);margin:0 0 12px}
+.footer{background:#0b1524;color:#c6d2df;padding:44px 0}.footer-grid{display:flex;justify-content:space-between;gap:25px;align-items:center}.footer h2{color:white;font-size:22px;margin:0 0 5px}.footer p{font-size:12px;margin:0;color:#9eafc2}.footer a{color:var(--cyan);font-size:13px}.top{position:fixed;right:22px;bottom:22px;background:#0f3443;color:white;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s}.top.show{opacity:1;pointer-events:auto}
+@media(max-width:850px){nav{display:none;position:absolute;top:72px;left:0;right:0;background:#0b1524;padding:18px 24px 24px;flex-direction:column;align-items:flex-start}nav.open{display:flex}.menu{display:block}.hero-grid,.about-grid{grid-template-columns:1fr}.hero-card{max-width:500px}.cards{grid-template-columns:repeat(2,1fr)}.section-head{display:block}.section-head p{margin-top:12px}.metric-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.wrap{width:min(100% - 30px,1160px)}.hero{padding:68px 0 70px}.hero-grid{gap:35px}.hero h1{font-size:42px}.hero p{font-size:16px}.cards,.two-col{grid-template-columns:1fr}.metric{padding:16px}.metric b{font-size:24px}section{padding:62px 0}.panel{padding:22px}.focus-list{grid-template-columns:1fr}.info-row{grid-template-columns:85px 1fr}.footer-grid{display:block}.footer-grid>div+div{margin-top:18px}}
+@media print{header,.actions,.pub-tools,.top{display:none!important}body{background:white}.hero{padding:35px 0;background:#0b1524!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.metrics{margin-top:10px}section{padding:35px 0}.panel,.metric,.research-card,.info-card,.pub{break-inside:avoid;box-shadow:none}.pub.hidden{display:grid!important}}
+
+/* Subtle molecular background accents */
+.molecule-bg{position:relative;isolation:isolate;overflow:hidden}
+.molecule-bg>*{position:relative;z-index:1}
+.molecule-bg:before,.molecule-bg:after{content:"";position:absolute;z-index:0;pointer-events:none;opacity:.16}
+.molecule-bg:before{
+  width:190px;height:520px;right:4%;top:8%;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 23px,rgba(121,216,223,.7) 24px 25px,transparent 26px 48px),
+    repeating-linear-gradient(90deg,transparent 0 30px,rgba(121,216,223,.55) 31px 32px,transparent 33px 62px);
+  clip-path:polygon(50% 0,100% 8%,100% 92%,50% 100%,0 92%,0 8%);
+  mask-image:repeating-linear-gradient(0deg,#000 0 2px,transparent 2px 24px);
+  transform:rotate(14deg);opacity:.10
+}
+.molecule-bg:after{
+  width:150px;height:420px;left:3%;bottom:-22%;
+  background:
+    radial-gradient(circle,rgba(33,182,168,.95) 0 3px,transparent 4px) 0 0/30px 30px,
+    repeating-linear-gradient(135deg,transparent 0 14px,rgba(121,216,223,.65) 15px 16px,transparent 17px 30px);
+  opacity:.10;transform:rotate(-18deg)
+}
+.hero{isolation:isolate}
+.hero:before{content:"";position:absolute;z-index:0;pointer-events:none;right:8%;top:3%;width:240px;height:540px;opacity:.20;
+  background:
+   radial-gradient(ellipse at 50% 8%,#79d8df 0 3px,transparent 4px),
+   repeating-linear-gradient(0deg,transparent 0 24px,rgba(121,216,223,.75) 25px 26px,transparent 27px 48px);
+  mask-image:repeating-linear-gradient(0deg,#000 0 2px,transparent 2px 24px);
+  transform:rotate(24deg)
+}
+.hero:after{z-index:0}
+#research,#career{position:relative;isolation:isolate;overflow:hidden}
+#research:before,#career:after{content:"";position:absolute;z-index:0;pointer-events:none;width:210px;height:480px;right:-38px;top:12%;opacity:.11;
+  background:repeating-linear-gradient(0deg,transparent 0 18px,rgba(19,145,139,.7) 19px 20px,transparent 21px 38px);
+  mask-image:repeating-linear-gradient(0deg,#000 0 2px,transparent 2px 19px);transform:rotate(-25deg)
+}
+#career:after{right:auto;left:-50px;top:20%;transform:rotate(25deg);opacity:.08}
+#publications{position:relative;isolation:isolate;overflow:hidden}
+#publications:after{content:"";position:absolute;z-index:0;pointer-events:none;right:-65px;top:18%;width:210px;height:440px;opacity:.08;
+  background:repeating-linear-gradient(135deg,transparent 0 15px,rgba(33,182,168,.8) 16px 17px,transparent 18px 32px);
+  mask-image:radial-gradient(ellipse,#000 20%,transparent 72%)
+}
+@media(max-width:700px){.hero:before{right:-65px;opacity:.10}.molecule-bg:before,.molecule-bg:after{opacity:.06}}
+
+
+/* Realistic DNA double helix + RNA strand background artwork */
+.bio-art{position:absolute;z-index:0;pointer-events:none;overflow:visible;filter:drop-shadow(0 0 12px rgba(66,211,211,.18))}
+.bio-art.dna{width:clamp(150px,22vw,285px);height:auto;opacity:.30;animation:helix-drift 18s ease-in-out infinite}
+.bio-art.rna{width:clamp(115px,17vw,215px);height:auto;opacity:.22;animation:rna-drift 21s ease-in-out infinite}
+.bio-art .strand-a{fill:none;stroke:#75e1df;stroke-width:5;stroke-linecap:round}
+.bio-art .strand-b{fill:none;stroke:#51a9d4;stroke-width:5;stroke-linecap:round}
+.bio-art .rung{stroke:#b3f3ed;stroke-width:2.3;stroke-linecap:round;opacity:.78}
+.bio-art .base{fill:#a7e8e8;opacity:.9}
+.bio-art .rna-main{fill:none;stroke:#70d8c9;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.bio-art .rna-branch{stroke:#9ce9df;stroke-width:2.2;stroke-linecap:round;opacity:.9}
+.bio-art .rna-node{fill:#d0fff4;stroke:#4cbeb5;stroke-width:1.5}
+@keyframes helix-drift{0%,100%{transform:translate3d(0,0,0) rotate(5deg)}50%{transform:translate3d(-9px,13px,0) rotate(-2deg)}}
+@keyframes rna-drift{0%,100%{transform:translate3d(0,0,0) rotate(-7deg)}50%{transform:translate3d(8px,-10px,0) rotate(1deg)}}
+.hero .bio-art.dna{right:5%;top:2%;height:94%;width:auto;max-width:30%;opacity:.26}
+#research .bio-art.dna{right:-15px;top:8%;height:78%;width:auto;max-width:28%;opacity:.16}
+#research .bio-art.rna{left:-28px;bottom:2%;height:55%;width:auto;max-width:22%;opacity:.13}
+#experience .bio-art.dna{left:-35px;top:8%;height:72%;width:auto;max-width:22%;opacity:.12}
+#publications .bio-art.rna{right:0;top:6%;height:70%;width:auto;max-width:24%;opacity:.12}
+#career .bio-art.dna{right:-20px;bottom:2%;height:70%;width:auto;max-width:22%;opacity:.11}
+@media(max-width:700px){.hero .bio-art.dna{right:-18px;opacity:.13;max-width:38%}#research .bio-art.dna,#experience .bio-art.dna,#career .bio-art.dna{opacity:.07}#research .bio-art.rna,#publications .bio-art.rna{opacity:.07}}
+@media(prefers-reduced-motion:reduce){.bio-art{animation:none!important}}
+
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap nav">
+  <a class="brand" href="#home">ANANDA <span>JAGUVA VASUDEVAN</span></a>
+  <button class="menu" id="menuBtn" aria-label="Toggle navigation">☰</button>
+  <nav id="navLinks"><a href="#about">Profile</a><a href="#research">Research</a><a href="#experience">Experience</a><a href="#career">Career</a><a href="#publications">Publications</a><a href="#contact">Contact</a></nav>
+ </div>
+</header>
+<main id="home">
+<section class="hero">
+ <svg class="bio-art dna" viewBox="0 0 220 620" aria-hidden="true">
+ <defs><linearGradient id="dnaA" x1="0" x2="1"><stop stop-color="#9af3e8"/><stop offset="1" stop-color="#35a9c9"/></linearGradient><linearGradient id="dnaB" x1="0" x2="1"><stop stop-color="#45b8cf"/><stop offset="1" stop-color="#a2f1df"/></linearGradient></defs>
+ <path class="strand-a" stroke="url(#dnaA)" d="M45 8 C190 58 190 112 45 162 C-25 186 -25 236 45 260 C190 310 190 364 45 414 C-25 438 -25 488 45 512 C190 562 190 590 45 612"/>
+ <path class="strand-b" stroke="url(#dnaB)" d="M175 8 C30 58 30 112 175 162 C245 186 245 236 175 260 C30 310 30 364 175 414 C245 438 245 488 175 512 C30 562 30 590 175 612"/>
+ <g class="rung">
+  <path d="M65 24L155 24 M105 54L115 54 M155 84L65 84 M115 114L105 114 M65 144L155 144 M55 190L165 190 M82 222L138 222 M155 252L65 252 M115 282L105 282 M65 312L155 312 M55 342L165 342 M82 374L138 374 M155 404L65 404 M115 434L105 434 M65 464L155 464 M55 494L165 494 M82 526L138 526 M155 556L65 556 M115 586L105 586"/>
+ </g>
+ <g class="base"><circle cx="65" cy="24" r="3"/><circle cx="155" cy="24" r="3"/><circle cx="155" cy="144" r="3"/><circle cx="65" cy="144" r="3"/><circle cx="55" cy="342" r="3"/><circle cx="165" cy="342" r="3"/><circle cx="65" cy="464" r="3"/><circle cx="155" cy="464" r="3"/><circle cx="155" cy="556" r="3"/><circle cx="65" cy="556" r="3"/></g>
+</svg>
+ <svg class="bio-art rna" viewBox="0 0 190 500" aria-hidden="true">
+ <path class="rna-main" d="M92 8 C18 52 170 92 92 138 S18 226 94 270 S168 356 90 402 S22 456 92 492"/>
+ <g class="rna-branch">
+  <path d="M73 42L28 24 M112 83L160 63 M72 132L25 151 M113 177L162 195 M72 225L25 207 M112 270L160 248 M73 318L25 337 M111 365L162 385 M72 414L25 396 M108 458L155 478"/>
+  <path d="M28 24l-9 -7 M28 24l-10 5 M160 63l9 -8 M160 63l10 5 M25 151l-9 -8 M25 151l-10 5 M162 195l9 -8 M162 195l10 5 M25 207l-9 -8 M25 207l-10 5 M160 248l9 -8 M160 248l10 5 M25 337l-9 -8 M25 337l-10 5 M162 385l9 -8 M162 385l10 5 M25 396l-9 -8 M25 396l-10 5 M155 478l9 -8 M155 478l10 5"/>
+ </g>
+ <g class="rna-node"><circle cx="92" cy="8" r="5"/><circle cx="92" cy="138" r="5"/><circle cx="94" cy="270" r="5"/><circle cx="90" cy="402" r="5"/><circle cx="92" cy="492" r="5"/></g>
+</svg>
+ <div class="wrap hero-grid">
+  <div>
+   <div class="eyebrow">Research portfolio · Molecular & structural biology</div>
+   <h1>Ananda Ayyappan<br><span>Jaguva Vasudevan</span>, Ph.D.</h1>
+   <p>Scientist investigating genome integrity, DNA repair, antiviral restriction factors and the molecular mechanisms that shape cellular responses.</p>
+   <div class="actions">
+    <a class="btn btn-primary" href="mailto:ayyappan86@gmail.com">Get in touch ↗</a>
+    <a class="btn btn-outline" href="#publications">Explore publications ↓</a>
+    <button class="btn btn-outline" onclick="window.print()">Print portfolio / Save PDF</button>
+   </div>
+  </div>
+  <aside class="hero-card">
+   <div class="small">Current appointment</div>
+   <strong>Postdoctoral Visiting Fellow</strong>
+   <p>Structural Cell Biology Group<br>Department of Genome Integrity and Structural Biology<br>National Institute of Environmental Health Sciences (NIEHS/NIH), USA</p>
+   <hr>
+   <div class="small">Research advisor</div>
+   <strong>Dr. R. Scott Williams</strong>
+   <p>Senior Investigator</p>
+   <hr>
+   <div class="small">Contact</div>
+   <a href="mailto:ayyappan86@gmail.com">ayyappan86@gmail.com</a><br>
+   <a href="tel:+19199374818">+1 919-937-4818</a><br>
+   <a href="https://www.niehs.nih.gov/research/atniehs/labs/gisbl/pi/genome/staff" target="_blank" rel="noopener">NIEHS staff profile ↗</a>
+  </aside>
+ </div>
+</section>
+<div class="wrap metrics">
+ <div class="metric-grid">
+  <div class="metric"><b>26</b><span>Peer-reviewed publications listed</span></div>
+  <div class="metric"><b>2017</b><span>Ph.D. · Summa cum laude</span></div>
+  <div class="metric"><b>2020—</b><span>NIEHS / NIH research</span></div>
+  <div class="metric"><b>4 + 1</b><span>Master's & visiting Ph.D. mentees</span></div>
+ </div>
+</div>
+<section id="about" class="molecule-bg">
+ <div class="wrap">
+  <div class="section-head"><div><div class="kicker">01 · Profile</div><h2>Research driven by mechanism.</h2></div><p>Combining structural, biochemical and functional approaches to understand how proteins protect genome integrity and influence host–virus interactions.</p></div>
+  <div class="about-grid">
+   <div class="panel">
+    <p>Ananda Ayyappan Jaguva Vasudevan is a molecular biologist with research experience spanning DNA repair, transcription-associated processes, antiviral restriction factors, viral epitranscriptomics and cancer epigenetics.</p>
+    <p>His work integrates protein structure determination with biochemical and cellular assays to investigate molecular mechanisms. At NIEHS/NIH, his current research focuses on the DNA repair and transcription factor ZATT/ZNF451, including its roles in TOP2 DNA–protein crosslink repair and RNA/DNA hybrid cleavage.</p>
+    <p>He earned a Ph.D. in Biology (Dr. rer. nat.) from Heinrich Heine University, Düsseldorf, Germany, with the distinction <em>Summa cum laude</em>.</p>
+   </div>
+   <div class="panel">
+    <div class="kicker">Core research themes</div>
+    <div class="focus-list">
+     <div class="focus"><i></i>Genome integrity & DNA repair</div>
+     <div class="focus"><i></i>Structural cell biology</div>
+     <div class="focus"><i></i>APOBEC3 & antiviral restriction</div>
+     <div class="focus"><i></i>Protein biochemistry</div>
+     <div class="focus"><i></i>RNA/DNA hybrid biology</div>
+     <div class="focus"><i></i>Viral epitranscriptomics</div>
+     <div class="focus"><i></i>Cancer epigenetics</div>
+     <div class="focus"><i></i>Molecular virology</div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+<section id="research" style="background:#edf3f6">
+ <div class="wrap">
+  <div class="section-head"><div><div class="kicker">02 · Research areas</div><h2>Questions at the molecular level.</h2></div><p>Selected areas represented in the research experience and publications documented in the CV.</p></div>
+  <div class="cards">
+   <article class="research-card"><div class="icon">⌬</div><h3>ZATT / ZNF451 biology</h3><p>Structural and functional investigation of a DNA repair and transcription factor, including TOP2 DNA–protein crosslink repair and RNA/DNA hybrid cleavage.</p></article>
+   <article class="research-card"><div class="icon">⌁</div><h3>APOBEC3 restriction factors</h3><p>Mechanistic studies of APOBEC3 family members, substrate specificity, antiviral restriction and viral counteraction mechanisms.</p></article>
+   <article class="research-card"><div class="icon">◈</div><h3>Protein structure & biochemistry</h3><p>Integrative approaches including crystallography, electrophoretic mobility shift assays (EMSA) and enzymatic assays.</p></article>
+   <article class="research-card"><div class="icon">◎</div><h3>Host–virus interactions</h3><p>Research on HIV and other viruses, viral epitranscriptomic modification, replication and host restriction factors.</p></article>
+   <article class="research-card"><div class="icon">▦</div><h3>Cancer epigenetics</h3><p>Studies of histone deacetylases in urothelial carcinoma, gene expression profiles and cellular responses to HDAC inhibition.</p></article>
+   <article class="research-card"><div class="icon">⌘</div><h3>Integrated molecular analysis</h3><p>Application of transcriptomic, proteomic and functional assays to investigate molecular regulation and cellular phenotypes.</p></article>
+  </div>
+ </div>
+</section>
+<section id="experience" class="molecule-bg">
+ <div class="wrap">
+  <div class="section-head"><div><div class="kicker">03 · Research experience</div><h2>Academic & research appointments.</h2></div><p>A research career across the United States and Germany, with foundational biotechnology experience in India.</p></div>
+  <div class="panel">
+   <div class="timeline">
+    <article class="timeline-item"><div class="date">June 2020 – Present</div><h3>Postdoctoral Visiting Fellow</h3><div class="org">Structural Cell Biology Group · Department of Genome Integrity and Structural Biology · NIEHS/NIH, Research Triangle Park, NC, USA</div><ul><li>Leading multidisciplinary structural and functional investigations of ZATT/ZNF451.</li><li>Investigating roles in TOP2 DNA–protein crosslink repair and RNA/DNA hybrid cleavage.</li><li>Solved protein structure and dissected domain architecture using crystallography, EMSA and enzymatic assays.</li></ul></article>
+    <article class="timeline-item"><div class="date">April 2019 – March 2020</div><h3>Postdoctoral Associate</h3><div class="org">Department of Molecular Genetics & Microbiology · Duke University Medical Center, Durham, NC, USA</div><ul><li>Characterized viral epitranscriptomic modification and its effects on HIV viral replication.</li></ul></article>
+    <article class="timeline-item"><div class="date">October 2017 – March 2019</div><h3>Postdoctoral Fellow</h3><div class="org">Clinic for Gastroenterology, Hepatology, and Infectiology · Heinrich Heine University, Düsseldorf, Germany</div><ul><li>Conducted biochemical and functional studies of anticancer and antiviral effects of APOBEC3 deaminases and the anti-Herpesvirus effect of MXB protein.</li></ul></article>
+    <article class="timeline-item"><div class="date">October 2016 – September 2017</div><h3>Researcher · Postdoctoral level, prior to Ph.D. award</h3><div class="org">Department of Urology, Medical Faculty · Heinrich Heine University, Düsseldorf, Germany</div><ul><li>Explored HDAC epigenetic enzymes in urothelial carcinoma, including effects of HDAC inhibition on bladder cancer cell fate and gene expression.</li><li>Performed transcriptomic, proteomic and functional analyses.</li></ul></article>
+    <article class="timeline-item"><div class="date">February 2010 – November 2017</div><h3>Ph.D. Researcher · Biology</h3><div class="org">AIDS Research Group · Clinic for Gastroenterology, Hepatology, and Infectiology · Heinrich Heine University, Düsseldorf, Germany</div><ul><li>Dissertation: “APOBEC3 DNA deaminases: A mechanistic study of A3A, A3C, and A3G action on retroviruses and counteraction by viral proteins.”</li><li>Investigated APOBEC3 antiviral mechanisms and counteraction by HIV-1 Vif and other viral antagonists.</li><li>Studied substrate specificity and restriction capacity using in vitro reconstitution and infection models.</li></ul></article>
+    <article class="timeline-item"><div class="date">November 2008 – December 2009</div><h3>Project Assistant</h3><div class="org">CSIR-Institute of Microbial Technology, Chandigarh, India</div><ul><li>Contributed to bioremediation research, optimizing bacterial strains for degradation of nitroaromatic compounds.</li></ul></article>
+   </div>
+  </div>
+ </div>
+</section>
+<section id="career" style="background:#edf3f6">
+ <div class="wrap">
+  <div class="section-head"><div><div class="kicker">04 · Academic profile</div><h2>Education, recognition & service.</h2></div><p>Academic qualifications, honors, leadership, scientific service and mentoring.</p></div>
+  <div class="two-col">
+   <div class="info-card"><h3>Education</h3>
+    <div class="info-row"><b>2017</b><span><strong>Ph.D. (Dr. rer. nat.) in Biology</strong><br>Heinrich Heine University, Düsseldorf, Germany · <em>Summa cum laude</em></span></div>
+    <div class="info-row"><b>2008</b><span><strong>M.Sc. Biotechnology</strong><br>Sourashtra College, affiliated to Madurai Kamaraj University, Madurai, India · Distinction</span></div>
+    <div class="info-row"><b>2006</b><span><strong>B.Sc. Biochemistry</strong><br>Sourashtra College, affiliated to Madurai Kamaraj University, Madurai, India · Distinction</span></div>
+   </div>
+   <div class="info-card"><h3>Selected honors & awards</h3>
+    <div class="info-row"><b>2022</b><span>NIH Fellows Award for Research Excellence (FARE) 2023 award, Protein Structure / Structural Biology Study Section.</span></div>
+    <div class="info-row"><b>2020–Present</b><span>Postdoctoral Visiting Fellowship, NIEHS/NIH.</span></div>
+    <div class="info-row"><b>2017</b><span>Ph.D. awarded <em>Summa cum laude</em>; dissertation nominated for Best Dissertation Award (2018 academic year).</span></div>
+    <div class="info-row"><b>2013</b><span>Young Investigator Award and travel grant to attend CROI, Atlanta.</span></div>
+    <div class="info-row"><b>2009 / 2007</b><span>Gold Medal for Excellence in M.Sc. Biotechnology, second year / first year.</span></div>
+    <div class="info-row"><b>2006</b><span>Madurai Kamaraj University Merit Rank in B.Sc. Biochemistry.</span></div>
+   </div>
+   <div class="info-card"><h3>Leadership & professional service</h3>
+    <div class="info-row"><b>2024–25</b><span>Organizer, Career Panel, 27th Annual NIEHS Biomedical Career Symposium (2025).</span></div>
+    <div class="info-row"><b>2024</b><span>Retreat co-chair, Genome Integrity and Structural Biology Laboratory; seminar host; Chief Judge and Referee, NIH FARE 2025 HIV and AIDS Study Section; judge, NC Women of Color Research Network Symposium.</span></div>
+    <div class="info-row"><b>2023</b><span>Judge, NIEHS Summer Internship Program Poster Session.</span></div>
+    <div class="info-row"><b>2022–Present</b><span>Trainee Committee Member, Trainee Action Committee, GISBL at NIEHS.</span></div>
+    <div class="info-row"><b>2021–Present</b><span>Judge for Postbac Poster Day.</span></div>
+    <div class="info-row"><b>2017–Current</b><span>Ad hoc journal reviewer; Topical Advisory Panel Member, International Journal of Molecular Sciences.</span></div>
+   </div>
+   <div class="info-card"><h3>Teaching, mentoring & invited talks</h3>
+    <div class="info-row"><b>2013–2018</b><span>Mentor and Research Supervisor, Heinrich Heine University; supervised four Master's students and one visiting Ph.D. student.</span></div>
+    <div class="info-row"><b>2024</b><span>Departmental Keynote, GISBL Retreat, NIEHS: “ZATT (ZNF451) is a TOP2-Regulated Ribonuclease”.</span></div>
+    <div class="info-row"><b>2023</b><span>International Conference Speaker (virtual), Lady Doak College, India: “New Avenues in Applied Sciences (ICNAAS’2023)”.</span></div>
+    <div class="info-row"><b>2022</b><span>NIH Leadership Briefing, NIEHS: presented ZATT research highlights to Dr. Tara Schwetz, Acting NIH Principal Deputy Director.</span></div>
+   </div>
+  </div>
+ </div>
+</section>
+<section id="publications">
+ <div class="wrap">
+  <div class="section-head"><div><div class="kicker">05 · Scholarly work</div><h2>Selected publications.</h2></div><p>Publication titles and bibliographic details are transcribed and lightly formatted from the supplied CV. Search by title, journal or year.</p></div>
+  <div class="pub-tools">
+   <input class="search" id="pubSearch" type="search" placeholder="Search publications, journals, authors…">
+   <button class="filter active" data-filter="all">All</button><button class="filter" data-filter="2020s">2020–2025</button><button class="filter" data-filter="2010s">2010–2019</button>
+  </div>
+  <p class="pub-count" id="pubCount">Showing 26 publications</p>
+  <div class="pub-list" id="pubList">
+   <article class="pub" data-year="2025"><div class="pub-num">26</div><div><h3>TOP2B modulates DNA supercoiling and chromatin contacts during transcriptional induction.</h3><p>Terron-Bautista J. et al., including Jaguva Vasudevan A.A. · <span class="journal">Science Advances</span> 11, 48 (2025).</p></div></article>
+   <article class="pub" data-year="2022"><div class="pub-num">25</div><div><h3>Tough Way In, Tough Way Out: The Complex Interplay of Host and Viral Factors in Nucleocytoplasmic Trafficking during HIV-1 Infection.</h3><p>Sarkar S. et al., including Jaguva Vasudevan A.A. · <span class="journal">Viruses</span> 14 (2022).</p></div></article>
+   <article class="pub" data-year="2022"><div class="pub-num">24</div><div><h3>Proteomic and transcriptomic profiles of human urothelial cancer cells with histone deacetylase 5 overexpression.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Scientific Data</span> 9, 240 (2022). Corresponding authors.</p></div></article>
+   <article class="pub" data-year="2021"><div class="pub-num">23</div><div><h3>Encapsidation of Staufen-2 Enhances Infectivity of HIV-1.</h3><p>Balakrishnan K. et al., including Jaguva Vasudevan A.A. · <span class="journal">Viruses</span> 13 (2021).</p></div></article>
+   <article class="pub" data-year="2021"><div class="pub-num">22</div><div><h3>Foamy Viruses, Bet, and APOBEC3 Restriction.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Viruses</span> 13 (2021). Corresponding authors.</p></div></article>
+   <article class="pub" data-year="2021"><div class="pub-num">21</div><div><h3>Murine leukemia virus resists producer cell APOBEC3A by its Glycosylated Gag but not target cell APOBEC3A.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Virology</span> 557, 1–14 (2021). Corresponding authors.</p></div></article>
+   <article class="pub" data-year="2020"><div class="pub-num">20</div><div><h3>Loop 1 of APOBEC3C Regulates its Antiviral Activity against HIV-1.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Journal of Molecular Biology</span> 432, 6200–6227 (2020). Corresponding authors.</p></div></article>
+   <article class="pub" data-year="2020"><div class="pub-num">19</div><div><h3>Acetylation of cytidine residues boosts HIV-1 gene expression by increasing viral RNA stability.</h3><p>Tsai K. et al., including Jaguva Vasudevan A.A. · <span class="journal">Cell Host & Microbe</span> 28, 306–312 (2020).</p></div></article>
+   <article class="pub" data-year="2019"><div class="pub-num">18</div><div><h3>HDAC5 expression in urothelial carcinoma cell lines inhibits long-term proliferation but can promote epithelial-to-mesenchymal transition.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">International Journal of Molecular Sciences</span> 20, 2135 (2019).</p></div></article>
+   <article class="pub" data-year="2018"><div class="pub-num">17</div><div><h3>Equine MX2 is a restriction factor of equine infectious anemia virus (EIAV).</h3><p>Meier K. et al., including Jaguva Vasudevan A.A. · <span class="journal">Virology</span> 523, 52–63 (2018).</p></div></article>
+   <article class="pub" data-year="2018"><div class="pub-num">16</div><div><h3>MXB inhibits murine cytomegalovirus.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Virology</span> 522, 158–167 (2018). Equal contribution; highlighted article.</p></div></article>
+   <article class="pub" data-year="2018"><div class="pub-num">15</div><div><h3>APOBEC3B activity is prevalent in urothelial carcinoma cells and only slightly affected by LINE-1 expression.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Frontiers in Microbiology</span> 9, 2088 (2018). Corresponding authors.</p></div></article>
+   <article class="pub" data-year="2018"><div class="pub-num">14</div><div><h3>USP18 (UBP43) Abrogates p21-Mediated Inhibition of HIV-1.</h3><p>Osei Kuffour E. et al., including Jaguva Vasudevan A.A. · <span class="journal">Journal of Virology</span> (2018).</p></div></article>
+   <article class="pub" data-year="2018"><div class="pub-num">13</div><div><h3>Effects of novel HDAC inhibitors on urothelial carcinoma cells.</h3><p>Kaletsch A. et al., including Jaguva Vasudevan A.A. · <span class="journal">Clinical Epigenetics</span> 10, 100 (2018).</p></div></article>
+   <article class="pub" data-year="2018"><div class="pub-num">12</div><div><h3>Detection of APOBEC3 Proteins and Catalytic Activity in Urothelial Carcinoma.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Methods in Molecular Biology</span> 1655, 97–107 (2018). Book chapter; non-peer reviewed.</p></div></article>
+   <article class="pub" data-year="2017"><div class="pub-num">11</div><div><h3>Enhancing the Catalytic Deamination Activity of APOBEC3C Is Insufficient to Inhibit Vif-Deficient HIV-1.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Journal of Molecular Biology</span> 429, 1171–1191 (2017).</p></div></article>
+   <article class="pub" data-year="2016"><div class="pub-num">10</div><div><h3>Vif Proteins from Diverse Human Immunodeficiency Virus/Simian Immunodeficiency Virus Lineages Have Distinct Binding Sites in A3C.</h3><p>Zhang Z. et al., including Jaguva Vasudevan A.A. · <span class="journal">Journal of Virology</span> 90, 10193–10208 (2016).</p></div></article>
+   <article class="pub" data-year="2016"><div class="pub-num">9</div><div><h3>Determinants of FIV and HIV Vif sensitivity of feline APOBEC3 restriction factors.</h3><p>Zhang Z. et al., including Jaguva Vasudevan A.A. · <span class="journal">Retrovirology</span> 13, 46 (2016).</p></div></article>
+   <article class="pub" data-year="2016"><div class="pub-num">8</div><div><h3>APOBEC4 Enhances the Replication of HIV-1.</h3><p>Marino D. et al., including Jaguva Vasudevan A.A. · <span class="journal">PLOS ONE</span> 11, e0155422 (2016). Equal contribution.</p></div></article>
+   <article class="pub" data-year="2016"><div class="pub-num">7</div><div><h3>Interferon but not MxB inhibits foamy retroviruses.</h3><p>Bähr A. et al., including Jaguva Vasudevan A.A. · <span class="journal">Virology</span> 488, 51–60 (2016).</p></div></article>
+   <article class="pub" data-year="2015"><div class="pub-num">6</div><div><h3>Deletions in the cytoplasmic domain of iRhom1 and iRhom2 promote shedding of the TNF receptor by the protease ADAM17.</h3><p>Maney S.K. et al., including Jaguva Vasudevan A.A. · <span class="journal">Science Signaling</span> 8, ra109 (2015).</p></div></article>
+   <article class="pub" data-year="2014"><div class="pub-num">5</div><div><h3>A functional conserved intronic G run in HIV-1 intron 3 is critical to counteract APOBEC3G-mediated host restriction.</h3><p>Widera M. et al., including Jaguva Vasudevan A.A. · <span class="journal">Retrovirology</span> 11, 72 (2014).</p></div></article>
+   <article class="pub" data-year="2014"><div class="pub-num">4</div><div><h3>Human LINE-1 restriction by APOBEC3C is deaminase independent and mediated by an ORF1p interaction that affects LINE reverse transcriptase activity.</h3><p>Horn A.V. et al., including Jaguva Vasudevan A.A. · <span class="journal">Nucleic Acids Research</span> 42, 396–416 (2014). Featured with a press release by Paul-Ehrlich-Institut.</p></div></article>
+   <article class="pub" data-year="2013"><div class="pub-num">3</div><div><h3>Structural features of antiviral DNA cytidine deaminases.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Biological Chemistry</span> 394, 1357–1370 (2013).</p></div></article>
+   <article class="pub" data-year="2013"><div class="pub-num">2</div><div><h3>Prototype foamy virus Bet impairs the dimerization and cytosolic solubility of human APOBEC3G.</h3><p>Jaguva Vasudevan A.A. et al. · <span class="journal">Journal of Virology</span> 87, 9030–9040 (2013). Equal contribution.</p></div></article>
+   <article class="pub" data-year="2012"><div class="pub-num">1</div><div><h3>Interaction of human immunodeficiency virus type 1 Vif with APOBEC3G is not dependent on serine/threonine phosphorylation status.</h3><p>Kopietz F. et al., including Jaguva Vasudevan A.A. · <span class="journal">Journal of General Virology</span> 93, 2425–2430 (2012).</p></div></article>
+  </div>
+  <div class="panel" style="margin-top:20px"><div class="kicker">Manuscripts under pipeline</div><p style="margin:10px 0 8px;color:#26364b;font-size:14px"><strong>1.</strong> Jaguva Vasudevan, A. A., Riccio, A., Randall, T., Williams, R. S. “ZATT/ZNF451 harbors a novel ribonuclease activity.” Manuscript to be submitted.</p><p style="margin:0;color:#26364b;font-size:14px"><strong>2.</strong> Jaguva Vasudevan, A. A., and Williams, R. S. “Production of human ZATT/ZNF451 for structural and biochemical studies using mammalian cell culture expression and purification.” Manuscript to be submitted.</p></div>
+ </div>
+</section>
+<section id="contact" style="background:#edf3f6">
+ <div class="wrap">
+  <div class="section-head"><div><div class="kicker">06 · Contact</div><h2>Connect about science.</h2></div><p>For research discussions, academic collaboration, seminar invitations and professional enquiries.</p></div>
+  <div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:25px;flex-wrap:wrap">
+   <div><h3 style="margin:0 0 7px;font-size:22px">Ananda Ayyappan Jaguva Vasudevan, Ph.D.</h3><p style="margin:0;color:#64748a">Structural Cell Biology · Genome Integrity · Molecular Virology</p></div>
+   <div class="actions"><a class="btn btn-primary" href="mailto:ayyappan86@gmail.com">Email</a><a class="btn" style="border:1px solid #d5e0e9" href="https://www.niehs.nih.gov/research/atniehs/labs/gisbl/pi/genome/staff" target="_blank" rel="noopener">NIEHS profile ↗</a></div>
+  </div>
+ </div>
+</section>
+</main>
+<footer class="footer"><div class="wrap footer-grid"><div><h2>Ananda A. Jaguva Vasudevan, Ph.D.</h2><p>Academic research portfolio · Content based on the supplied CV (2026).</p></div><div><a href="mailto:ayyappan86@gmail.com">ayyappan86@gmail.com</a><p style="margin-top:7px">© <span id="year"></span> · Professional portfolio</p></div></div></footer>
+<a class="top" id="topBtn" href="#home" aria-label="Back to top">↑</a>
+<script>
+const menuBtn=document.getElementById('menuBtn'),nav=document.getElementById('navLinks');
+menuBtn.addEventListener('click',()=>nav.classList.toggle('open'));
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+const search=document.getElementById('pubSearch'),pubs=[...document.querySelectorAll('.pub')],filters=[...document.querySelectorAll('.filter')];
+let active='all';
+function filterPubs(){const q=search.value.toLowerCase().trim();let count=0;pubs.forEach(p=>{const y=Number(p.dataset.year),period=y>=2020?'2020s':'2010s';const show=(active==='all'||active===period)&&p.innerText.toLowerCase().includes(q);p.classList.toggle('hidden',!show);if(show)count++});document.getElementById('pubCount').textContent=`Showing ${count} of ${pubs.length} publications`;}
+search.addEventListener('input',filterPubs);filters.forEach(b=>b.addEventListener('click',()=>{filters.forEach(x=>x.classList.remove('active'));b.classList.add('active');active=b.dataset.filter;filterPubs()}));
+document.getElementById('year').textContent=new Date().getFullYear();
+const topBtn=document.getElementById('topBtn');window.addEventListener('scroll',()=>topBtn.classList.toggle('show',window.scrollY>500));
+</script>
+</body>
+</html>

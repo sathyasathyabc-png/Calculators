@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Node.js Studio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<style>*{box-sizing:border-box}body{margin:0;background:#111318;color:#e8eaf0;font:14px Segoe UI,Arial;height:100vh;overflow:hidden}header{height:58px;background:#171a21;border-bottom:1px solid #303644;display:flex;align-items:center;justify-content:space-between;padding:0 18px}.brand{font-size:18px;font-weight:700}.pill{font-size:11px;color:#aeb9ca;background:#28313c;border-radius:14px;padding:4px 8px;margin-left:8px}button{background:#252b38;color:#eee;border:1px solid #3a4252;border-radius:7px;padding:9px 13px;cursor:pointer;margin-left:5px;font-weight:600}.run{background:#167b55;color:white}.layout{height:calc(100vh - 58px);display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1px;background:#303644}.left,.right{background:#111318;min-width:0;min-height:0;display:flex;flex-direction:column}.bar,.head{height:44px;flex-shrink:0;background:#1b1e27;border-bottom:1px solid #303644;display:flex;align-items:center;justify-content:space-between;padding:0 13px}.editor{flex:1;min-height:0;overflow:hidden}.CodeMirror{height:100%;font:14px/1.6 Consolas,monospace;padding:12px 0}.right{gap:1px}.block{display:flex;flex-direction:column;min-height:0}.input{height:34%;min-height:140px}.output{flex:1}.body{padding:12px;background:#14171e;flex:1;min-height:0;overflow:auto}textarea{width:100%;height:100%;resize:none;background:transparent;color:#eee;border:0;outline:0;font:13px/1.5 Consolas,monospace}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Consolas,monospace;margin:0;color:#dce3ef}.status{height:27px;background:#171a21;border-top:1px solid #303644;padding:5px 12px;color:#9aa3b2;font-size:11px;display:flex;justify-content:space-between}.ok{color:#37c98b}.err{color:#ff6b75}@media(max-width:800px){body{height:auto;overflow:auto}.layout{height:auto;grid-template-columns:1fr}.left{height:60vh}.right{min-height:55vh}.input{height:180px}.output{min-height:220px}}</style></head><body>
+<header><div class="brand">🟢 Node.js Studio <span class="pill">JavaScript · Browser Runtime</span></div><div><button id="sample">Load sample</button><button id="clear">Clear</button><button id="download">Download .js</button><button class="run" id="run">▶ Run</button></div></header>
+<main class="layout"><section class="left"><div class="bar"><b>main.js</b><small>JavaScript source</small></div><div class="editor"><textarea id="code">console.log("Hello, Node.js Studio!");
+
+const name = prompt("Enter your name: ");
+console.log(`Welcome, ${name}!`);
+
+const numbers = [10, 20, 30, 40];
+console.log("Total:", numbers.reduce((sum, n) => sum + n, 0));
+</textarea></div><div class="status"><span id="editstatus">Ready</span><span>JavaScript ES2023 · Browser runtime</span></div></section>
+<aside class="right"><section class="block input"><div class="head"><b>Program input (stdin)</b><small>One input per line</small></div><div class="body"><textarea id="stdin">Sathish</textarea></div></section><section class="block output"><div class="head"><b>Console output</b><span id="state" class="ok">Ready</span></div><div class="body"><pre id="output">Click Run to execute your JavaScript code.</pre></div></section></aside></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script>
+const editor=CodeMirror.fromTextArea(document.getElementById('code'),{mode:'javascript',theme:'dracula',lineNumbers:true,indentUnit:2,tabSize:2});
+const out=document.getElementById('output'),state=document.getElementById('state'),run=document.getElementById('run');
+document.getElementById('sample').onclick=()=>{editor.setValue(`const products = [
+  { name: "Laptop", price: 55000 },
+  { name: "Keyboard", price: 1500 },
+  { name: "Mouse", price: 800 }
+];
+console.log("Products:");
+products.forEach(p => console.log(p.name + ": ₹" + p.price));
+const total = products.reduce((sum, p) => sum + p.price, 0);
+console.log("Grand total: ₹" + total);
+const user = prompt("Enter your name:");
+console.log("Welcome, " + user + "!");`);document.getElementById('stdin').value='Sathish'};
+document.getElementById('clear').onclick=()=>{editor.setValue('');document.getElementById('stdin').value='';out.textContent='Console cleared.';state.textContent='Ready'};
+document.getElementById('download').onclick=()=>{const a=document.createElement('a'),u=URL.createObjectURL(new Blob([editor.getValue()],{type:'text/javascript'}));a.href=u;a.download='main.js';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+run.onclick=async()=>{const lines=document.getElementById('stdin').value.split(/\r?\n/);let i=0,logs=[];const fmt=v=>{if(typeof v==='string')return v;try{return JSON.stringify(v,null,2)??String(v)}catch{return String(v)}};const log=(...a)=>logs.push(a.map(fmt).join(' '));const con={log,info:log,debug:log,table:v=>log(v),warn:(...a)=>logs.push('WARN: '+a.map(fmt).join(' ')),error:(...a)=>logs.push('ERROR: '+a.map(fmt).join(' ')),clear:()=>{logs=[]}};
+const prompt=(msg='')=>{if(msg)logs.push(String(msg));return i<lines.length?lines[i++] : ''};run.disabled=true;run.textContent='Running…';state.textContent='Executing';state.className='';out.textContent='Running…';
+try{const fn=new Function('console','prompt','alert',`return (async()=>{${editor.getValue()}\n})()`);await fn(con,prompt,msg=>logs.push('ALERT: '+msg));out.textContent=logs.join('\n')||'Program finished with no console output.';state.textContent='Execution complete';state.className='ok';document.getElementById('editstatus').textContent='Run completed'}
+catch(e){logs.push(e.stack||String(e));out.textContent=logs.join('\n');state.textContent='Execution failed';state.className='err';document.getElementById('editstatus').textContent='Check error'}
+finally{run.disabled=false;run.textContent='▶ Run'}};
+editor.on('change',()=>document.getElementById('editstatus').textContent='Modified');
+</script></body></html>

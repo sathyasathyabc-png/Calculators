@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C# Studio — Online Compiler</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<style>
+:root{--bg:#111318;--panel:#1b1e27;--panel2:#222633;--line:#303644;--text:#e8eaf0;--muted:#9aa3b2;--blue:#4d8dff;--green:#37c98b;--red:#ff6b75}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",Arial,sans-serif;height:100vh;overflow:hidden}
+.topbar{height:58px;background:#171a21;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.brand{display:flex;align-items:center;gap:11px;font-size:17px;font-weight:700}.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#5b9cff,#7957e8);display:grid;place-items:center;color:white;font-weight:800}
+.actions{display:flex;gap:8px;align-items:center}.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 13px;border-radius:7px;cursor:pointer;font-weight:600}.btn:hover{filter:brightness(1.15)}.run{background:#167b55;border-color:#229b6d;color:#fff}.btn:disabled{opacity:.55;cursor:wait}
+.layout{height:calc(100vh - 58px);display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1px;background:var(--line)}
+.left,.right{min-width:0;min-height:0;background:var(--bg);display:flex;flex-direction:column}.toolbar,.panelhead{height:44px;flex-shrink:0;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 13px}
+.filetag{color:#d8deea;font-weight:600}.subtle{color:var(--muted);font-size:12px}.editorwrap{flex:1;min-height:0;overflow:hidden}.CodeMirror{height:100%;font:14px/1.6 Consolas,Monaco,monospace;padding:12px 0}.CodeMirror-gutters{background:#282a36;border-right:1px solid #3b3e4a}
+.right{gap:1px}.block{display:flex;flex-direction:column;min-height:0;background:var(--bg)}.inputblock{height:34%;min-height:150px}.outputblock{flex:1}.panelhead .title{font-weight:700}.panelbody{flex:1;min-height:0;padding:12px;overflow:auto;background:#14171e}
+textarea{width:100%;height:100%;resize:none;background:transparent;border:0;outline:0;color:#e7eaf1;font:13px/1.5 Consolas,monospace}
+#output{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Consolas,monospace;color:#dce3ef;margin:0}
+.status{height:27px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#171a21;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+.pill{padding:3px 7px;border-radius:12px;background:#28313c;color:#aeb9ca}.success{color:var(--green)}.error{color:var(--red)}
+select{background:#282d39;color:var(--text);border:1px solid var(--line);padding:6px;border-radius:5px}
+.hint{color:var(--muted);font-size:12px;line-height:1.5;margin-top:8px}
+@media(max-width:850px){body{height:auto;overflow:auto}.layout{height:auto;min-height:calc(100vh - 58px);grid-template-columns:1fr}.left{height:62vh}.right{min-height:55vh}.inputblock{height:180px}.outputblock{min-height:240px}.actions .optional{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo">C#</div><span>C# Studio</span><span class="pill">Online Compiler</span></div>
+  <div class="actions">
+    <button class="btn optional" id="sampleBtn">Load sample</button>
+    <button class="btn optional" id="clearBtn">Clear</button>
+    <button class="btn" id="downloadBtn">Download .cs</button>
+    <button class="btn run" id="runBtn">▶ Run</button>
+  </div>
+</header>
+<main class="layout">
+  <section class="left">
+    <div class="toolbar"><span class="filetag">Program.cs</span><span class="subtle">C# · UTF-8</span></div>
+    <div class="editorwrap"><textarea id="code">using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, C# Studio!");
+        Console.Write("Enter your name: ");
+        string name = Console.ReadLine();
+        Console.WriteLine($"Welcome, {name}!");
+    }
+}</textarea></div>
+    <div class="status"><span id="editorStatus">Ready</span><span>Tab size: 4 · C#</span></div>
+  </section>
+  <aside class="right">
+    <section class="block inputblock">
+      <div class="panelhead"><span class="title">Program input (stdin)</span><span class="subtle">Optional</span></div>
+      <div class="panelbody"><textarea id="stdin" spellcheck="false" placeholder="Type input for Console.ReadLine() here...">Sathish</textarea></div>
+    </section>
+    <section class="block outputblock">
+      <div class="panelhead"><span class="title">Output</span><span id="runState" class="subtle">Waiting to run</span></div>
+      <div class="panelbody"><pre id="output">Your program output will appear here.
+
+Press ▶ Run to compile and execute your C# code.</pre></div>
+    </section>
+  </aside>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script>
+const starter = `using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, C# Studio!");
+        Console.Write("Enter your name: ");
+        string name = Console.ReadLine();
+        Console.WriteLine($"Welcome, {name}!");
+    }
+}`;
+const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+  mode: 'text/x-csharp', theme: 'dracula', lineNumbers: true, indentUnit: 4,
+  tabSize: 4, indentWithTabs: false, lineWrapping: false
+});
+const output = document.getElementById('output');
+const runBtn = document.getElementById('runBtn');
+const runState = document.getElementById('runState');
+const editorStatus = document.getElementById('editorStatus');
+
+document.getElementById('sampleBtn').onclick = () => {
+  editor.setValue(`using System;
+
+class Program
+{
+    static void Main()
+    {
+        int[] numbers = { 12, 5, 8, 20, 3 };
+        Console.WriteLine("Numbers:");
+        foreach (int n in numbers)
+            Console.WriteLine(n);
+
+        Console.WriteLine($"Total = {numbers.Sum()}");
+    }
+}`);
+  // Keep this sample self-contained without extra namespaces.
+  editor.setValue(`using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        int[] numbers = { 12, 5, 8, 20, 3 };
+        Console.WriteLine("Numbers: " + string.Join(", ", numbers));
+        Console.WriteLine($"Total = {numbers.Sum()}");
+        Console.WriteLine($"Largest = {numbers.Max()}");
+    }
+}`);
+  editorStatus.textContent = 'Sample loaded';
+};
+document.getElementById('clearBtn').onclick = () => { editor.setValue(''); output.textContent='Output cleared.'; runState.textContent='Waiting to run'; };
+document.getElementById('downloadBtn').onclick = () => {
+  const blob = new Blob([editor.getValue()], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='Program.cs'; a.click(); URL.revokeObjectURL(a.href);
+};
+runBtn.onclick = async () => {
+  const source = editor.getValue();
+  if (!source.trim()) { output.textContent='Please enter some C# code first.'; return; }
+  runBtn.disabled = true; runBtn.textContent='Running…';
+  runState.textContent='Finding C# compiler'; runState.className='subtle';
+  editorStatus.textContent='Executing';
+  output.textContent='Connecting to Wandbox and finding an available C# compiler…';
+
+  try {
+    // Wandbox's public endpoint now returns 401 for non-whitelisted projects.
+    // Wandbox exposes a public compile API; resolve the current compiler ID dynamically.
+    const listResponse = await fetch('https://wandbox.org/api/list.json', { method:'GET' });
+    if (!listResponse.ok) throw new Error(`Could not load compiler list (HTTP ${listResponse.status}).`);
+    const compilers = await listResponse.json();
+    const candidates = compilers.filter(c => String(c.language || '').toLowerCase() === 'c#');
+    if (!candidates.length) throw new Error('Wandbox did not list a C# compiler at this time.');
+
+    // Prefer a current non-HEAD compiler when available.
+    candidates.sort((a,b) => {
+      const ah = /head|experimental/i.test((a.name||'') + ' ' + (a.version||'')) ? 1 : 0;
+      const bh = /head|experimental/i.test((b.name||'') + ' ' + (b.version||'')) ? 1 : 0;
+      return ah - bh;
+    });
+    const compiler = candidates[0];
+    runState.textContent = `Compiling with ${compiler['display-name'] || compiler.name}`;
+
+    const compileResponse = await fetch('https://wandbox.org/api/compile.json', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        compiler:compiler.name,
+        code:source,
+        stdin:document.getElementById('stdin').value || '',
+        save:false
+      })
+    });
+    if (!compileResponse.ok) {
+      let detail = '';
+      try { detail = await compileResponse.text(); } catch {}
+      throw new Error(`Wandbox returned HTTP ${compileResponse.status}.${detail ? '\\n' + detail : ''}`);
+    }
+    const result = await compileResponse.json();
+    const compilerMessage = result.compiler_message || '';
+    const programMessage = result.program_message || '';
+    const status = result.status;
+    let text = '';
+    if (compilerMessage.trim()) text += 'COMPILER MESSAGE\\n' + compilerMessage.trim() + '\\n\\n';
+    if (programMessage.trim()) text += 'PROGRAM OUTPUT\\n' + programMessage.trim();
+    if (!text.trim()) text = status === '0' || status === 0
+      ? 'Program finished successfully with no output.'
+      : 'The compiler returned no output. Check the compiler status below.';
+    if (status !== undefined && status !== null && String(status) !== '0') {
+      text += `\\n\\nCompiler status: ${status}`;
+    }
+    if (result.permlink) text += `\\n\\nPermalink: ${result.permlink}`;
+    output.textContent = text;
+    const failed = status !== undefined && status !== null && String(status) !== '0';
+    runState.textContent = failed ? 'Completed with errors' : 'Execution complete';
+    runState.className = failed ? 'error' : 'success';
+    editorStatus.textContent = failed ? 'Check compiler message' : 'Run completed';
+  } catch (err) {
+    output.textContent = 'Unable to compile this program.\\n\\n' + (err && err.message ? err.message : String(err)) +
+      '\\n\\nPossible causes: internet connection, browser/network CORS restrictions, or the public compiler service being temporarily unavailable. Your C# code has not been changed.';
+    runState.textContent='Compiler connection failed'; runState.className='error';
+    editorStatus.textContent='Compiler unavailable';
+  } finally {
+    runBtn.disabled=false; runBtn.textContent='▶ Run';
+  }
+};
+editor.on('change', () => { editorStatus.textContent='Modified'; });
+</script>
+</body>
+</html>

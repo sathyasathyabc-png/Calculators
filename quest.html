@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain Quest — Educational Game</title>
+<style>
+:root{--bg:#10172a;--panel:#1b2742;--panel2:#243454;--ink:#f4f7ff;--muted:#b8c5df;--accent:#72e0c1;--gold:#ffd166;--pink:#ff8fab;--bad:#ff7272}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 10%,#263c68 0,transparent 35%),linear-gradient(135deg,#0d1426,#182747);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;justify-content:center;padding:22px}
+button{font:inherit;cursor:pointer;border:0}button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.app{width:min(920px,100%)}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--accent),#70a8ff);display:grid;place-items:center;font-size:26px;color:#10203a;box-shadow:0 8px 25px #0005}h1{font-size:clamp(23px,4vw,32px);margin:0;letter-spacing:-.7px}.tag{color:var(--muted);font-size:13px}.top-actions{display:flex;gap:8px}.small-btn{background:var(--panel2);color:var(--ink);padding:9px 12px;border-radius:11px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.stat,.card{background:#1b2742eF;border:1px solid #ffffff16;border-radius:18px;box-shadow:0 12px 30px #0002}.stat{padding:12px 14px}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{font-size:22px}
+.card{padding:clamp(18px,4vw,30px)}.screen{display:none}.screen.active{display:block}.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:1.4px;font-size:12px}.welcome{text-align:center;padding:22px 10px 12px}.welcome .hero{font-size:68px;margin:5px}.welcome h2{font-size:clamp(25px,5vw,38px);margin:6px 0}.welcome p{color:var(--muted);max-width:580px;margin:0 auto 22px;line-height:1.6}
+.primary{background:linear-gradient(110deg,#72e0c1,#79b7ff);color:#102039;font-weight:850;padding:14px 24px;border-radius:13px;box-shadow:0 7px 20px #72e0c133}.secondary{background:var(--panel2);color:var(--ink);padding:12px 18px;border-radius:12px;font-weight:700}.btn-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.level{padding:14px;border-radius:14px;background:var(--panel2);border:1px solid #ffffff15;color:var(--ink);text-align:left}.level b{display:block;font-size:16px}.level small{color:var(--muted)}.level.selected{border:2px solid var(--accent);background:#24445a}
+.quiz-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px;color:var(--muted);font-size:13px}.progress{height:9px;background:#0d1629;border-radius:20px;overflow:hidden;margin-bottom:22px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#70a8ff);transition:width .3s}
+.question{font-size:clamp(21px,4vw,29px);line-height:1.3;margin:10px 0 22px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}.answer{padding:16px;text-align:left;background:var(--panel2);border:2px solid transparent;color:var(--ink);border-radius:14px;min-height:64px;font-weight:650;transition:.15s}.answer:hover{transform:translateY(-2px);border-color:#72e0c177}.answer .letter{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:8px;background:#ffffff18;margin-right:9px;color:var(--accent)}.answer.correct{border-color:var(--accent);background:#1c554b}.answer.wrong{border-color:var(--bad);background:#542c3a}.answer:disabled{cursor:default}
+.feedback{min-height:28px;margin:17px 0 8px;font-weight:750}.feedback.good{color:var(--accent)}.feedback.bad{color:var(--pink)}.quiz-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}.hint{color:var(--muted);font-size:12px}
+.result{text-align:center}.result .medal{font-size:66px}.result h2{font-size:32px;margin:5px}.result p{color:var(--muted)}.result-score{font-size:48px;color:var(--gold);font-weight:900;margin:8px}
+.leaderboard{margin-top:20px;text-align:left;background:var(--panel2);padding:16px;border-radius:14px}.leaderboard h3{margin:0 0 10px}.leader-row{display:flex;justify-content:space-between;padding:8px 2px;border-bottom:1px solid #ffffff12;color:var(--muted)}.leader-row:last-child{border:0}
+footer{text-align:center;color:#8292b2;font-size:12px;margin:15px}
+@media(max-width:600px){body{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.answers{grid-template-columns:1fr}.levels{grid-template-columns:1fr}.quiz-footer{align-items:stretch;flex-direction:column-reverse}.quiz-footer button{width:100%}.top-actions .small-btn{padding:8px}.card{padding:17px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="logo">🧠</div><div><h1>Brain Quest</h1><div class="tag">Learn • Play • Level Up</div></div></div>
+ <div class="top-actions"><button class="small-btn" id="soundBtn" aria-label="Toggle sound">🔊 Sound</button><button class="small-btn" id="homeBtn">⌂ Home</button></div>
+</header>
+<div class="stats">
+ <div class="stat"><span>⭐ TOTAL POINTS</span><strong id="totalPoints">0</strong></div>
+ <div class="stat"><span>🏆 BEST SCORE</span><strong id="bestScore">0</strong></div>
+ <div class="stat"><span>🎮 LEVEL</span><strong id="levelStat">1</strong></div>
+ <div class="stat"><span>🔥 STREAK</span><strong id="streakStat">0</strong></div>
+</div>
+<main class="card">
+<section class="screen active" id="startScreen">
+ <div class="welcome"><div class="hero">🚀</div><div class="eyebrow">Your daily brain adventure</div><h2>Ready to challenge yourself?</h2><p>Answer fun questions across science, maths, geography and general knowledge. Earn points, build streaks and unlock harder levels.</p><button class="primary" id="playBtn">Start playing →</button></div>
+ <h3>Choose your challenge</h3>
+ <div class="levels">
+  <button class="level selected" data-level="0"><b>🌱 Level 1 · Starter</b><small>Warm-up questions</small></button>
+  <button class="level" data-level="1"><b>⚡ Level 2 · Explorer</b><small>Think a little deeper</small></button>
+  <button class="level" data-level="2"><b>🔥 Level 3 · Master</b><small>For sharp minds</small></button>
+ </div>
+ <div class="hint">Keyboard: press 1–4 to answer · Enter to continue</div>
+</section>
+<section class="screen" id="quizScreen">
+ <div class="quiz-head"><span id="category">SCIENCE</span><span id="questionCount">QUESTION 1 / 10</span><span id="roundPoints">0 pts</span></div>
+ <div class="progress"><div class="bar" id="progressBar"></div></div>
+ <div class="eyebrow" id="levelLabel">LEVEL 1</div>
+ <h2 class="question" id="questionText">Question goes here</h2>
+ <div class="answers" id="answers"></div>
+ <div class="feedback" id="feedback" aria-live="polite"></div>
+ <div class="quiz-footer"><span class="hint" id="keyHint">Press 1, 2, 3 or 4 to answer</span><button class="primary" id="nextBtn" disabled>Next question →</button></div>
+</section>
+<section class="screen result" id="resultScreen">
+ <div class="medal" id="medal">🏆</div><div class="eyebrow">Challenge complete</div><h2 id="resultTitle">Well played!</h2>
+ <div class="result-score" id="finalScore">0</div><p id="resultMessage">You earned points.</p>
+ <div class="btn-row"><button class="primary" id="againBtn">Play again</button><button class="secondary" id="changeBtn">Choose level</button></div>
+ <div class="leaderboard"><h3>🏅 Your high scores</h3><div id="leaderRows"></div></div>
+</section>
+</main>
+<footer>Brain Quest · A single-file educational game · Scores are saved on this device</footer>
+</div>
+<script>
+const BANK = [
+[
+ {c:"SCIENCE",q:"Which planet is known as the Red Planet?",a:["Venus","Mars","Jupiter","Mercury"],k:1,e:"Mars looks reddish because its surface contains iron oxide."},
+ {c:"MATHS",q:"What is 9 × 7?",a:["56","63","72","49"],k:1,e:"9 multiplied by 7 equals 63."},
+ {c:"GEOGRAPHY",q:"Which is the largest ocean on Earth?",a:["Atlantic Ocean","Indian Ocean","Pacific Ocean","Arctic Ocean"],k:2,e:"The Pacific Ocean is the largest and deepest ocean."},
+ {c:"GENERAL",q:"How many days are there in a leap year?",a:["364","365","366","367"],k:2,e:"A leap year has 366 days."},
+ {c:"SCIENCE",q:"What do plants absorb from the air for photosynthesis?",a:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],k:1,e:"Plants use carbon dioxide, water and sunlight to make food."},
+ {c:"MATHS",q:"What is half of 3/4?",a:["1/2","3/8","2/8","1/4"],k:1,e:"Half of three-fourths is three-eighths."},
+ {c:"GEOGRAPHY",q:"Which is the capital of Japan?",a:["Seoul","Beijing","Tokyo","Bangkok"],k:2,e:"Tokyo is the capital of Japan."},
+ {c:"GENERAL",q:"Which instrument is used to measure temperature?",a:["Barometer","Thermometer","Compass","Altimeter"],k:1,e:"A thermometer measures temperature."},
+ {c:"SCIENCE",q:"Which part of the human body pumps blood?",a:["Lungs","Brain","Heart","Liver"],k:2,e:"The heart pumps blood around the body."},
+ {c:"MATHS",q:"What is 100 divided by 4?",a:["20","25","40","50"],k:1,e:"100 ÷ 4 = 25."}
+],
+[
+ {c:"SCIENCE",q:"Which gas makes up most of Earth's atmosphere?",a:["Oxygen","Carbon dioxide","Nitrogen","Argon"],k:2,e:"Nitrogen makes up about 78% of Earth's atmosphere."},
+ {c:"MATHS",q:"What is the square of 13?",a:["156","169","179","196"],k:1,e:"13 × 13 = 169."},
+ {c:"GEOGRAPHY",q:"The Andes mountain range is mainly in which continent?",a:["Europe","Africa","South America","Asia"],k:2,e:"The Andes run along the western side of South America."},
+ {c:"GENERAL",q:"Who wrote the play Romeo and Juliet?",a:["Charles Dickens","William Shakespeare","Jane Austen","Mark Twain"],k:1,e:"William Shakespeare wrote Romeo and Juliet."},
+ {c:"SCIENCE",q:"What is the chemical symbol for gold?",a:["Ag","Gd","Go","Au"],k:3,e:"Au comes from the Latin word aurum."},
+ {c:"MATHS",q:"A triangle has angles 60° and 70°. What is the third angle?",a:["40°","50°","60°","70°"],k:1,e:"Angles in a triangle add up to 180°."},
+ {c:"GEOGRAPHY",q:"Which river flows through Egypt?",a:["Amazon","Danube","Nile","Thames"],k:2,e:"The Nile is closely associated with the history of Egypt."},
+ {c:"GENERAL",q:"Which is the smallest prime number?",a:["0","1","2","3"],k:2,e:"2 is the smallest prime number and the only even prime."},
+ {c:"SCIENCE",q:"What is the centre of an atom called?",a:["Electron","Nucleus","Cell","Orbit"],k:1,e:"An atom's nucleus contains protons and neutrons."},
+ {c:"MATHS",q:"What is 15% of 200?",a:["15","20","25","30"],k:3,e:"10% is 20 and 5% is 10, so 15% is 30."}
+],
+[
+ {c:"SCIENCE",q:"Which principle explains why a ship floats?",a:["Pascal's law","Archimedes' principle","Ohm's law","Newton's third law"],k:1,e:"Buoyant force equals the weight of displaced fluid."},
+ {c:"MATHS",q:"If x + 5 = 17, what is x²?",a:["100","121","144","169"],k:2,e:"x = 12, so x² = 144."},
+ {c:"GEOGRAPHY",q:"Which strait separates India and Sri Lanka?",a:["Bering Strait","Palk Strait","Malacca Strait","Gibraltar Strait"],k:1,e:"The Palk Strait lies between Tamil Nadu and Sri Lanka."},
+ {c:"GENERAL",q:"In computing, what does CPU stand for?",a:["Central Processing Unit","Computer Power Utility","Core Program Upload","Central Print Unit"],k:0,e:"CPU stands for Central Processing Unit."},
+ {c:"SCIENCE",q:"Which blood cells help the body fight infection?",a:["Red blood cells","White blood cells","Platelets","Plasma cells only"],k:1,e:"White blood cells are key parts of the immune system."},
+ {c:"MATHS",q:"What is the next prime number after 29?",a:["30","31","33","35"],k:1,e:"31 is divisible only by 1 and itself."},
+ {c:"GEOGRAPHY",q:"Which layer of Earth is liquid and surrounds the inner core?",a:["Crust","Mantle","Outer core","Lithosphere"],k:2,e:"Earth's outer core is mainly liquid iron and nickel."},
+ {c:"GENERAL",q:"Which protocol is commonly used to load secure websites?",a:["FTP","HTTPS","SMTP","Bluetooth"],k:1,e:"HTTPS encrypts communication between browser and website."},
+ {c:"SCIENCE",q:"What is the SI unit of electric resistance?",a:["Volt","Ampere","Watt","Ohm"],k:3,e:"Electrical resistance is measured in ohms."},
+ {c:"MATHS",q:"What is the probability of rolling an even number on a fair six-sided die?",a:["1/6","1/3","1/2","2/3"],k:2,e:"Three of the six outcomes are even, so the probability is 3/6 = 1/2."}
+]
+];
+const $=id=>document.getElementById(id);
+let level=0, questions=[], index=0, score=0, streak=0, answered=false, sound=true, audioCtx=null;
+let total=Number(localStorage.getItem("bq_total")||0), best=Number(localStorage.getItem("bq_best")||0);
+let history=JSON.parse(localStorage.getItem("bq_scores")||"[]");
+function updateStats(){ $("totalPoints").textContent=total;$("bestScore").textContent=best;$("levelStat").textContent=level+1;$("streakStat").textContent=streak; }
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");}
+function beep(freq=550,duration=.12,type="sine"){if(!sound)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.08,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration);}catch(e){}}
+function selectLevel(n){level=n;document.querySelectorAll(".level").forEach(b=>b.classList.toggle("selected",Number(b.dataset.level)===n));updateStats();}
+document.querySelectorAll(".level").forEach(b=>b.addEventListener("click",()=>selectLevel(Number(b.dataset.level))));
+function start(){questions=[...BANK[level]].sort(()=>Math.random()-.5);index=0;score=0;streak=0;updateStats();show("quizScreen");render();}
+function render(){answered=false;let q=questions[index];$("category").textContent=q.c;$("questionCount").textContent=`QUESTION ${index+1} / ${questions.length}`;$("roundPoints").textContent=score+" pts";$("levelLabel").textContent="LEVEL "+(level+1);$("questionText").textContent=q.q;$("progressBar").style.width=(index/questions.length*100)+"%";$("feedback").textContent="";$("feedback").className="feedback";$("nextBtn").disabled=true;$("nextBtn").textContent=index===questions.length-1?"See results →":"Next question →";$("answers").innerHTML="";
+q.a.forEach((a,i)=>{let b=document.createElement("button");b.className="answer";b.innerHTML=`<span class="letter">${i+1}</span>${a}`;b.addEventListener("click",()=>answer(i));$("answers").appendChild(b);});}
+function answer(i){if(answered)return;answered=true;let q=questions[index],buttons=[...document.querySelectorAll(".answer")],correct=i===q.k;buttons.forEach((b,n)=>{b.disabled=true;if(n===q.k)b.classList.add("correct");if(n===i&&!correct)b.classList.add("wrong");});if(correct){let gained=10+(level*5)+(streak>=2?5:0);score+=gained;total+=gained;streak++;$("feedback").textContent="✓ Correct! +"+gained+" points. "+q.e;$("feedback").classList.add("good");beep(760,.15);setTimeout(()=>beep(980,.13),100);}else{streak=0;$("feedback").textContent="Not quite. "+q.e;$("feedback").classList.add("bad");beep(180,.22,"triangle");}best=Math.max(best,score);localStorage.setItem("bq_total",total);localStorage.setItem("bq_best",best);$("roundPoints").textContent=score+" pts";updateStats();$("nextBtn").disabled=false;$("progressBar").style.width=((index+1)/questions.length*100)+"%";}
+function finish(){history.push({level:level+1,score,date:new Date().toLocaleDateString()});history.sort((a,b)=>b.score-a.score);history=history.slice(0,5);localStorage.setItem("bq_scores",JSON.stringify(history));$("finalScore").textContent=score+" pts";$("resultTitle").textContent=score>=100?"Outstanding work!":score>=60?"Great effort!":"Keep learning!";$("medal").textContent=score>=100?"🏆":score>=60?"🥇":"🌟";$("resultMessage").textContent=`You answered ${questions.filter((q,i)=>true).length} questions in Level ${level+1}. Keep practising to improve your best score.`;$("leaderRows").innerHTML=history.length?history.map((h,i)=>`<div class="leader-row"><span>${["🥇","🥈","🥉","4.","5."][i]} Level ${h.level} · ${h.date}</span><strong>${h.score} pts</strong></div>`).join(""):'<div class="leader-row">No scores yet</div>';show("resultScreen");beep(660,.18);setTimeout(()=>beep(830,.2),150);}
+function next(){if(!answered)return;if(index<questions.length-1){index++;render();}else finish();}
+$("playBtn").addEventListener("click",start);$("nextBtn").addEventListener("click",next);$("againBtn").addEventListener("click",start);$("changeBtn").addEventListener("click",()=>show("startScreen"));$("homeBtn").addEventListener("click",()=>show("startScreen"));
+$("soundBtn").addEventListener("click",()=>{sound=!sound;$("soundBtn").textContent=sound?"🔊 Sound":"🔇 Muted";if(sound)beep();});
+document.addEventListener("keydown",e=>{if(!$("quizScreen").classList.contains("active")){if(e.key==="Enter"&&$("startScreen").classList.contains("active"))start();return;}if(!answered&&["1","2","3","4"].includes(e.key))answer(Number(e.key)-1);else if(answered&&e.key==="Enter")next();});
+updateStats();
+</script>
+</body>
+</html>

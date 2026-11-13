@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Cricket Champs — HTML5 Cricket Game</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:12px;background:radial-gradient(circle at 50% 0,#285b4b,#101c2b 70%);color:#f5f8f3;font-family:system-ui,Segoe UI,sans-serif;display:grid;place-items:center}.app{width:min(960px,100%)}header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}.brand{display:flex;align-items:center;gap:10px}.logo{font-size:29px;background:#315d48;border-radius:13px;padding:9px}h1{font-size:clamp(22px,4vw,30px);margin:0}.sub{font-size:12px;color:#b8cbbd}.tools{display:flex;gap:7px}button{font:inherit;border:0;border-radius:11px;font-weight:750;cursor:pointer}.tool{padding:9px 12px;background:#284438;color:white}.hud{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}.stat{background:#1b302b;border:1px solid #ffffff18;border-radius:12px;padding:8px 11px}.stat small{display:block;color:#b8cbbd;font-size:11px}.stat b{font-size:19px}.stadium{position:relative;border-radius:18px;overflow:hidden;border:1px solid #ffffff25;box-shadow:0 20px 45px #0006;background:#193e35}.stadium canvas{width:100%;height:auto;display:block;aspect-ratio:16/9;touch-action:none}.overlay{position:absolute;inset:0;background:#0c1b18d9;display:grid;place-items:center;text-align:center;padding:18px}.overlay.hide{display:none}.panel{max-width:540px}.hero{font-size:54px}.panel h2{font-size:clamp(26px,5vw,39px);margin:4px}.panel p{color:#c4d3c8;line-height:1.5}.primary{padding:13px 24px;background:linear-gradient(110deg,#9be7a4,#ffe08a);color:#183024}.secondary{padding:12px 18px;background:#315346;color:white}.row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}.help{font-size:12px;color:#c4d3c8;margin-top:13px}.mobile{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:570px;margin:10px auto 0;user-select:none}.pad{display:flex;gap:9px}.ctrl{height:55px;min-width:62px;padding:0 12px;background:#294c3e;color:white;font-size:19px;touch-action:none;box-shadow:inset 0 -4px #172d24}.ctrl:active{transform:translateY(2px)}.shot{background:#684a29;color:#fff0c5;min-width:112px}.note{text-align:center;color:#a8bdad;font-size:12px;margin-top:8px}@media(max-width:560px){body{padding:7px}.hud{grid-template-columns:repeat(3,1fr)}.ctrl{min-width:55px;height:51px;padding:0 9px}.shot{min-width:100px}}
+</style></head>
+<body><div class="app">
+<header><div class="brand"><div class="logo">🏏</div><div><h1>Cricket Champs</h1><div class="sub">Time your shot • Score runs • Win the match</div></div></div><div class="tools"><button class="tool" id="soundBtn">🔊 Sound</button><button class="tool" id="homeBtn">⌂ Home</button></div></header>
+<div class="hud"><div class="stat"><small>LEVEL</small><b id="level">1 / 5</b></div><div class="stat"><small>SCORE</small><b id="score">0/0</b></div><div class="stat"><small>OVERS</small><b id="overs">0.0</b></div><div class="stat"><small>TARGET</small><b id="target">—</b></div><div class="stat"><small>BEST</small><b id="best">0</b></div></div>
+<div class="stadium"><canvas id="game" width="960" height="540"></canvas>
+<div class="overlay" id="overlay"><div class="panel"><div class="hero">🏏🏟️</div><div class="sub">HTML5 CRICKET CHALLENGE</div><h2 id="title">Cricket Champs</h2><p id="message">Face 2 overs in each challenge. Watch the ball, time your shot and aim for boundaries. Score enough runs to chase the target and unlock the next level.</p><div class="row"><button class="primary" id="startBtn">Start batting</button></div><div class="help">Keyboard: press SPACE or ENTER to hit · Mobile: tap SHOT<br>Timing is everything — hit when the ball reaches the crease!</div></div></div>
+</div>
+<div class="mobile"><div class="pad"><button class="ctrl" id="defend">🛡 Defend</button><button class="ctrl" id="swing">↗ Loft</button></div><button class="ctrl shot" id="hit">🏏 SHOT</button></div>
+<div class="note">Score 1, 2, 3, 4 or 6 runs · Miss or mistime the ball and risk losing a wicket</div>
+</div>
+<script>
+(()=>{
+const c=document.getElementById('game'),g=c.getContext('2d'),W=960,H=540,$=id=>document.getElementById(id);
+let level=0,runs=0,wickets=0,balls=0,best=+(localStorage.getItem('cc_best')||0),target=0,active=false,ball=null,shotAnim=0,batSwing=0,last=0,sound=true,audio=null,feedback='',feedbackTime=0,shake=0,history=JSON.parse(localStorage.getItem('cc_scores')||'[]');
+const maxBalls=12,targets=[24,32,40,48,58],overs=()=>Math.floor(balls/6)+'.'+(balls%6);
+$('best').textContent=best;
+function beep(f=500,d=.1,type='sine'){if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),a=audio.createGain();o.type=type;o.frequency.value=f;a.gain.setValueAtTime(.07,audio.currentTime);a.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.connect(a);a.connect(audio.destination);o.start();o.stop(audio.currentTime+d)}catch(e){}}
+function hud(){$('level').textContent=(level+1)+' / 5';$('score').textContent=runs+'/'+wickets;$('overs').textContent=overs();$('target').textContent=target;$('best').textContent=best}
+function start(){runs=0;wickets=0;balls=0;target=targets[level];ball=null;feedback='';active=true;hud();$('overlay').classList.add('hide');spawnBall();last=0;requestAnimationFrame(loop)}
+function overlay(t,m,b){active=false;$('title').textContent=t;$('message').textContent=m;$('startBtn').textContent=b;$('overlay').classList.remove('hide')}
+function spawnBall(){if(!active)return;if(balls>=maxBalls){endInnings();return}let line=Math.random();ball={x:480+(Math.random()-.5)*80,y:230+Math.random()*20,vx:(Math.random()-.5)*1.4,vy:3.1+level*.42,done:false,line:line<.18?'wide':line>.84?'leg':'good',swing:Math.random()*.7-.35};}
+function endInnings(){if(runs>=target){best=Math.max(best,runs);localStorage.setItem('cc_best',best);history.unshift({level:level+1,runs,date:new Date().toLocaleDateString()});history=history.slice(0,5);localStorage.setItem('cc_scores',JSON.stringify(history));hud();if(level<4){overlay('Level '+(level+1)+' won! 🏆',`Excellent batting! You scored ${runs} runs and chased ${target}. Next challenge target: ${targets[level+1]}.`,'Next level');beep(750,.16);setTimeout(()=>beep(980,.2),140)}else{overlay('Series champion! 🏆',`Incredible! You won all five challenges. Final score: ${runs}. Your best is saved on this device.`,'Play again');beep(850,.2);setTimeout(()=>beep(1100,.25),170)}}else{overlay('Innings over',`You scored ${runs}/${wickets} in 2 overs. The target was ${target}. Keep practising and try again!`,'Retry level');beep(170,.25,'triangle')}}
+function hit(style='normal'){if(!active||!ball||ball.done)return;let dx=Math.abs(ball.x-480),dy=Math.abs(ball.y-395);let timing=Math.max(0,1-(dy/125))*(1-Math.min(1,dx/130));let threshold=style==='defend'?.26:.36;
+ if(timing<threshold){ball.done=true;balls++;if(ball.y>355&&Math.random()<.42){wickets++;feedback='BOWLED! Wicket down';beep(150,.24,'sawtooth')}else{feedback='MISSED! Dot ball';beep(220,.12)}feedbackTime=75;hud();setTimeout(()=>{if(active)spawnBall()},650);return}
+ ball.done=true;balls++;let quality=timing+(style==='loft'?.12:0);let value=quality>.83?6:quality>.67?4:quality>.53?3:quality>.42?2:1;if(style==='defend')value=Math.min(value,2);if(ball.line==='wide'&&style==='normal'){value=1;balls--;}
+ runs+=value;feedback=value===6?'SIX! What a hit!':value===4?'FOUR! Beautiful boundary':value===1&&ball.line==='wide'?'WIDE! +1 run':` ${value} RUN${value>1?'S':''}!`;feedbackTime=85;batSwing=18;beep(value>=4?900:560,.13);if(value>=4){setTimeout(()=>beep(value===6?1200:780,.16),100)}hud();setTimeout(()=>{if(active){if(runs>=target)endInnings();else spawnBall()}},650);
+}
+function update(dt){if(!ball||ball.done){if(feedbackTime>0)feedbackTime--;return}ball.y+=ball.vy*dt*.06;ball.x+=ball.vx*dt*.06+ball.swing*dt*.012;if(ball.y>455){ball.done=true;balls++;feedback='DOT BALL';feedbackTime=60;hud();setTimeout(()=>{if(active)spawnBall()},550)}if(batSwing>0)batSwing--;}
+function polygon(points,color){g.fillStyle=color;g.beginPath();g.moveTo(...points[0]);points.slice(1).forEach(p=>g.lineTo(...p));g.closePath();g.fill()}
+function draw(){
+ let sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#75b6ce');sky.addColorStop(.52,'#c6d9bd');sky.addColorStop(.53,'#276b48');sky.addColorStop(1,'#16432f');g.fillStyle=sky;g.fillRect(0,0,W,H);
+ // stadium stands
+ polygon([[0,160],[250,105],[710,105],[960,160],[960,280],[0,280]],'#43545a');for(let row=0;row<5;row++){g.strokeStyle=['#e2a36b','#9bc4b0','#d8d5a0','#9ab2d0','#e0a4a6'][row];g.lineWidth=5;g.beginPath();g.moveTo(20,170+row*19);g.lineTo(940,170+row*19);g.stroke()}
+ for(let i=0;i<170;i++){g.fillStyle=['#f4d6a1','#c5e5d3','#d8b9df','#f0a6a6'][i%4];g.fillRect((i*53)%960,125+(i*31)%135,4,5)}
+ // outfield
+ g.fillStyle='#28764b';g.beginPath();g.ellipse(480,420,460,210,0,0,Math.PI*2);g.fill();g.strokeStyle='#b5d9a2';g.lineWidth=3;g.beginPath();g.ellipse(480,420,430,185,0,0,Math.PI*2);g.stroke();
+ // pitch perspective
+ polygon([[410,205],[550,205],[610,540],[350,540],'#c9ad78']);g.fillStyle='#cbb98b';g.fillRect(414,220,132,320);g.fillStyle='#b39463';g.fillRect(420,220,120,320);
+ // creases wickets
+ g.strokeStyle='white';g.lineWidth=3;g.beginPath();g.moveTo(390,420);g.lineTo(570,420);g.moveTo(420,230);g.lineTo(540,230);g.stroke();
+ for(let x of [463,480,497]){g.fillStyle='#f6eee0';g.fillRect(x-2,393,4,30);g.fillRect(x-2,204,4,25)}
+ // batter
+ g.fillStyle='#e9ece8';g.beginPath();g.arc(480,355,16,0,Math.PI*2);g.fill();g.fillStyle='#e2e7e9';g.fillRect(463,370,34,58);g.fillStyle='#243e5d';g.fillRect(464,424,13,34);g.fillRect(484,424,13,34);
+ // bat swings
+ g.save();g.translate(500,391);g.rotate(batSwing>0?-.9: -.25);g.fillStyle='#b77a3f';g.fillRect(0,-5,12,75);g.fillStyle='#e8c08a';g.fillRect(-2,62,16,10);g.restore();
+ // bowler
+ g.fillStyle='#dbb58d';g.beginPath();g.arc(480,178,12,0,Math.PI*2);g.fill();g.fillStyle='#e7f0f0';g.fillRect(468,190,24,39);g.strokeStyle='#e7f0f0';g.lineWidth=7;g.beginPath();g.moveTo(470,200);g.lineTo(449,222);g.moveTo(490,200);g.lineTo(510,218);g.stroke();
+ if(ball&&!ball.done){g.fillStyle='#a92f38';g.beginPath();g.arc(ball.x,ball.y,9,0,Math.PI*2);g.fill();g.strokeStyle='#f8d7cf';g.lineWidth=1.5;g.beginPath();g.arc(ball.x,ball.y,6,-1,1);g.stroke()}
+ // scoreboard banner
+ g.fillStyle='#102c25cc';g.fillRect(20,18,230,58);g.fillStyle='#fff';g.font='bold 18px system-ui';g.fillText('CRICKET CHAMPS',34,42);g.font='13px system-ui';g.fillStyle='#c8e8d0';g.fillText('LEVEL '+(level+1)+'  •  TARGET '+target,34,63);
+ if(feedbackTime>0){g.fillStyle='#10251fe0';g.fillRect(270,90,420,54);g.textAlign='center';g.font='bold 27px system-ui';g.fillStyle=feedback.includes('WICKET')||feedback.includes('BOWLED')?'#ff9696':'#ffe28a';g.fillText(feedback,480,126);g.textAlign='left'}
+ // ball count
+ g.fillStyle='#ffffffdd';g.font='bold 16px system-ui';g.fillText('BALLS  '+balls+'/'+maxBalls,780,42);
+}
+function loop(t){if(!active)return;let dt=Math.min(40,t-(last||t));last=t;update(dt||16);draw();requestAnimationFrame(loop)}
+$('startBtn').onclick=()=>{if($('startBtn').textContent==='Next level')level++;start()};
+$('homeBtn').onclick=()=>overlay('Cricket Champs','Face 2 overs in each challenge. Watch the ball, time your shot and aim for boundaries. Score enough runs to chase the target and unlock the next level.','Start batting');
+$('soundBtn').onclick=()=>{sound=!sound;$('soundBtn').textContent=sound?'🔊 Sound':'🔇 Muted';if(sound)beep()};
+window.addEventListener('keydown',e=>{if(e.code==='Space'||e.key==='Enter'){e.preventDefault();hit('normal')}if(e.key==='ArrowUp'||e.key==='w')hit('loft');if(e.key==='ArrowDown'||e.key==='s')hit('defend')});
+$('hit').addEventListener('pointerdown',e=>{e.preventDefault();hit('normal')});$('swing').addEventListener('pointerdown',e=>{e.preventDefault();hit('loft')});$('defend').addEventListener('pointerdown',e=>{e.preventDefault();hit('defend')});
+draw();hud();
+})();
+</script></body></html>

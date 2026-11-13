@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock & Billing Manager</title>
+<style>
+:root{--bg:#f4f7fb;--panel:#fff;--ink:#172033;--muted:#667085;--line:#e6eaf0;--brand:#3157d5;--brand2:#203fae;--red:#d92d20;--amber:#b54708;--green:#067647;--shadow:0 8px 24px #1720330b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
+header{background:#101d3a;color:#fff;padding:18px 26px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand{font-size:20px;font-weight:750;letter-spacing:.2px}.brand small{display:block;color:#b9c5e2;font-size:11px;font-weight:400;margin-top:2px}
+nav{display:flex;gap:7px;flex-wrap:wrap;padding:12px 24px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button,.btn{border:0;border-radius:9px;padding:10px 14px;background:#eef2ff;color:#2947b7;font-weight:650;cursor:pointer}
+nav button.active,.btn.primary{background:var(--brand);color:#fff}button:hover{filter:brightness(.97)}.btn.dark{background:#182746;color:#fff}.btn.light{background:#f2f4f7;color:#344054}.btn.danger{background:#fee4e2;color:#b42318}
+main{max-width:1440px;margin:auto;padding:24px}.screen{display:none}.screen.active{display:block}
+h1{font-size:24px;margin:0 0 5px}h2{font-size:17px;margin:0 0 15px}.sub{color:var(--muted);margin:0 0 20px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.metric-label{color:var(--muted);font-size:12px}.metric{font-size:26px;font-weight:750;margin-top:7px}.metric-note{color:var(--muted);font-size:11px;margin-top:3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+label{display:block;font-size:12px;color:#475467;font-weight:650;margin-bottom:5px}input,select,textarea{width:100%;padding:10px 11px;border:1px solid #d0d5dd;border-radius:8px;background:#fff;color:var(--ink);font:inherit;min-width:0}
+input:focus,select:focus{outline:2px solid #c7d2fe;border-color:#8094ed}.field{margin-bottom:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:12px}table{width:100%;border-collapse:collapse;white-space:nowrap;background:#fff}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}th{background:#f8fafc;color:#475467;font-size:11px;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:0}.right{text-align:right}.muted{color:var(--muted)}.pill{display:inline-block;padding:4px 8px;border-radius:30px;font-size:11px;font-weight:700}.ok{background:#dcfae6;color:#067647}.warn{background:#fef0c7;color:#93370d}.bad{background:#fee4e2;color:#b42318}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.toolbar .search{max-width:280px}.alertlist{display:grid;gap:8px}.alert{padding:10px 12px;border-radius:9px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}.empty{padding:22px;text-align:center;color:var(--muted)}
+.small{font-size:12px}.hidden{display:none!important}.notice{padding:11px 13px;border-radius:9px;background:#eff6ff;color:#1d4ed8;margin:12px 0}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.formgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){main{padding:14px}.cards{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}header{padding:15px}.metric{font-size:22px}nav{padding:9px}}
+@media print{header,nav,.no-print,.actions,.toolbar .search{display:none!important}body{background:#fff}main{padding:0;max-width:none}.screen{display:none!important}#inventory.screen.active{display:block!important}.card,.panel{box-shadow:none}table{font-size:10px}th,td{padding:6px}}
+</style>
+</head>
+<body>
+<header><div class="brand">StockPilot <small>Inventory, expiry tracking & billing</small></div><div class="small">Local-first stock manager · INR (₹)</div></header>
+<nav class="no-print">
+<button class="active" data-screen="dashboard">Dashboard</button><button data-screen="inventory">Stock entry</button><button data-screen="prices">Price setup</button><button data-screen="billing">Billing / Sales</button><button data-screen="reports">Reports</button><button data-screen="backup">JSON backup</button>
+</nav>
+<main>
+<section id="dashboard" class="screen active">
+<h1>Dashboard</h1><p class="sub">Live inventory position, expiry warnings and stock value.</p>
+<div class="cards">
+<div class="card"><div class="metric-label">Products / batches</div><div class="metric" id="mProducts">0</div><div class="metric-note">Active stock records</div></div>
+<div class="card"><div class="metric-label">Total units in stock</div><div class="metric" id="mUnits">0</div><div class="metric-note">Across all batches</div></div>
+<div class="card"><div class="metric-label">Stock cost value</div><div class="metric" id="mCost">₹0.00</div><div class="metric-note">Quantity × cost price</div></div>
+<div class="card"><div class="metric-label">Potential sales value</div><div class="metric" id="mSales">₹0.00</div><div class="metric-note">Quantity × selling price</div></div>
+</div>
+<div class="grid2">
+<div class="panel"><h2>Alerts & attention</h2><div id="alerts" class="alertlist"></div></div>
+<div class="panel"><h2>Cost summary</h2><div class="tablewrap"><table><tbody>
+<tr><td>Total inventory cost</td><td class="right" id="dCost">₹0.00</td></tr><tr><td>Potential gross margin</td><td class="right" id="dMargin">₹0.00</td></tr><tr><td>Expired stock value (cost)</td><td class="right" id="dExpired">₹0.00</td></tr><tr><td>Low-stock products</td><td class="right" id="dLow">0</td></tr></tbody></table></div></div>
+</div>
+<div class="panel" style="margin-top:16px"><div class="toolbar"><h2>Upcoming expiry (nearest first)</h2><button class="btn light no-print" onclick="showScreen('inventory')">View stock</button></div><div id="dashExpiry"></div></div>
+</section>
+
+<section id="inventory" class="screen">
+<h1>Stock entry</h1><p class="sub">Add each received batch separately so expiry dates and quantities remain traceable.</p>
+<div class="panel no-print"><h2 id="stockFormTitle">Add stock batch</h2>
+<form id="stockForm"><input type="hidden" id="editId"><div class="formgrid">
+<div class="field"><label>Product name *</label><input id="product" required placeholder="e.g. Whole milk 500 ml"></div>
+<div class="field"><label>SKU / item code</label><input id="sku" placeholder="Optional code"></div>
+<div class="field"><label>Category</label><input id="category" placeholder="e.g. Grocery"></div>
+<div class="field"><label>Batch / lot number</label><input id="batch" placeholder="Optional"></div>
+<div class="field"><label>Quantity received *</label><input id="qty" type="number" min="0" step="0.001" required></div>
+<div class="field"><label>Low-stock alert level *</label><input id="minQty" type="number" min="0" step="0.001" value="5" required></div>
+<div class="field"><label>Expiry date *</label><input id="expiry" type="date" required></div>
+<div class="field"><label>Cost price per unit (₹)</label><input id="cost" type="number" min="0" step="0.01" value="0"></div>
+<div class="field"><label>Selling price per unit (₹)</label><input id="price" type="number" min="0" step="0.01" value="0"></div>
+</div><div class="actions"><button class="btn primary" type="submit">Save stock</button><button class="btn light" type="button" onclick="resetStockForm()">Clear</button></div></form></div>
+<div class="panel" style="margin-top:16px"><div class="toolbar"><div><h2>Current stock</h2><div class="muted small">Sorted by expiry date: latest expiry first (descending).</div></div><input class="search" id="stockSearch" placeholder="Search product / SKU"></div>
+<div class="actions no-print"><button class="btn light" onclick="window.print()">Print stock list</button><button class="btn light" onclick="exportCSV()">Export CSV</button></div><div id="stockTable"></div></div>
+</section>
+
+<section id="prices" class="screen">
+<h1>Price setup</h1><p class="sub">Maintain cost and selling prices independently for each product. Changes apply to matching stock batches.</p>
+<div class="panel"><h2>Product price list</h2><div class="toolbar"><span class="muted small">Update prices without changing quantities or expiry dates.</span><input class="search" id="priceSearch" placeholder="Search product / SKU"></div><div id="priceTable"></div></div>
+</section>
+
+<section id="billing" class="screen">
+<h1>Billing / Sales</h1><p class="sub">Create a bill. Stock is reduced automatically using earliest-expiry-first batch allocation.</p>
+<div class="grid2">
+<div class="panel"><h2>Add items to bill</h2><div class="field"><label>Product</label><select id="billProduct"></select></div>
+<div class="field"><label>Quantity</label><input id="billQty" type="number" min="0.001" step="0.001" value="1"></div>
+<div class="actions"><button class="btn primary" onclick="addBillItem()">Add to bill</button></div>
+<div id="billCart"></div></div>
+<div class="panel"><h2>Bill details</h2><div class="field"><label>Customer name</label><input id="customer" placeholder="Walk-in customer"></div><div class="field"><label>Bill date</label><input id="billDate" type="date"></div><div id="billTotals" class="notice">No items added yet.</div><div class="actions"><button class="btn primary" onclick="completeBill()">Complete sale & reduce stock</button><button class="btn light" onclick="clearCart()">Clear bill</button></div></div>
+</div>
+<div class="panel" style="margin-top:16px"><h2>Recent bills</h2><div id="billHistory"></div></div>
+</section>
+
+<section id="reports" class="screen">
+<h1>Stock reports</h1><p class="sub">Valuation and movement summaries.</p><div class="cards">
+<div class="card"><div class="metric-label">Total cost value</div><div class="metric" id="rCost">₹0</div></div><div class="card"><div class="metric-label">Potential sales value</div><div class="metric" id="rSales">₹0</div></div><div class="card"><div class="metric-label">Gross margin potential</div><div class="metric" id="rMargin">₹0</div></div><div class="card"><div class="metric-label">Units sold (all bills)</div><div class="metric" id="rSold">0</div></div>
+</div><div class="panel"><h2>Stock valuation by product</h2><div id="valuationTable"></div></div>
+</section>
+
+<section id="backup" class="screen">
+<h1>JSON backup & restore</h1><p class="sub">Download a complete backup or restore this app from a previously saved JSON file.</p>
+<div class="grid2"><div class="panel"><h2>Export backup</h2><p class="muted">Includes stock batches, price setup, sales bills and settings.</p><button class="btn primary" onclick="downloadJSON()">Download JSON backup</button></div>
+<div class="panel"><h2>Import backup</h2><p class="muted">Import replaces the current local data. Export a backup first if you need to keep it.</p><input type="file" id="jsonFile" accept=".json,application/json"><div class="actions"><button class="btn danger" onclick="importJSON()">Import and replace data</button></div></div></div>
+<div class="notice">Data is stored in this browser using localStorage. It does not automatically sync to another computer or browser. Keep regular JSON backups.</div>
+</section>
+</main>
+<script>
+const KEY='stockpilot_v1';
+let db={stocks:[],bills:[]}, cart=[];
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num=id=>Number($(id).value||0);
+const today=()=>new Date().toISOString().slice(0,10);
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&Array.isArray(x.stocks)&&Array.isArray(x.bills))db=x}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function uid(){return 'S'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function dayDiff(date){const a=new Date(today()+'T00:00:00'),b=new Date(date+'T00:00:00');return Math.round((b-a)/86400000)}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.screen===id));if(id==='billing')renderBilling();if(id==='prices')renderPrices()}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.screen)));
+function resetStockForm(){$('stockForm').reset();$('editId').value='';$('minQty').value=5;$('stockFormTitle').textContent='Add stock batch'}
+$('stockForm').addEventListener('submit',e=>{e.preventDefault();const id=$('editId').value;const item={id:id||uid(),product:$('product').value.trim(),sku:$('sku').value.trim(),category:$('category').value.trim(),batch:$('batch').value.trim(),qty:num('qty'),minQty:num('minQty'),expiry:$('expiry').value,cost:num('cost'),price:num('price')};if(!item.product||!item.expiry||item.qty<0)return alert('Please enter valid product, quantity and expiry date.');if(id){const old=db.stocks.find(x=>x.id===id);if(old){old.product=item.product;old.sku=item.sku;old.category=item.category;old.batch=item.batch;old.qty=item.qty;old.minQty=item.minQty;old.expiry=item.expiry;old.cost=item.cost;old.price=item.price}}else db.stocks.push(item);resetStockForm();save()});
+function editStock(id){const x=db.stocks.find(s=>s.id===id);if(!x)return;showScreen('inventory');$('editId').value=x.id;['product','sku','category','batch','qty','minQty','expiry','cost','price'].forEach(k=>$(k).value=x[k]??'');$('stockFormTitle').textContent='Edit stock batch';window.scrollTo({top:0,behavior:'smooth'})}
+function deleteStock(id){if(confirm('Delete this stock batch?')){db.stocks=db.stocks.filter(s=>s.id!==id);save()}}
+function renderStock(){const q=($('stockSearch')?.value||'').toLowerCase();const arr=[...db.stocks].filter(s=>(s.product+' '+s.sku+' '+s.batch).toLowerCase().includes(q)).sort((a,b)=>b.expiry.localeCompare(a.expiry));$('stockTable').innerHTML=arr.length?`<div class="tablewrap"><table><thead><tr><th>Product</th><th>SKU / Batch</th><th>Qty</th><th>Low level</th><th>Expiry</th><th>Cost</th><th>Selling</th><th>Stock cost</th><th>Status</th><th class="no-print">Action</th></tr></thead><tbody>${arr.map(s=>`<tr><td><b>${esc(s.product)}</b><div class="muted small">${esc(s.category||'')}</div></td><td>${esc(s.sku||'—')} / ${esc(s.batch||'—')}</td><td>${s.qty}</td><td>${s.minQty}</td><td>${s.expiry}</td><td>${money(s.cost)}</td><td>${money(s.price)}</td><td>${money(s.qty*s.cost)}</td><td>${status(s)}</td><td class="no-print"><button class="btn light" onclick="editStock('${s.id}')">Edit</button> <button class="btn danger" onclick="deleteStock('${s.id}')">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No stock records. Add your first batch above.</div>'}
+function status(s){let d=dayDiff(s.expiry);if(d<0)return '<span class="pill bad">Expired</span>';if(d<=3)return `<span class="pill bad">Expires in ${d} day(s)</span>`;if(s.qty<=s.minQty)return '<span class="pill warn">Low stock</span>';return '<span class="pill ok">In stock</span>'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderDashboard(){const units=db.stocks.reduce((a,s)=>a+s.qty,0),cost=db.stocks.reduce((a,s)=>a+s.qty*s.cost,0),sales=db.stocks.reduce((a,s)=>a+s.qty*s.price,0),expired=db.stocks.filter(s=>dayDiff(s.expiry)<0).reduce((a,s)=>a+s.qty*s.cost,0),low=db.stocks.filter(s=>s.qty<=s.minQty).length;
+$('mProducts').textContent=db.stocks.length;$('mUnits').textContent=units;$('mCost').textContent=money(cost);$('mSales').textContent=money(sales);$('dCost').textContent=money(cost);$('dMargin').textContent=money(sales-cost);$('dExpired').textContent=money(expired);$('dLow').textContent=low;
+let alerts=[];db.stocks.forEach(s=>{let d=dayDiff(s.expiry);if(d<0)alerts.push(`<div class="alert"><b>Expired:</b> ${esc(s.product)} — ${s.qty} units (expiry ${s.expiry})</div>`);else if(d<=3)alerts.push(`<div class="alert"><b>Expiry alert:</b> ${esc(s.product)} — ${s.qty} units expire ${d===0?'today':'in '+d+' day(s)'} (${s.expiry})</div>`);if(s.qty<=s.minQty)alerts.push(`<div class="alert"><b>Low stock:</b> ${esc(s.product)} — ${s.qty} left (alert at ${s.minQty})</div>`)});$('alerts').innerHTML=alerts.join('')||'<div class="empty">No current alerts.</div>';
+const exp=[...db.stocks].filter(s=>dayDiff(s.expiry)>=0).sort((a,b)=>a.expiry.localeCompare(b.expiry)).slice(0,8);$('dashExpiry').innerHTML=exp.length?`<div class="tablewrap"><table><thead><tr><th>Product</th><th>Qty</th><th>Expiry</th><th>Days left</th></tr></thead><tbody>${exp.map(s=>`<tr><td>${esc(s.product)}</td><td>${s.qty}</td><td>${s.expiry}</td><td>${dayDiff(s.expiry)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No upcoming expiry records.</div>'}
+function renderPrices(){let q=($('priceSearch')?.value||'').toLowerCase();let groups={};db.stocks.forEach(s=>{let k=(s.sku||s.product).toLowerCase();if(!groups[k])groups[k]={key:k,name:s.product,sku:s.sku,cost:s.cost,price:s.price,ids:[]};groups[k].ids.push(s.id)});let a=Object.values(groups).filter(x=>(x.name+' '+x.sku).toLowerCase().includes(q));$('priceTable').innerHTML=a.length?`<div class="tablewrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Cost price</th><th>Selling price</th><th>Action</th></tr></thead><tbody>${a.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${esc(x.sku||'—')}</td><td><input type="number" min="0" step=".01" id="pc${i}" value="${x.cost}"></td><td><input type="number" min="0" step=".01" id="ps${i}" value="${x.price}"></td><td><button class="btn primary" onclick="savePrice('${x.ids.join(',')}',${i})">Save</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No products to configure.</div>';window.priceGroups=a}
+function savePrice(ids,i){let c=Number($('pc'+i).value),p=Number($('ps'+i).value);if(c<0||p<0||!Number.isFinite(c)||!Number.isFinite(p))return alert('Enter valid prices.');ids.split(',').forEach(id=>{let s=db.stocks.find(x=>x.id===id);if(s){s.cost=c;s.price=p}});save()}
+function renderBilling(){let opts=[...new Map(db.stocks.filter(s=>s.qty>0).map(s=>[s.sku||s.product,{key:s.sku||s.product,name:s.product,price:s.price,qty:db.stocks.filter(t=>(t.sku||t.product)===(s.sku||s.product)).reduce((n,t)=>n+t.qty,0)}])).values()];$('billProduct').innerHTML=opts.map(x=>`<option value="${esc(x.key)}">${esc(x.name)} — ${x.qty} available · ${money(x.price)}</option>`).join('')||'<option value="">No available stock</option>';$('billDate').value=$('billDate').value||today();renderCart()}
+function addBillItem(){let key=$('billProduct').value,q=num('billQty');if(!key||q<=0)return alert('Choose a product and enter a quantity.');let available=db.stocks.filter(s=>(s.sku||s.product)===key).reduce((a,s)=>a+s.qty,0);let already=cart.filter(x=>x.key===key).reduce((a,x)=>a+x.qty,0);if(q+already>available)return alert('Insufficient stock. Available: '+(available-already));let s=db.stocks.find(x=>(x.sku||x.product)===key&&x.qty>0);let item=cart.find(x=>x.key===key);if(item)item.qty+=q;else cart.push({key,name:s.product,qty:q,price:s.price});renderCart()}
+function renderCart(){let total=cart.reduce((a,x)=>a+x.qty*x.price,0);$('billCart').innerHTML=cart.length?`<div class="tablewrap"><table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th><th></th></tr></thead><tbody>${cart.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td><td><button class="btn danger" onclick="cart.splice(${i},1);renderCart()">×</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Bill is empty.</div>';$('billTotals').innerHTML=`<b>Bill total: ${money(total)}</b><div class="small muted">${cart.length} product line(s)</div>`}
+function clearCart(){cart=[];renderCart()}
+function completeBill(){if(!cart.length)return alert('Add at least one item.');for(let x of cart){let avail=db.stocks.filter(s=>(s.sku||s.product)===x.key).reduce((a,s)=>a+s.qty,0);if(avail<x.qty)return alert('Stock changed. Insufficient quantity for '+x.name)}
+let lines=[];cart.forEach(x=>{let remain=x.qty;let batches=db.stocks.filter(s=>(s.sku||s.product)===x.key&&s.qty>0).sort((a,b)=>a.expiry.localeCompare(b.expiry));for(let s of batches){let take=Math.min(remain,s.qty);if(take>0){s.qty-=take;lines.push({product:x.name,sku:s.sku,batch:s.batch,qty:take,price:x.price,cost:s.cost,expiry:s.expiry});remain-=take}if(remain<=0)break}});
+let bill={id:'INV-'+Date.now(),date:$('billDate').value||today(),customer:$('customer').value.trim()||'Walk-in customer',items:lines,total:lines.reduce((a,x)=>a+x.qty*x.price,0),cost:lines.reduce((a,x)=>a+x.qty*x.cost,0)};db.bills.unshift(bill);cart=[];save();renderBilling();alert('Sale completed. Stock quantities have been reduced automatically.');}
+function renderBills(){$('billHistory').innerHTML=db.bills.length?`<div class="tablewrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Units</th><th>Sales</th><th>Cost</th><th>Profit</th><th></th></tr></thead><tbody>${db.bills.slice(0,50).map((b,i)=>`<tr><td>${b.id}</td><td>${b.date}</td><td>${esc(b.customer)}</td><td>${b.items.reduce((a,x)=>a+x.qty,0)}</td><td>${money(b.total)}</td><td>${money(b.cost)}</td><td>${money(b.total-b.cost)}</td><td><button class="btn light" onclick="printBill('${b.id}')">Print</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No bills yet.</div>'}
+function printBill(id){let b=db.bills.find(x=>x.id===id);if(!b)return;let w=window.open('','_blank');w.document.write(`<html><head><title>${b.id}</title><style>body{font:14px Arial;padding:25px}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ddd;padding:8px;text-align:left}</style></head><body><h2>StockPilot — Invoice</h2><p>${b.id} · ${b.date}<br>Customer: ${esc(b.customer)}</p><table><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>${b.items.map(x=>`<tr><td>${esc(x.product)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join('')}</table><h3>Total: ${money(b.total)}</h3><script>window.print()<\/script></body></html>`);w.document.close()}
+function renderReports(){let c=db.stocks.reduce((a,s)=>a+s.qty*s.cost,0),v=db.stocks.reduce((a,s)=>a+s.qty*s.price,0),sold=db.bills.reduce((a,b)=>a+b.items.reduce((n,x)=>n+x.qty,0),0);$('rCost').textContent=money(c);$('rSales').textContent=money(v);$('rMargin').textContent=money(v-c);$('rSold').textContent=sold;let g={};db.stocks.forEach(s=>{let k=s.sku||s.product;if(!g[k])g[k]={name:s.product,qty:0,cost:0,sales:0};g[k].qty+=s.qty;g[k].cost+=s.qty*s.cost;g[k].sales+=s.qty*s.price});let a=Object.values(g);$('valuationTable').innerHTML=a.length?`<div class="tablewrap"><table><thead><tr><th>Product</th><th>Qty</th><th>Cost value</th><th>Sales value</th><th>Potential margin</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.cost)}</td><td>${money(x.sales)}</td><td>${money(x.sales-x.cost)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No stock records.</div>'}
+function renderAll(){renderStock();renderDashboard();renderPrices();renderBilling();renderBills();renderReports()}
+$('stockSearch').addEventListener('input',renderStock);$('priceSearch').addEventListener('input',renderPrices);
+function downloadJSON(){let blob=new Blob([JSON.stringify({app:'StockPilot',version:1,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='stockpilot-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function importJSON(){let f=$('jsonFile').files[0];if(!f)return alert('Choose a JSON backup file.');if(!confirm('This will replace all current stock and bill data. Continue?'))return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result),d=x.data||x;if(!Array.isArray(d.stocks)||!Array.isArray(d.bills))throw Error('Invalid backup structure');db=d;save();alert('Backup imported successfully.')}catch(e){alert('Could not import: '+e.message)}};r.readAsText(f)}
+function exportCSV(){let rows=[['Product','SKU','Batch','Quantity','Low stock level','Expiry','Cost price','Selling price','Stock cost value'],...db.stocks.map(s=>[s.product,s.sku,s.batch,s.qty,s.minQty,s.expiry,s.cost,s.price,s.qty*s.cost])];let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='stock-list-'+today()+'.csv';a.click();URL.revokeObjectURL(a.href)}
+load();renderAll();
+</script>
+</body></html>

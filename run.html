@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Neon Run 3D</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#253d70,#101426 70%);color:#f4f7ff;font-family:system-ui,Segoe UI,sans-serif;display:grid;place-items:center;padding:12px}.app{width:min(1000px,100%)}header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.brand{display:flex;align-items:center;gap:10px}.logo{font-size:28px;background:#243b65;border-radius:13px;padding:9px}h1{margin:0;font-size:clamp(22px,4vw,30px)}.sub{font-size:12px;color:#aebcda}.tools{display:flex;gap:7px}button{font:inherit;border:0;border-radius:11px;font-weight:750;cursor:pointer}.tool{background:#263553;color:white;padding:9px 12px}.hud{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.stat{background:#1b2742;border:1px solid #ffffff18;border-radius:12px;padding:8px 12px}.stat small{display:block;color:#aebcda;font-size:11px}.stat b{font-size:20px}.stage{position:relative;overflow:hidden;border-radius:18px;border:1px solid #ffffff25;box-shadow:0 20px 50px #0007;background:#0d1427}.stage canvas{width:100%;height:auto;display:block;aspect-ratio:16/9;touch-action:none}.overlay{position:absolute;inset:0;background:#0c1426d9;display:grid;place-items:center;text-align:center;padding:18px}.overlay.hide{display:none}.panel{max-width:520px}.hero{font-size:54px}.panel h2{font-size:clamp(26px,5vw,40px);margin:4px}.panel p{color:#c0cbe1;line-height:1.5}.primary{padding:13px 23px;background:linear-gradient(110deg,#73e6dc,#8aa9ff);color:#101b33}.secondary{padding:12px 18px;background:#2a3b5b;color:white}.row{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.help{font-size:12px;color:#b9c6df;margin-top:13px}.mobile{display:flex;justify-content:space-between;align-items:center;max-width:480px;margin:10px auto 0;gap:12px;user-select:none}.pad{display:flex;gap:9px}.ctrl{width:62px;height:54px;background:#263b60;color:white;font-size:22px;touch-action:none;box-shadow:inset 0 -4px #17243d}.ctrl:active{transform:translateY(2px)}.jump{width:92px;background:#56452c;color:#ffe7a6}.note{text-align:center;color:#9eacc9;font-size:12px;margin-top:8px}@media(max-width:540px){body{padding:7px}.hud{grid-template-columns:repeat(2,1fr)}.ctrl{width:55px;height:50px}.jump{width:84px}}
+</style></head>
+<body><div class="app">
+<header><div class="brand"><div class="logo">🏎️</div><div><h1>Neon Run 3D</h1><div class="sub">Dodge • Collect • Survive</div></div></div><div class="tools"><button class="tool" id="sound">🔊 Sound</button><button class="tool" id="home">⌂ Home</button></div></header>
+<div class="hud"><div class="stat"><small>LEVEL</small><b id="level">1 / 5</b></div><div class="stat"><small>DISTANCE</small><b id="distance">0 m</b></div><div class="stat"><small>SCORE</small><b id="score">0</b></div><div class="stat"><small>BEST</small><b id="best">0</b></div></div>
+<div class="stage"><canvas id="game" width="960" height="540"></canvas><div class="overlay" id="overlay"><div class="panel"><div class="hero">🌌</div><div class="sub">A 3D-STYLE ENDLESS RUNNER</div><h2 id="title">Neon Run 3D</h2><p id="message">Race down a glowing track, switch lanes to avoid barriers and collect energy orbs. Reach the distance target to unlock the next level.</p><div class="row"><button class="primary" id="start">Start race</button></div><div class="help">Keyboard: ← → or A / D to change lanes · Space to jump<br>Mobile: use the buttons below the track.</div></div></div></div>
+<div class="mobile"><div class="pad"><button class="ctrl" id="left">◀</button><button class="ctrl" id="right">▶</button></div><button class="ctrl jump" id="jump">⬆ JUMP</button></div><div class="note">Avoid red barriers · Collect cyan energy orbs · Complete each level's distance goal</div>
+</div>
+<script>
+(()=>{
+const c=document.getElementById('game'),g=c.getContext('2d'),W=960,H=540,$=id=>document.getElementById(id);
+let level=0,score=0,best=+(localStorage.getItem('nr3_best')||0),distance=0,speed=0.34,playerLane=0,playerX=0,jumpY=0,jumpV=0,objects=[],running=false,sound=true,audio=null,keys={},touch={left:false,right:false,jump:false},last=0,spawn=0,shake=0;
+const targets=[450,600,750,900,1100],palette=[['#10213d','#17385a','#25d9d0'],['#251d45','#53346f','#ff72b6'],['#142c3c','#245a68','#8ce7ff'],['#39233b','#78445b','#ffc36a'],['#1b2445','#384f83','#b8a6ff']];
+$('best').textContent=best;
+function beep(f=500,d=.1,type='sine'){if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),a=audio.createGain();o.type=type;o.frequency.value=f;a.gain.setValueAtTime(.07,audio.currentTime);a.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.connect(a);a.connect(audio.destination);o.start();o.stop(audio.currentTime+d)}catch(e){}}
+function reset(){distance=0;speed=.34+level*.035;playerLane=0;playerX=0;jumpY=0;jumpV=0;objects=[];spawn=0;shake=0;score=0;updateHud()}
+function updateHud(){$('level').textContent=(level+1)+' / 5';$('distance').textContent=Math.floor(distance)+' m';$('score').textContent=score;$('best').textContent=best}
+function start(){reset();$('overlay').classList.add('hide');running=true;last=0;requestAnimationFrame(loop)}
+function overlay(t,m,b){running=false;$('title').textContent=t;$('message').textContent=m;$('start').textContent=b;$('overlay').classList.remove('hide')}
+function project(x,z,y=0){let depth=1/(1+z*.0015),horizon=175;return {x:W/2+x*depth*390,y:horizon+(H-horizon)*depth-y*depth*1.8,scale:depth}}
+function laneX(lane){return lane*2.5}
+function addObject(){let lane=Math.floor(Math.random()*3)-1;let type=Math.random()<.68?'block':'orb';objects.push({lane,z:1100,type,hit:false,spin:Math.random()*6});}
+function moveLane(d){playerLane=Math.max(-1,Math.min(1,playerLane+d));beep(260,.045)}
+function update(dt){
+ distance+=speed*dt*.06;let targetX=laneX(playerLane);playerX+=(targetX-playerX)*Math.min(1,dt*.012);
+ if((keys[' ']||keys.ArrowUp||keys.w||keys.W||touch.jump)&&jumpY===0){jumpV=13;jumpY=1;beep(390,.08)}
+ if(jumpY>0){jumpY+=jumpV*dt*.06;jumpV-=.7*dt*.06;if(jumpY<=0){jumpY=0;jumpV=0}}
+ spawn+=dt;if(spawn>Math.max(380,900-level*90)){addObject();spawn=0}
+ for(let o of objects){o.z-=speed*dt*.9;if(o.z<45&&!o.hit){o.hit=true;if(o.type==='orb'){score+=30;beep(900,.08);updateHud()}else if(o.lane===playerLane&&jumpY<40){score=Math.max(0,score-40);shake=12;beep(115,.22,'sawtooth');}}}
+ objects=objects.filter(o=>o.z>-90);
+ if(Math.floor(distance)%10===0){}updateHud();
+ if(distance>=targets[level]){if(level<4){level++;best=Math.max(best,score);localStorage.setItem('nr3_best',best);$('best').textContent=best;overlay('Level unlocked! ✨',`Great driving! You reached ${Math.floor(distance)} metres. Level ${level+1} is faster. Your score: ${score}.`,'Next level');beep(700,.15);setTimeout(()=>beep(980,.2),130)}else{best=Math.max(best,score);localStorage.setItem('nr3_best',best);$('best').textContent=best;overlay('Champion racer! 🏆',`You completed all five levels! Final score: ${score}. Best score is saved on this device.`,'Race again');beep(850,.2);setTimeout(()=>beep(1100,.25),160)}}
+}
+function polygon(points,color){g.fillStyle=color;g.beginPath();g.moveTo(points[0][0],points[0][1]);for(let p of points.slice(1))g.lineTo(p[0],p[1]);g.closePath();g.fill()}
+function draw(){
+ let p=palette[level];let sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,p[0]);sky.addColorStop(1,'#0a1021');g.fillStyle=sky;g.fillRect(0,0,W,H);
+ // distant neon skyline and stars
+ for(let i=0;i<70;i++){let x=(i*137)%W,y=(i*71)%155;g.fillStyle='rgba(220,245,255,.65)';g.fillRect(x,y,2,2)}
+ for(let i=0;i<14;i++){let x=i*82-((distance*3)%82),h=25+(i*31)%95;g.fillStyle='#ffffff12';g.fillRect(x,175-h,43,h)}
+ // perspective ground
+ polygon([[0,175],[960,175],[960,540],[0,540]],p[1]);
+ polygon([[300,175],[660,175],[960,540],[0,540]],'#172b3b');
+ // road edges and lanes perspective strips
+ let pulse=(distance*5)%100;
+ for(let z=0;z<1200;z+=100){let a=project(-1.5,z-pulse),b=project(1.5,z-pulse),aa=project(-1.5,z+55-pulse),bb=project(1.5,z+55-pulse);polygon([[a.x,a.y],[b.x,b.y],[bb.x,bb.y],[aa.x,aa.y]],Math.floor((z+pulse)/100)%2?'#1b3446':'#1d3b4c')}
+ for(let lane=-1;lane<=1;lane++){let x=lane*1.0;for(let z=0;z<1200;z+=150){let a=project(x,z-pulse),b=project(x,z+70-pulse);g.strokeStyle='#8bdedc66';g.lineWidth=Math.max(1,4*a.scale);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()}}
+ // horizon glow
+ let glow=g.createRadialGradient(480,180,5,480,180,350);glow.addColorStop(0,p[2]+'55');glow.addColorStop(1,'transparent');g.fillStyle=glow;g.fillRect(100,70,760,330);
+ // objects far to near
+ for(let o of [...objects].sort((a,b)=>b.z-a.z)){let q=project(laneX(o.lane),o.z);let s=80*q.scale;if(o.type==='orb'){let r=Math.max(3,13*q.scale);g.save();g.translate(q.x,q.y-30*q.scale);g.rotate(distance*.04+o.spin);g.shadowBlur=18*q.scale;g.shadowColor='#5dfaff';g.fillStyle='#65f8ff';g.beginPath();g.arc(0,0,r,0,Math.PI*2);g.fill();g.fillStyle='white';g.beginPath();g.arc(-r*.3,-r*.3,r*.28,0,Math.PI*2);g.fill();g.restore()}else{let w=52*q.scale,h=65*q.scale;g.save();g.shadowBlur=14*q.scale;g.shadowColor='#ff4e78';polygon([[q.x-w/2,q.y-h],[q.x+w/2,q.y-h],[q.x+w*.65,q.y],[q.x-w*.65,q.y]],'#e74b68');g.fillStyle='#ffb3c0';g.fillRect(q.x-w*.28,q.y-h*.78,w*.56,h*.12);g.restore()}}
+ // player hover vehicle, pseudo-3D
+ let px=project(playerX,0).x,baseY=478-jumpY*3.2;
+ g.save();g.translate(px,baseY);g.shadowBlur=24;g.shadowColor=p[2];g.fillStyle=p[2]+'66';g.beginPath();g.ellipse(0,12,65,14,0,0,Math.PI*2);g.fill();
+ polygon([[-42,-5],[-29,-35],[-13,-48],[22,-48],[40,-24],[48,-5],[34,10],[-35,10]],'#e7f2ff');
+ polygon([[-25,-32],[-12,-43],[18,-43],[31,-25],[0,-20]],'#4d7da0');
+ polygon([[-42,-5],[-34,8],[-20,12],[-24,1]],p[2]);polygon([[42,-5],[34,8],[20,12],[24,1]],p[2]);
+ g.fillStyle='#14243a';g.fillRect(-31,-2,17,12);g.fillRect(18,-2,17,12);g.fillStyle='#fff4bf';g.fillRect(-10,-8,20,5);g.restore();
+ if(shake>0)shake--;
+ // speed bars
+ g.fillStyle='#ffffffbb';g.font='bold 14px system-ui';g.fillText('DISTANCE TARGET  '+targets[level]+' m',24,30);g.fillStyle='#ffffff33';g.fillRect(24,42,180,7);g.fillStyle=p[2];g.fillRect(24,42,180*Math.min(1,distance/targets[level]),7);
+}
+function loop(t){if(!running)return;let dt=Math.min(40,t-(last||t));last=t;update(dt||16);draw();requestAnimationFrame(loop)}
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight',' ','ArrowUp'].includes(e.key))e.preventDefault();if(!keys[e.key]){if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')moveLane(-1);if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')moveLane(1)}keys[e.key]=true});window.addEventListener('keyup',e=>keys[e.key]=false);window.addEventListener('blur',()=>{keys={};touch={left:false,right:false,jump:false}});
+function bind(id,k,fn){let el=$(id);el.addEventListener('pointerdown',e=>{e.preventDefault();touch[k]=true;if(fn)fn()});['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();touch[k]=false}))}
+bind('left','left',()=>moveLane(-1));bind('right','right',()=>moveLane(1));bind('jump','jump');
+$('start').onclick=()=>{if(!$('overlay').classList.contains('hide')&&$('start').textContent==='Next level'){start();return}level=0;start()};
+$('home').onclick=()=>overlay('Neon Run 3D','Race down a glowing track, switch lanes to avoid barriers and collect energy orbs. Reach the distance target to unlock the next level.','Start race');
+$('sound').onclick=()=>{sound=!sound;$('sound').textContent=sound?'🔊 Sound':'🔇 Muted';if(sound)beep()};
+draw();
+})();
+</script></body></html>

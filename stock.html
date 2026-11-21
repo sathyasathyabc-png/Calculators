@@ -1,0 +1,332 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Market Mind Garden</title>
+<style>
+:root{--bg:#f4f7f4;--ink:#20332d;--muted:#718079;--green:#28745a;--mint:#e4f2e9;--line:#e2eae4}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,Arial}header{background:linear-gradient(120deg,#e1f2e8,#f2effb,#fff2e5);padding:28px 18px}.wrap{max-width:1100px;margin:auto;padding:0 16px}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:6px 0}h2{margin:5px 0 10px}p{margin:8px 0}.muted,.tiny{color:var(--muted)}.tiny{font-size:.85rem}.eyebrow{font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green);font-weight:800}main{padding:22px 0}.layout{display:grid;grid-template-columns:260px 1fr;gap:18px}.panel,.card{background:white;border:1px solid var(--line);border-radius:19px;padding:19px;box-shadow:0 10px 30px #20332d0b}.side{position:sticky;top:12px;height:max-content}.bar{height:8px;background:#edf1ed;border-radius:20px;margin:10px 0 16px;overflow:hidden}.bar span{display:block;height:100%;background:var(--green);width:0}.nav{display:grid;gap:5px}.nav button{background:transparent;color:var(--ink);text-align:left;padding:9px;border-radius:11px;font-weight:600}.nav button.active{background:var(--mint);color:var(--green)}button{border:0;border-radius:12px;padding:10px 14px;background:var(--green);color:white;font-weight:700;cursor:pointer}button.secondary{background:#edf3ef;color:var(--ink)}button.ghost{background:white;color:var(--green);border:1px solid var(--line)}button:disabled{opacity:.4}.main{display:grid;gap:15px}.hero{background:linear-gradient(120deg,#fff,#f1faf4)}.tag{display:inline-block;background:var(--mint);color:var(--green);border-radius:30px;padding:4px 10px;font-size:.78rem;font-weight:750}.actions,.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.tabs button{font-size:.9rem}.tabs button.inactive{background:#edf3ef;color:var(--ink)}.body{background:#f8faf8;border-radius:14px;padding:16px;margin-top:12px;min-height:125px}.example{background:#fff5d9;padding:14px;border-radius:13px;margin:12px 0}.note{background:#fff0e5;padding:13px;border-radius:13px;margin:12px 0}.formula{display:inline-block;background:#eaf1fb;padding:12px 15px;border-radius:12px;font-weight:800;margin:8px 0}.quiz{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}.options{display:grid;gap:8px;margin:12px 0}.options button{text-align:left;background:#f3f7f4;color:var(--ink);border:1px solid var(--line)}.options button:disabled{opacity:1}.feedback{display:none;padding:13px;border-radius:12px}.feedback.show{display:block}.good{background:#e6f5e9}.retry{background:#fff2e5}.calc{display:grid;grid-template-columns:1fr 1fr;gap:10px}.calc label{font-size:.85rem;font-weight:700}.calc input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px}.result{background:var(--mint);padding:13px;border-radius:12px;margin-top:12px}.break{text-align:center;background:linear-gradient(120deg,#eff8f2,#f2effb)}.orb{height:105px;width:105px;border-radius:100%;background:#d8eee0;display:grid;place-items:center;margin:16px auto;color:var(--green);font-weight:800;animation:breathe 8s infinite ease-in-out}@keyframes breathe{50%{transform:scale(1.14)}}.metric{padding:13px;border-radius:13px;background:#f4f7f5;margin-bottom:8px}.metric strong{display:block;font-size:1.25rem}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px}@media(max-width:760px){.layout{grid-template-columns:1fr}.side{position:static}.nav{grid-template-columns:1fr 1fr}.calc{grid-template-columns:1fr}}
+
+/* Adventure mode */
+.adventure-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.level-pill{background:#f0ecfb;color:#55428d;border-radius:30px;padding:5px 11px;font-size:.78rem;font-weight:800}
+.game-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
+.game-tabs button{background:#edf3ef;color:var(--ink);font-size:.88rem}
+.game-tabs button.active{background:var(--green);color:#fff}
+.game-pane{display:none}.game-pane.active{display:block}
+.game-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.game-stat{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:13px}
+.game-stat span{display:block;color:var(--muted);font-size:.78rem}.game-stat strong{font-size:1.25rem}
+.game-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:12px 0}
+.game-form label{display:block;font-size:.84rem;font-weight:700}.game-form input,.game-form select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);margin-top:4px}
+.game-table{width:100%;border-collapse:collapse;font-size:.9rem;margin:10px 0}.game-table th,.game-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}.game-table th{color:var(--muted);font-size:.78rem}
+.market-event{padding:14px;border-radius:14px;background:#f4f1fc;margin:12px 0}
+.trade-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.trade-row select,.trade-row input{padding:9px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink)}
+.game-feedback{padding:12px 14px;border-radius:12px;background:#e7f5eb;margin:10px 0;display:none}.game-feedback.show{display:block}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap}.award{background:#fff5d9;border-radius:12px;padding:9px 12px;font-size:.85rem;font-weight:750}
+@media(max-width:760px){.game-grid{grid-template-columns:1fr 1fr}.game-form{grid-template-columns:1fr}.game-table{font-size:.8rem}.game-table th,.game-table td{padding:8px 5px}}
+
+</style></head><body>
+<header><div class="wrap"><div class="eyebrow">A calmer way to understand the market</div><h1>Market Mind Garden 🌱</h1><p class="muted">One idea at a time. Small activities. Plenty of breathing space.</p></div></header>
+<main class="wrap"><div class="layout"><aside class="panel side"><b>Your learning path</b><div class="tiny" id="pct">0% explored</div><div class="bar"><span id="fill"></span></div><div class="nav" id="nav"></div><hr style="border:0;border-top:1px solid var(--line);margin:15px 0"><p class="tiny"><b>Gentle rule:</b> You can pause, repeat or skip. No race, no pressure.</p><button class="secondary" onclick="resetMarks()">Reset progress marks</button></aside>
+<section class="main"><div class="panel hero"><div class="eyebrow">Your personal learning space</div><h2 id="welcome">Welcome, learner.</h2><p class="muted" id="intro">You have already explored many building blocks. This space brings them together without rushing.</p><div class="actions"><button onclick="go(0)">Start / continue</button><button class="secondary" onclick="pause()">Take a 1-minute reset</button></div></div>
+<div class="card" id="lesson"></div><div class="panel break" id="break"><div class="eyebrow">Rest is part of learning</div><h2>Give your brain a moment.</h2><p class="muted">Look away from the screen. Relax your shoulders. Let the next idea wait.</p><div class="orb" id="orb">Breathe in</div><p id="breathHint" class="tiny">Follow the circle gently. Don't force your breathing.</p><button class="secondary" onclick="breath()">Start / stop breathing guide</button></div>
+<div class="panel" id="detectiveGame">
+  <div class="eyebrow">Play to understand · No real money</div>
+  <h2>🕵️ Company Detective</h2>
+  <p class="muted">You are an analyst-in-training. Read the clues, spot what matters, and make a careful judgement. Each case is fictional.</p>
+  <div class="actions">
+    <span class="tag" id="gameLevel">Case 1 of 3</span>
+    <span class="tag" id="gameScore">Score: 0</span>
+  </div>
+  <div class="example" id="caseStory" style="margin-top:14px"></div>
+  <div class="two" id="caseClues"></div>
+  <h3 style="margin-top:16px" id="caseQuestion">What would you investigate first?</h3>
+  <div class="options" id="caseOptions"></div>
+  <div class="feedback" id="caseFeedback"></div>
+  <div class="actions">
+    <button class="secondary" onclick="showHint()">💡 Give me a hint</button>
+    <button onclick="nextCase()" id="nextCaseBtn" disabled>Next case →</button>
+    <button class="ghost" onclick="restartGame()">Restart game</button>
+  </div>
+  <p class="tiny" id="gameProgress">Solve cases thoughtfully. The game rewards reasoning, not speed.</p>
+</div>
+
+
+<div class="panel" id="adventureMode">
+ <div class="adventure-head">
+  <div><div class="eyebrow">Level up · Learn by doing</div><h2>🎮 Stock Market Learning Adventure</h2><p class="muted">Build a fictional business, practise a pretend exchange, solve financial puzzles and enter the championship.</p></div>
+  <span class="level-pill" id="adventureLevel">LEVEL 1 · EXPLORER</span>
+ </div>
+ <div class="game-grid" style="margin-top:14px">
+  <div class="game-stat"><span>Adventure points</span><strong id="adventurePoints">0</strong></div>
+  <div class="game-stat"><span>Virtual wallet</span><strong>₹1,00,000</strong></div>
+  <div class="game-stat"><span>Achievements</span><strong id="achievementCount">0 / 4</strong></div>
+ </div>
+ <div class="game-tabs">
+  <button class="active" onclick="adventureTab('builder',this)">🏭 Build a company</button>
+  <button onclick="adventureTab('exchange',this)">📊 Virtual exchange</button>
+  <button onclick="adventureTab('puzzles',this)">🧩 Financial puzzles</button>
+  <button onclick="adventureTab('championship',this)">🏆 Championship</button>
+ </div>
+ <section class="game-pane active" id="pane-builder">
+  <h3>Mission 1 · Create your own company</h3>
+  <p class="muted">Choose fictional numbers and see how the business story changes. All values are in ₹ lakh unless specified.</p>
+  <div class="game-form">
+   <label>Company name<input id="coName" value="GreenSprout Foods" maxlength="28"></label>
+   <label>Annual revenue (₹ lakh)<input id="coRevenue" type="number" min="0" value="250" oninput="buildCompany()"></label>
+   <label>Operating expenses (₹ lakh)<input id="coExpenses" type="number" min="0" value="190" oninput="buildCompany()"></label>
+   <label>Interest expense (₹ lakh)<input id="coInterest" type="number" min="0" value="8" oninput="buildCompany()"></label>
+   <label>Shareholders' equity (₹ lakh)<input id="coEquity" type="number" min="1" value="100" oninput="buildCompany()"></label>
+   <label>Total debt (₹ lakh)<input id="coDebt" type="number" min="0" value="50" oninput="buildCompany()"></label>
+   <label>Shares outstanding (lakh)<input id="coShares" type="number" min=".01" step=".01" value="10" oninput="buildCompany()"></label>
+   <label>Share price (₹)<input id="coPrice" type="number" min="0" step=".5" value="25" oninput="buildCompany()"></label>
+  </div>
+  <div class="game-grid" id="companyStats"></div>
+  <div class="market-event" id="companyStory">Your business summary will appear here.</div>
+  <div class="actions"><button onclick="award('builder')">Complete company builder mission</button><button class="secondary" onclick="resetCompany()">Restore sample company</button></div>
+  <p class="tiny">Simplified training model: operating profit is treated as EBIT; tax and other adjustments are excluded. It is not a substitute for financial statements.</p>
+ </section>
+ <section class="game-pane" id="pane-exchange">
+  <h3>Mission 2 · Practice on a pretend exchange</h3>
+  <p class="muted">You start with a virtual ₹1,00,000 wallet. Buy and sell fictional shares, then advance through simulated market days. No real money, real securities or live prices are involved.</p>
+  <div class="game-grid">
+   <div class="game-stat"><span>Cash available</span><strong id="walletCash">₹1,00,000</strong></div>
+   <div class="game-stat"><span>Holdings value</span><strong id="walletHoldings">₹0</strong></div>
+   <div class="game-stat"><span>Portfolio value</span><strong id="walletTotal">₹1,00,000</strong></div>
+  </div>
+  <div class="market-event" id="marketNews">Market Day 1 · The exchange is open. Study the fictional companies before placing a practice order.</div>
+  <table class="game-table"><thead><tr><th>Fictional company</th><th>Price</th><th>Day change</th><th>Practice action</th></tr></thead><tbody id="marketRows"></tbody></table>
+  <div class="trade-row"><label class="tiny">Shares <input id="tradeQty" type="number" min="1" step="1" value="10" style="width:78px"></label><button onclick="trade('buy')">Buy</button><button class="secondary" onclick="trade('sell')">Sell</button><button class="ghost" onclick="advanceMarket()">Advance market day →</button></div>
+  <div class="game-feedback" id="tradeFeedback"></div>
+  <h3 style="margin-top:16px">Your practice holdings</h3>
+  <div id="holdingsList" class="tiny">No shares held yet.</div>
+  <div class="actions"><button class="secondary" onclick="resetExchange()">Reset virtual wallet</button><button onclick="award('exchange')">Complete exchange mission</button></div>
+ </section>
+ <section class="game-pane" id="pane-puzzles">
+  <h3>Mission 3 · Financial puzzle room</h3>
+  <p class="muted">Four short situations. Choose the best interpretation, not just the biggest number.</p>
+  <span class="tag" id="puzzleCount">Puzzle 1 of 4</span>
+  <div class="example" id="puzzlePrompt" style="margin-top:12px"></div>
+  <div class="options" id="puzzleOptions"></div>
+  <div class="game-feedback" id="puzzleFeedback"></div>
+  <div class="actions"><button class="secondary" onclick="puzzleHint()">💡 Hint</button><button onclick="nextPuzzle()" id="puzzleNext" disabled>Next puzzle →</button></div>
+ </section>
+ <section class="game-pane" id="pane-championship">
+  <h3>Mission 4 · The analyst championship</h3>
+  <p class="muted">A final mixed-topic challenge. You need at least 4 correct answers out of 5 to earn the Analyst Apprentice award. You can retry as often as you like.</p>
+  <div class="game-grid">
+   <div class="game-stat"><span>Questions</span><strong id="champNumber">0 / 5</strong></div>
+   <div class="game-stat"><span>Correct</span><strong id="champScore">0</strong></div>
+   <div class="game-stat"><span>Target</span><strong>4 / 5</strong></div>
+  </div>
+  <div class="example" id="champQuestion">Press Start championship when you are ready. Take a breath first if you like.</div>
+  <div class="options" id="champOptions"></div>
+  <div class="game-feedback" id="champFeedback"></div>
+  <div class="actions"><button onclick="startChampionship()">Start / retry championship</button><button class="secondary" onclick="champNext()" id="champNext" disabled>Next question →</button></div>
+ </section>
+ <div class="market-event"><b>Your awards</b><div class="badge-row" id="awardShelf"><span class="tiny">Your badges will appear here as you complete missions.</span></div></div>
+</div>
+
+<div class="footer">Fictional examples · Educational practice only · Not investment advice</div></section></div></main>
+<script>
+const L=[
+["Market basics: volume & market cap","Warm-up","Volume counts shares traded in completed transactions during a trading session. Market cap describes the market value of all outstanding shares.",[
+["Understand","<h3>Volume is activity, not company size</h3><p>Volume is the number of shares exchanged during a session. A matched trade of 1,000 shares contributes 1,000 shares of volume—not 2,000.</p><p>The session's volume accumulates during the day and resets next trading day.</p>"],
+["Example","<div class='example'>Share price ₹20 × 10 lakh outstanding shares = <b>₹2 crore market cap</b>.<p>If 15,000 shares trade today, you do not add 15,000 to market cap.</p></div>"],
+["Remember","<div class='note'><b>Volume</b> = trading activity. <b>Market cap</b> = share price × outstanding shares. In normal secondary-market trades, money goes from buyer to seller, not automatically to the company.</div>"]],
+["A company has 5 lakh shares and a share price of ₹40. What is market cap?",["₹2 crore","₹5 lakh","₹40 lakh"],0,"₹40 × 5,00,000 = ₹2 crore. Volume is not used in this calculation."]],
+["IPO: fresh issue & OFS","Company funding","An IPO can raise money for a company, but not every rupee in the IPO goes to the company.",[
+["Understand","<p><b>Fresh Issue:</b> company creates new shares; proceeds go to the company before expenses.</p><p><b>Offer for Sale (OFS):</b> existing shareholders sell shares; proceeds go to those selling shareholders.</p>"],
+["Example","<div class='example'>₹25 lakh fresh issue + ₹10 lakh OFS = ₹35 lakh IPO size.<p>The company receives ₹25 lakh before expenses; selling shareholders receive ₹10 lakh.</p></div>"],
+["Remember","A fresh issue increases total shares outstanding. An OFS transfers existing shares and does not itself increase the share count."]],
+["IPO has ₹30 lakh fresh issue and ₹20 lakh OFS. How much does the company raise through the issue before expenses?",["₹50 lakh","₹30 lakh","₹20 lakh"],1,"The fresh issue proceeds go to the company: ₹30 lakh."]],
+["Face value, issue price & listing price","Price vocabulary","Three prices can appear around an IPO. They describe different things.",[
+["Understand","<p><b>Face value:</b> nominal value assigned to a share.</p><p><b>Issue price:</b> price at which IPO shares are offered.</p><p><b>Listing price:</b> price at which shares begin trading on the exchange.</p>"],
+["Example","<div class='example'>Face value ₹10; issue price ₹150.<p>Issue premium = ₹150 − ₹10 = <b>₹140</b>.</p>Listing at ₹180 is above issue price; ₹120 is below.</div>"],
+["Remember","Listing price is not guaranteed. It can be above, equal to, or below the issue price."]],
+["Face value ₹10, issue price ₹125. What is the premium?",["₹135","₹115","₹125"],1,"Premium = issue price − face value = ₹115."]],
+["EPS: earnings per share","Profit per share","EPS translates company profit into an earnings figure for each share.",[
+["Understand","<div class='formula'>EPS = Net profit ÷ weighted average shares</div><p>For simple exercises, we use a basic share count. Actual reported EPS may include weighted averages and adjustments.</p>"],
+["Example","<div class='example'>Profit ₹2 crore ÷ 10 lakh shares = <b>₹20 EPS</b>.<p>Another company may earn ₹5 crore but have 50 lakh shares: EPS is ₹10.</p></div>"],
+["Remember","EPS is not dividend, cash in the bank, or share price."]],
+["Net profit ₹60 lakh and 10 lakh shares. Simplified EPS?",["₹6","₹60","₹0.60"],0,"₹60,00,000 ÷ 10,00,000 = ₹6 per share."]],
+["P/E ratio","Valuation","P/E compares the share price with earnings per share.",[
+["Understand","<div class='formula'>P/E = Share price ÷ EPS</div><p>A P/E of 10 means the price is ten times the EPS figure used.</p>"],
+["Example","<div class='example'>Price ₹100; EPS ₹10. P/E = ₹100 ÷ ₹10 = <b>10x</b>.</div>"],
+["Remember","Low P/E is not automatically cheap; high P/E is not automatically bad. Consider growth, risk, debt, business quality and industry peers."]],
+["Price ₹240 and EPS ₹20. What is P/E?",["12x","20x","4x"],0,"₹240 ÷ ₹20 = 12x."]],
+["PEG ratio","Growth context","PEG adds an earnings-growth lens to P/E. Treat it as a rough comparison aid, not a decision rule.",[
+["Understand","<div class='formula'>PEG = P/E ÷ earnings growth rate (%)</div><p>In this convention, enter 20% as 20, not 0.20.</p>"],
+["Example","<div class='example'>P/E 25 ÷ growth 25 = <b>PEG 1.0</b>. If growth falls to 10%, PEG becomes 2.5.</div>"],
+["Remember","PEG around 1 is only a rough reference. Forecasts may be wrong; negative or volatile growth can make PEG unhelpful."]],
+["P/E is 18 and growth is 9%. PEG?",["0.5","2.0","9.0"],1,"18 ÷ 9 = 2.0."]],
+["Book value & P/B","Balance sheet","Book value gives a simplified view of net assets attributable to shareholders.",[
+["Understand","<p><b>Equity = Assets − Liabilities</b></p><p><b>BVPS = Equity ÷ shares</b></p><p><b>P/B = Market price ÷ BVPS</b></p>"],
+["Example","<div class='example'>Assets ₹1.2 crore − liabilities ₹40 lakh = equity ₹80 lakh. With 10 lakh shares, BVPS = ₹8. At price ₹16, P/B = <b>2x</b>.</div>"],
+["Remember","P/B can be useful for banks and asset-heavy firms. Book value may miss important intangible value in some businesses. Lower P/B is not automatically better."]],
+["Equity ₹90 lakh and 10 lakh shares. BVPS?",["₹9","₹90","₹0.90"],0,"₹90,00,000 ÷ 10,00,000 = ₹9."]],
+["ROE: return on equity","Profitability","ROE asks how much accounting profit a company generated relative to shareholders' equity.",[
+["Understand","<div class='formula'>ROE = Net profit ÷ shareholders' equity × 100</div>"],
+["Example","<div class='example'>Profit ₹16 lakh ÷ equity ₹80 lakh × 100 = <b>20% ROE</b>.</div>"],
+["Remember","High ROE can be amplified by debt or a small equity base. Check debt, cash generation, one-off gains and consistency."]],
+["Profit ₹12 lakh and equity ₹60 lakh. ROE?",["5%","20%","50%"],1,"12 ÷ 60 × 100 = 20%."]],
+["ROCE: return on capital employed","Capital efficiency","ROCE looks at operating profit relative to capital used in the business.",[
+["Understand","<div class='formula'>ROCE = EBIT ÷ capital employed × 100</div><p>Capital employed may be equity + interest-bearing debt, or total assets − current liabilities. Use one consistent method.</p>"],
+["Example","<div class='example'>EBIT ₹40 lakh; equity ₹100 lakh + debt ₹150 lakh = capital employed ₹250 lakh. ROCE = <b>16%</b>.</div>"],
+["Remember","ROCE considers broader capital; ROE focuses on shareholders' equity. Generic ROCE comparisons are less useful for banks and many financial institutions."]],
+["EBIT ₹30 lakh; capital employed ₹200 lakh. ROCE?",["15%","6%","30%"],0,"30 ÷ 200 × 100 = 15%."]],
+["Profit, cash flow & FCF","Cash reality","A company can report profit before collecting all customer payments. Cash flow helps show actual cash movement.",[
+["Understand","<p><b>CFO:</b> operating activities. <b>CFI:</b> investing activities. <b>CFF:</b> financing activities.</p>"],
+["Example","<div class='example'>Revenue ₹100 lakh; expenses ₹70 lakh → simplified profit ₹30 lakh. But if only ₹60 lakh is collected and all ₹70 lakh expenses are paid, operating cash flow is −₹10 lakh.</div>"],
+["Remember","<div class='formula'>Simplified FCF = CFO − capital expenditure</div><p>CFO ₹50 lakh − capex ₹20 lakh = FCF ₹30 lakh. FCF definitions can vary by source.</p>"]],
+["CFO ₹65 lakh and capex ₹25 lakh. Simplified FCF?",["₹90 lakh","₹40 lakh","₹25 lakh"],1,"₹65 lakh − ₹25 lakh = ₹40 lakh."]],
+["Debt-to-equity & interest coverage","Financial risk","Debt can help a company grow, but interest and repayment create obligations.",[
+["Understand","<div class='formula'>D/E = Total debt ÷ shareholders' equity</div><br><div class='formula'>Interest coverage = EBIT ÷ interest expense</div><p>Use interest-bearing borrowings consistently; not every liability is debt.</p>"],
+["Example","<div class='example'>Debt ₹100 lakh ÷ equity ₹100 lakh = <b>D/E 1.0x</b>.<p>EBIT ₹30 lakh ÷ interest ₹20 lakh = <b>coverage 1.5x</b>.</p></div>"],
+["Try the calculator","<p>Use fictional values. Change one field at a time and watch the ratios.</p><div class='calc'><label>Debt (₹ lakh)<input id='d' type='number' value='100' oninput='calc()'></label><label>Equity (₹ lakh)<input id='e' type='number' value='100' oninput='calc()'></label><label>EBIT (₹ lakh)<input id='b' type='number' value='30' oninput='calc()'></label><label>Interest (₹ lakh)<input id='i' type='number' value='20' oninput='calc()'></label></div><div class='result' id='res'>D/E 1.00x · Interest coverage 1.50x</div>"]],
+["D: D/E 0.5x, coverage 5x. E: D/E 2x, coverage 1.5x. Who appears lower risk in this simplified comparison?",["Company D","Company E","Identical"],0,"D has lower debt relative to equity and stronger interest coverage. Still investigate industry, cash flows and debt maturities."]],
+["Working capital, current & quick ratio","Short-term health","Can the business meet near-term obligations using resources expected to turn into cash?",[
+["Understand","<p><b>Working capital = Current assets − current liabilities</b></p><p><b>Current ratio = Current assets ÷ current liabilities</b></p><p><b>Quick ratio = (Current assets − inventory − prepayments) ÷ current liabilities</b></p>"],
+["Example","<div class='example'>Current assets ₹150 lakh; current liabilities ₹100 lakh. Working capital = ₹50 lakh; current ratio = 1.5x.<p>Inventory ₹40 lakh and prepayments ₹10 lakh: quick assets ₹100 lakh; quick ratio = 1.0x.</p></div>"],
+["Remember","A higher ratio is not always better. Inventory and unpaid customer invoices may not turn into cash quickly. Compare with the company's industry and history."]],
+["Current assets ₹120 lakh; current liabilities ₹80 lakh. Current ratio?",["0.67x","1.5x","2.0x"],1,"120 ÷ 80 = 1.5x."]]
+];
+let current=0,done=new Set(JSON.parse(localStorage.getItem("gardenDone")||"[]")),timer=null,breathing=false;
+function nav(){document.getElementById("nav").innerHTML=L.map((x,i)=>`<button class="${i===current?'active':''}" onclick="go(${i})">${done.has(i)?'✓':i+1+'.'} ${x[0]}</button>`).join("");let n=Math.round(done.size/L.length*100);document.getElementById("pct").textContent=n+"% explored";document.getElementById("fill").style.width=n+"%"}
+function go(i){current=i;nav();render();document.getElementById("lesson").scrollIntoView({behavior:"smooth",block:"start"});}
+const cases = [
+ {
+  story:"GreenLeaf Foods sells packaged staples. Its sales and reported profit have grown, but a large part of its sales is still waiting to be collected from customers.",
+  clues:[["Profit growth","18%"],["Operating cash flow","−₹8 lakh"],["Receivables","Rising quickly"],["Debt-to-equity","0.4x"]],
+  question:"Which clue deserves your attention first?",
+  options:["The negative operating cash flow and rising receivables","The low debt-to-equity ratio alone","The fact that sales have grown"],
+  answer:0,
+  explain:"Correct investigation path: profit is not the same as cash collected. Rising receivables alongside negative operating cash flow may mean customers are taking longer to pay. Check collection history and cash-flow details before forming a view.",
+  hint:"Look for the difference between accounting profit and money actually collected."
+ },
+ {
+  story:"Metro Tools manufactures equipment. It earns steady operating profit, but interest payments consume a large part of that operating profit.",
+  clues:[["EBIT","₹30 lakh"],["Interest expense","₹20 lakh"],["Debt-to-equity","2.0x"],["Interest coverage","1.5x"]],
+  question:"What is the clearest financial-risk signal?",
+  options:["Interest coverage is only 1.5x","The company has operating profit","The company manufactures equipment"],
+  answer:0,
+  explain:"Correct. Interest coverage = EBIT ÷ interest expense = ₹30 lakh ÷ ₹20 lakh = 1.5x. That leaves a relatively small cushion if operating earnings fall. Debt maturity and cash flow would be useful next clues.",
+  hint:"Ask how many times operating earnings cover the interest bill."
+ },
+ {
+  story:"BrightByte Services is a growing software business. It has little physical equipment, a strong cash balance and rising earnings. Its book value is modest because much of its value comes from people, software and customer relationships.",
+  clues:[["P/B ratio","7.0x"],["Debt-to-equity","0.1x"],["Cash from operations","Positive"],["Earnings growth","22%"]],
+  question:"Which interpretation is the most careful?",
+  options:["A high P/B alone proves the business is poor","Book value may not capture all important intangible value; investigate earnings, cash flow and valuation too","A low debt ratio guarantees a good investment"],
+  answer:1,
+  explain:"Exactly. Book value may not fully reflect internally developed software, people or customer relationships. A high P/B should prompt more investigation, not an automatic rejection. Also consider valuation, cash flow, competition and whether growth is sustainable.",
+  hint:"Think about what the balance sheet may not fully record for an intangible-heavy business."
+ }
+];
+let caseIndex=0, gameScore=0, gameAnswered=false;
+function renderCase(){
+ const c=cases[caseIndex];
+ document.getElementById("gameLevel").textContent=`Case ${caseIndex+1} of ${cases.length}`;
+ document.getElementById("gameScore").textContent=`Score: ${gameScore}`;
+ document.getElementById("caseStory").textContent=c.story;
+ document.getElementById("caseClues").innerHTML=c.clues.map(v=>`<div class="metric"><span class="tiny">${v[0]}</span><strong>${v[1]}</strong></div>`).join("");
+ document.getElementById("caseQuestion").textContent=c.question;
+ document.getElementById("caseOptions").innerHTML=c.options.map((v,i)=>`<button onclick="chooseCase(${i})">${String.fromCharCode(65+i)}. ${v}</button>`).join("");
+ const fb=document.getElementById("caseFeedback");fb.className="feedback";fb.textContent="";
+ document.getElementById("nextCaseBtn").disabled=true;
+ document.getElementById("nextCaseBtn").textContent=caseIndex===cases.length-1?"See results →":"Next case →";
+ document.getElementById("gameProgress").textContent="Read the clues. You can ask for a hint before answering.";
+ gameAnswered=false;
+}
+function chooseCase(i){
+ if(gameAnswered)return;
+ gameAnswered=true;
+ const c=cases[caseIndex],correct=i===c.answer;
+ if(correct)gameScore+=10;
+ document.getElementById("gameScore").textContent=`Score: ${gameScore}`;
+ document.querySelectorAll("#caseOptions button").forEach((b,n)=>{b.disabled=true;if(n===c.answer)b.style.border="2px solid #28745a"});
+ const fb=document.getElementById("caseFeedback");
+ fb.className="feedback show "+(correct?"good":"retry");
+ fb.innerHTML=(correct?"<b>Good detective work! +10 points 🌟</b> ":"<b>Useful attempt. Let's learn from the clues.</b> ")+c.explain;
+ document.getElementById("nextCaseBtn").disabled=false;
+ document.getElementById("gameProgress").textContent="Reasoning matters more than your score. Read the explanation before moving on.";
+}
+function showHint(){
+ const fb=document.getElementById("caseFeedback");
+ if(gameAnswered)return;
+ fb.className="feedback show retry";
+ fb.textContent="Hint: "+cases[caseIndex].hint;
+}
+function nextCase(){
+ if(!gameAnswered)return;
+ if(caseIndex<cases.length-1){caseIndex++;renderCase();}
+ else{
+  document.getElementById("caseStory").innerHTML="<b>Investigation complete! 🎉</b><p>You earned "+gameScore+" out of 30 points.</p><p>Remember: the goal is not to label a company as good or bad from one ratio. Combine clues, ask what is missing, and compare with its industry and history.</p>";
+  document.getElementById("caseClues").innerHTML="";
+  document.getElementById("caseQuestion").textContent="Your detective habits";
+  document.getElementById("caseOptions").innerHTML="<div class='note'>✓ You separated profit from cash flow<br>✓ You examined debt pressure<br>✓ You considered the limits of book value</div>";
+  document.getElementById("caseFeedback").className="feedback";
+  document.getElementById("nextCaseBtn").disabled=true;
+  document.getElementById("nextCaseBtn").textContent="Completed";
+  document.getElementById("gameProgress").textContent="Take a break, replay the cases, or return to a lesson and explore the ratios again.";
+ }
+}
+function restartGame(){caseIndex=0;gameScore=0;renderCase();}
+
+renderCase();
+
+// Adventure mode state is local to this browser and uses fictional training data.
+const adventureState={points:0,awards:[],cash:100000,shares:{},day:1,prices:[42,76,28],last:[42,76,28],puzzle:0,puzzleSolved:false,champ:[],champAt:0,champScore:0,champAnswered:false};
+const marketCompanies=[["Sunrise Foods","Packaged foods"],["Orbit Mobility","Electric mobility"],["RiverStone Finance","Financial services"]];
+const marketEvents=[
+ {headline:"Market Day 2 · A positive demand update lifts consumer interest; financing costs worry lenders.",moves:[.08,.03,-.06]},
+ {headline:"Market Day 3 · A supplier delay affects manufacturers; a new product launch helps mobility.",moves:[-.04,.09,-.02]},
+ {headline:"Market Day 4 · Investors take some profits. Prices move in mixed directions.",moves:[-.03,-.05,.04]},
+ {headline:"Market Day 5 · A calmer session: modest gains in two sectors, a small decline in another.",moves:[.025,.02,-.01]}
+];
+function rupee(n){return "₹"+Math.round(n).toLocaleString("en-IN")}
+function adventureTab(name,btn){document.querySelectorAll(".game-pane").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".game-tabs button").forEach(x=>x.classList.remove("active"));document.getElementById("pane-"+name).classList.add("active");btn.classList.add("active")}
+function award(key){if(adventureState.awards.includes(key))return;adventureState.awards.push(key);adventureState.points+=key==="champ"?50:20;updateAdventure();let names={builder:"🏭 Business Builder",exchange:"📈 Practice Trader",puzzles:"🧩 Puzzle Solver",champ:"🏆 Analyst Apprentice"};document.getElementById("awardShelf").innerHTML=adventureState.awards.map(k=>`<span class="award">${names[k]}</span>`).join("");}
+function updateAdventure(){document.getElementById("adventurePoints").textContent=adventureState.points;document.getElementById("achievementCount").textContent=adventureState.awards.length+" / 4";let lv=adventureState.points>=90?"LEVEL 4 · ANALYST":adventureState.points>=50?"LEVEL 3 · INVESTIGATOR":adventureState.points>=20?"LEVEL 2 · BUILDER":"LEVEL 1 · EXPLORER";document.getElementById("adventureLevel").textContent=lv;}
+function buildCompany(){let v=id=>Math.max(0,Number(document.getElementById(id).value)||0);let name=document.getElementById("coName").value.trim()||"Your Company";let rev=v("coRevenue"),exp=v("coExpenses"),interest=v("coInterest"),eq=v("coEquity"),debt=v("coDebt"),shares=v("coShares"),price=v("coPrice");let ebit=rev-exp,profit=ebit-interest,eps=shares?profit/shares:0,roe=eq?profit/eq*100:null,der=eq?debt/eq:null,cap=shares*price;
+let stats=[["Operating profit (EBIT)",rupee(ebit*10000)],["Simplified profit",rupee(profit*10000)],["EPS", "₹"+eps.toFixed(2)],["ROE",roe===null?"Not defined":roe.toFixed(1)+"%"],["Debt / equity",der===null?"Not defined":der.toFixed(2)+"x"],["Market cap",rupee(cap*100000)]];
+document.getElementById("companyStats").innerHTML=stats.map(s=>`<div class="game-stat"><span>${s[0]}</span><strong>${s[1]}</strong></div>`).join("");
+let notes=[];notes.push(ebit<0?"Operating expenses exceed revenue in this simplified model.":"The business has positive operating profit in this simplified model.");notes.push(profit<0?"After interest, the simplified result is a loss.":"After interest, the simplified result is positive.");if(der!==null)notes.push("Debt-to-equity is "+der.toFixed(2)+"x. Compare it with similar businesses.");notes.push("Market cap is an estimated market value, not cash held by the company.");document.getElementById("companyStory").innerHTML="<b>"+escapeText(name)+" — business snapshot</b><p>"+notes.join("</p><p>")+"</p>";}
+function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function resetCompany(){document.getElementById("coName").value="GreenSprout Foods";document.getElementById("coRevenue").value=250;document.getElementById("coExpenses").value=190;document.getElementById("coInterest").value=8;document.getElementById("coEquity").value=100;document.getElementById("coDebt").value=50;document.getElementById("coShares").value=10;document.getElementById("coPrice").value=25;buildCompany()}
+function renderMarket(){document.getElementById("marketRows").innerHTML=marketCompanies.map((c,i)=>{let ch=adventureState.last[i]?(adventureState.prices[i]/adventureState.last[i]-1)*100:0;return `<tr><td><b>${c[0]}</b><br><span class="tiny">${c[1]}</span></td><td>${rupee(adventureState.prices[i])}</td><td>${adventureState.day===1?"—":(ch>=0?"+":"")+ch.toFixed(1)+"%"}</td><td><button class="secondary" onclick="selectTrade(${i})">Select</button></td></tr>`}).join("");document.getElementById("walletCash").textContent=rupee(adventureState.cash);let val=adventureState.shares.reduce?0:0;val=adventureState.prices.reduce((sum,p,i)=>sum+p*(adventureState.shares[i]||0),0);document.getElementById("walletHoldings").textContent=rupee(val);document.getElementById("walletTotal").textContent=rupee(adventureState.cash+val);document.getElementById("holdingsList").innerHTML=marketCompanies.map((c,i)=>{let q=adventureState.shares[i]||0;return q?`${c[0]}: ${q} shares · value ${rupee(q*adventureState.prices[i])}`:null}).filter(Boolean).join("<br>")||"No shares held yet.";}
+let selectedTrade=0;
+function selectTrade(i){selectedTrade=i;let f=document.getElementById("tradeFeedback");f.className="game-feedback show";f.textContent=marketCompanies[i][0]+" selected. Choose a share quantity, then Buy or Sell."}
+function trade(side){let q=Math.floor(Number(document.getElementById("tradeQty").value));let price=adventureState.prices[selectedTrade],f=document.getElementById("tradeFeedback");if(!Number.isFinite(q)||q<1){f.className="game-feedback show";f.textContent="Enter a whole number of shares greater than zero.";return}let held=adventureState.shares[selectedTrade]||0;if(side==="buy"){let cost=q*price;if(cost>adventureState.cash){f.className="game-feedback show";f.textContent="Not enough virtual cash. Reduce the quantity or choose another share.";return}adventureState.cash-=cost;adventureState.shares[selectedTrade]=held+q;f.textContent="Practice buy completed: "+q+" shares of "+marketCompanies[selectedTrade][0]+" for "+rupee(cost)+"."}else{if(q>held){f.className="game-feedback show";f.textContent="You only hold "+held+" shares of this fictional company.";return}adventureState.cash+=q*price;adventureState.shares[selectedTrade]=held-q;f.textContent="Practice sale completed: "+q+" shares for "+rupee(q*price)+"."}f.className="game-feedback show";renderMarket()}
+function advanceMarket(){let ev=marketEvents[(adventureState.day-1)%marketEvents.length];adventureState.last=[...adventureState.prices];adventureState.prices=adventureState.prices.map((p,i)=>Math.max(1,Math.round(p*(1+ev.moves[i])*100)/100));adventureState.day++;document.getElementById("marketNews").textContent=ev.headline+" (Practice simulation only.)";renderMarket()}
+function resetExchange(){adventureState.cash=100000;adventureState.shares={};adventureState.day=1;adventureState.prices=[42,76,28];adventureState.last=[42,76,28];document.getElementById("marketNews").textContent="Market Day 1 · The exchange is open. Study the fictional companies before placing a practice order.";renderMarket();let f=document.getElementById("tradeFeedback");f.className="game-feedback";f.textContent=""}
+const puzzles=[
+ ["A company reports rising profit, but cash from operations is negative and receivables are rising. What should you examine?",["Customer collection and working-capital changes","Only the share price","Only the face value"],0,"Profit may not yet have been collected in cash. Look at receivables and operating cash flow.","Compare profit with cash collected."],
+ ["A business has debt ₹200 lakh and equity ₹100 lakh. What is D/E?",["0.5x","2.0x","200x"],1,"₹200 lakh ÷ ₹100 lakh = 2.0x.","Divide debt by equity."],
+ ["A company has current assets ₹90 lakh and current liabilities ₹120 lakh. Working capital is:",["₹30 lakh","−₹30 lakh","₹210 lakh"],1,"Working capital = current assets − current liabilities = −₹30 lakh.","Subtract current liabilities from current assets."],
+ ["A business has share price ₹50 and EPS ₹5. P/E is:",["10x","5x","55x"],0,"₹50 ÷ ₹5 = 10x.","Divide share price by EPS."]
+];
+function renderPuzzle(){let p=puzzles[adventureState.puzzle];document.getElementById("puzzleCount").textContent=`Puzzle ${adventureState.puzzle+1} of ${puzzles.length}`;document.getElementById("puzzlePrompt").textContent=p[0];document.getElementById("puzzleOptions").innerHTML=p[1].map((x,i)=>`<button onclick="solvePuzzle(${i})">${String.fromCharCode(65+i)}. ${x}</button>`).join("");document.getElementById("puzzleFeedback").className="game-feedback";document.getElementById("puzzleNext").disabled=true;adventureState.puzzleSolved=false}
+function solvePuzzle(i){if(adventureState.puzzleSolved)return;adventureState.puzzleSolved=true;let p=puzzles[adventureState.puzzle],ok=i===p[2];if(ok)adventureState.points+=5;document.querySelectorAll("#puzzleOptions button").forEach((b,n)=>{b.disabled=true;if(n===p[2])b.style.border="2px solid #28745a"});let f=document.getElementById("puzzleFeedback");f.className="game-feedback show";f.innerHTML=(ok?"<b>Correct! +5 points.</b> ":"<b>Good try.</b> ")+p[3];document.getElementById("puzzleNext").disabled=false;updateAdventure()}
+function puzzleHint(){if(adventureState.puzzleSolved)return;let f=document.getElementById("puzzleFeedback");f.className="game-feedback show";f.textContent="Hint: "+puzzles[adventureState.puzzle][4]}
+function nextPuzzle(){if(!adventureState.puzzleSolved)return;if(adventureState.puzzle<puzzles.length-1){adventureState.puzzle++;renderPuzzle()}else{document.getElementById("puzzlePrompt").textContent="Puzzle room cleared! You have practised cash flow, leverage, working capital and valuation.";document.getElementById("puzzleOptions").innerHTML="";document.getElementById("puzzleFeedback").className="game-feedback";document.getElementById("puzzleNext").disabled=true;award("puzzles")}}
+const championship=[
+ ["What does market capitalisation measure?",["Total daily trading volume","Share price × shares outstanding","Cash in the company bank"],1,"Market cap is price multiplied by outstanding shares."],
+ ["A fresh issue in an IPO generally sends proceeds to:",["The issuing company","The exchange","All existing shareholders"],0,"Fresh issue proceeds go to the company before expenses."],
+ ["Which ratio compares net profit with shareholders' equity?",["ROCE","ROE","Current ratio"],1,"ROE = net profit ÷ shareholders' equity × 100."],
+ ["CFO is ₹80 lakh and capex is ₹30 lakh. Simplified FCF is:",["₹110 lakh","₹50 lakh","₹30 lakh"],1,"FCF = CFO − capex = ₹50 lakh."],
+ ["Which is the best way to interpret one financial ratio?",["Use it alone to decide","Compare it with context, peers and history","Assume higher is always better"],1,"Ratios are clues. Context and multiple measures matter."]
+];
+function startChampionship(){adventureState.champ=championship.map((_,i)=>i);adventureState.champAt=0;adventureState.champScore=0;adventureState.champAnswered=false;renderChamp()}
+function renderChamp(){let n=adventureState.champAt;if(n>=5){let pass=adventureState.champScore>=4;document.getElementById("champQuestion").innerHTML=(pass?"<b>🏆 Analyst Apprentice earned!</b>":"<b>Championship complete.</b>")+"<p>You scored "+adventureState.champScore+"/5. "+(pass?"Excellent reasoning.":"Review the explanations and try again when ready.")+"</p>";document.getElementById("champOptions").innerHTML="";document.getElementById("champFeedback").className="game-feedback";document.getElementById("champNext").disabled=true;if(pass)award("champ");return}let q=championship[adventureState.champ[n]];document.getElementById("champNumber").textContent=(n+1)+" / 5";document.getElementById("champScore").textContent=adventureState.champScore;document.getElementById("champQuestion").textContent=q[0];document.getElementById("champOptions").innerHTML=q[1].map((o,i)=>`<button onclick="answerChamp(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("");document.getElementById("champFeedback").className="game-feedback";document.getElementById("champNext").disabled=true;adventureState.champAnswered=false}
+function answerChamp(i){if(adventureState.champAnswered)return;adventureState.champAnswered=true;let q=championship[adventureState.champ[adventureState.champAt]],ok=i===q[2];if(ok)adventureState.champScore++;document.getElementById("champScore").textContent=adventureState.champScore;document.querySelectorAll("#champOptions button").forEach((b,n)=>{b.disabled=true;if(n===q[2])b.style.border="2px solid #28745a"});let f=document.getElementById("champFeedback");f.className="game-feedback show";f.innerHTML=(ok?"<b>Correct!</b> ":"<b>Keep learning.</b> ")+q[3];document.getElementById("champNext").disabled=false}
+function champNext(){if(!adventureState.champAnswered)return;adventureState.champAt++;renderChamp()}
+buildCompany();renderMarket();renderPuzzle();updateAdventure();
+
+function render(){let x=L[current];document.getElementById("welcome").textContent=x[0];document.getElementById("intro").textContent=x[2];document.getElementById("lesson").innerHTML=`<span class="tag">${x[1]}</span><p class="tiny">Lesson ${current+1} of ${L.length} · Go at your own pace</p><h2>${x[0]}</h2><p class="muted">${x[2]}</p><div class="tabs">${x[3].map((t,i)=>`<button class="${i?'inactive':''}" onclick="tab(${i})">${t[0]}</button>`).join("")}</div><div class="body" id="body">${x[3][0][1]}</div><div class="actions"><button class="secondary" onclick="pause()">☕ Pause</button><button class="ghost" onclick="mark()">I've explored this ✓</button></div><div class="quiz"><h3>One small check-in</h3><p>${x[4][0]}</p><div class="options">${x[4][1].map((o,i)=>`<button onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div><div class="feedback" id="fb"></div><div class="actions"><button class="secondary" onclick="go(${Math.max(0,current-1)})" ${current===0?'disabled':''}>← Previous</button><button onclick="next()">${current===L.length-1?'Finish path':'Next gentle step →'}</button></div></div>`;calc()}
+function tab(i){document.querySelectorAll(".tabs button").forEach((b,n)=>b.className=n===i?"":"inactive");document.getElementById("body").innerHTML=L[current][3][i][1];calc()}
+function answer(i){let q=L[current][4],fb=document.getElementById("fb");document.querySelectorAll(".options button").forEach(b=>b.disabled=true);fb.className="feedback show "+(i===q[2]?"good":"retry");fb.innerHTML=(i===q[2]?"<b>Correct! 🌟</b> ":"<b>Good attempt — mistakes are part of learning.</b> ")+q[3]+`<br><button class="secondary" style="margin-top:9px" onclick="render()">Try again</button>`;if(i===q[2])mark(false)}
+function mark(show=true){done.add(current);localStorage.setItem("gardenDone",JSON.stringify([...done]));nav();if(show){let fb=document.getElementById("fb");fb.className="feedback show good";fb.textContent="Marked as explored. Revisit any time."}}
+function next(){if(current<L.length-1)go(current+1);else{document.getElementById("lesson").innerHTML="<h2>You completed the garden! 🌿</h2><p>You explored the core ideas from market activity to short-term liquidity.</p><div class='example'>You do not need to memorise every ratio today. Try explaining one idea in your own words. That is meaningful progress.</div><button onclick='go(0)'>Revisit from the beginning</button>"}}
+function calc(){let d=+(document.getElementById("d")?.value||0),e=+(document.getElementById("e")?.value||0),b=+(document.getElementById("b")?.value||0),i=+(document.getElementById("i")?.value||0),r=document.getElementById("res");if(r)r.innerHTML="<b>D/E: "+(e? (d/e).toFixed(2)+"x":"Not defined (equity is zero)")+"</b><br><b>Interest coverage: "+(i?(b/i).toFixed(2)+"x":(b?"Not defined (no interest expense)":"Not defined"))+"</b>"}
+function pause(){document.getElementById("break").scrollIntoView({behavior:"smooth",block:"center"})}
+function breath(){breathing=!breathing;let o=document.getElementById("orb"),h=document.getElementById("breathHint");if(breathing){let n=0;o.textContent="Breathe in";h.textContent="Slow and comfortable. Stop whenever you like.";timer=setInterval(()=>{n=1-n;o.textContent=n?"Breathe out":"Breathe in"},4000)}else{clearInterval(timer);o.textContent="Breathe in";h.textContent="Guide paused. Take your time."}}
+function resetMarks(){if(confirm("Clear completed-topic marks? Lessons and activities will remain.")){done.clear();localStorage.removeItem("gardenDone");nav()}}
+nav();render();
+</script></body></html>

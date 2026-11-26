@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Subscription Manager</title>
+<style>
+:root{--bg:#f4f6fb;--panel:#fff;--ink:#172033;--muted:#68738a;--line:#e4e8f0;--accent:#5146e5;--accent2:#e9e8ff;--green:#14845b;--red:#c23b50;--amber:#a96708;--shadow:0 8px 28px #1b2b4b0c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{max-width:1380px;margin:auto;padding:26px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:var(--accent);color:white;display:grid;place-items:center;font-size:23px}.brand h1{font-size:23px;margin:0}.sub{color:var(--muted);font-size:13px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:white;color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:650}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn:hover{filter:brightness(.97)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.stat{padding:17px}.stat .k{color:var(--muted);font-size:13px}.stat .v{font-size:25px;font-weight:750;margin-top:5px}.stat small{color:var(--muted)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:16px}.panel{padding:18px}.panelhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.panel h2{font-size:17px;margin:0}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.field{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff;color:var(--ink);min-width:0}.filters input{flex:1;min-width:160px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:680px}th{text-align:left;color:var(--muted);font-size:12px;font-weight:700;padding:11px 9px;border-bottom:1px solid var(--line)}td{padding:13px 9px;border-bottom:1px solid var(--line);vertical-align:middle}tr:last-child td{border-bottom:0}.service{display:flex;align-items:center;gap:10px;font-weight:700}.sicon{width:36px;height:36px;border-radius:11px;background:#f0efff;color:var(--accent);display:grid;place-items:center;font-weight:800}.muted{color:var(--muted);font-size:12px}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#f0f2f7;color:#526078;font-size:11px;font-weight:700}.pill.active{background:#e7f7ef;color:var(--green)}.pill.soon{background:#fff3dc;color:var(--amber)}.pill.overdue{background:#fdebef;color:var(--red)}.rowactions{display:flex;gap:5px}.iconbtn{border:0;background:transparent;padding:6px;color:#65718a;border-radius:7px}.iconbtn:hover{background:#f0f2f7}.side{display:flex;flex-direction:column;gap:16px}.renewal{display:flex;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px solid var(--line)}.renewal:last-child{border:0}.empty{text-align:center;padding:38px 10px;color:var(--muted)}.empty strong{display:block;color:var(--ink);font-size:16px;margin-bottom:5px}.hint{font-size:12px;color:var(--muted);margin-top:10px}.modal{position:fixed;inset:0;background:#10182b77;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.dialog{background:#fff;border-radius:18px;width:min(620px,100%);max-height:92vh;overflow:auto;padding:22px;box-shadow:0 20px 70px #0003}.dialoghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.dialoghead h2{margin:0;font-size:20px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.formfield{display:flex;flex-direction:column;gap:5px}.formfield.full{grid-column:1/-1}.formfield label{font-size:12px;font-weight:700;color:#536078}.formfield input,.formfield select,.formfield textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:white;color:var(--ink)}.formfield textarea{min-height:68px;resize:vertical}.dialogfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.close{border:0;background:transparent;font-size:23px;color:var(--muted)}.bar{height:8px;border-radius:9px;background:#eef0f5;overflow:hidden;margin:10px 0}.bar span{display:block;height:100%;background:var(--accent);border-radius:9px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#172033;color:white;padding:11px 16px;border-radius:10px;display:none;z-index:9}.toast.show{display:block}.tourstep{background:#f5f4ff;border-radius:12px;padding:14px;margin:12px 0}.footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.app{padding:15px}.top{align-items:flex-start;flex-direction:column}.stats{gap:9px}.stat{padding:13px}.stat .v{font-size:21px}.side{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.formfield.full{grid-column:auto}.actions{width:100%}.actions .btn{flex:1}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="logo" aria-hidden="true">↻</div><div><h1>Subscription Manager</h1><div class="sub">All your recurring payments, in one place</div></div></div>
+ <div class="actions"><button class="btn" id="tourBtn">Take a tour</button><button class="btn" id="exportBtn">Export backup</button><button class="btn" id="importBtn">Import backup</button><button class="btn primary" id="addBtn">＋ Add subscription</button><input type="file" id="importFile" accept=".json,application/json" hidden></div>
+</header>
+<section class="stats" aria-label="Subscription summary">
+ <div class="stat"><div class="k">Active subscriptions</div><div class="v" id="activeCount">0</div><small>Currently tracked</small></div>
+ <div class="stat"><div class="k">Monthly equivalent</div><div class="v" id="monthlyTotal">₹0</div><small>All active plans normalized</small></div>
+ <div class="stat"><div class="k">Annual estimate</div><div class="v" id="annualTotal">₹0</div><small>Projected recurring spend</small></div>
+ <div class="stat"><div class="k">Renewing in 30 days</div><div class="v" id="dueCount">0</div><small>Upcoming renewals</small></div>
+</section>
+<div class="layout">
+ <main class="panel">
+  <div class="panelhead"><h2>Your subscriptions</h2><span class="muted" id="resultCount">0 items</span></div>
+  <div class="filters">
+   <input class="field" id="search" placeholder="Search service, category or notes…" aria-label="Search subscriptions">
+   <select class="field" id="categoryFilter" aria-label="Filter category"><option value="">All categories</option><option>Entertainment</option><option>Software</option><option>Cloud & Storage</option><option>Shopping</option><option>Learning</option><option>Utilities</option><option>Health & Fitness</option><option>Other</option></select>
+   <select class="field" id="statusFilter" aria-label="Filter status"><option value="">All statuses</option><option value="Active">Active</option><option value="Paused">Paused</option><option value="Cancelled">Cancelled</option></select>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>SUBSCRIPTION</th><th>PRICE</th><th>BILLING</th><th>NEXT RENEWAL</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="subRows"></tbody></table></div>
+  <div class="empty" id="emptyState"><strong>No subscriptions yet</strong>Add your first subscription to start tracking recurring costs.</div>
+ </main>
+ <aside class="side">
+  <section class="panel"><div class="panelhead"><h2>Upcoming renewals</h2><span class="pill soon">Next 30 days</span></div><div id="renewalList"></div><div class="hint">Renewal dates are calculated from the next renewal date you enter.</div></section>
+  <section class="panel"><div class="panelhead"><h2>Spending by category</h2></div><div id="categorySpend"></div><div class="hint">Monthly-equivalent spend for active subscriptions.</div></section>
+  <section class="panel"><h2>Quick tips</h2><p class="muted">• Add the next billing date to spot renewals early.</p><p class="muted">• Export a JSON backup before changing devices.</p><p class="muted">• Use notes to store account owner or cancellation instructions. Avoid storing passwords.</p></section>
+ </aside>
+</div>
+<div class="footer">Your data stays in this browser using local storage. Export a backup regularly; clearing browser data may erase it.</div>
+</div>
+<div class="modal" id="editModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+ <div class="dialog"><div class="dialoghead"><h2 id="modalTitle">Add subscription</h2><button class="close" id="closeModal" aria-label="Close">×</button></div>
+ <form id="subForm"><input type="hidden" id="editId"><div class="formgrid">
+  <div class="formfield"><label for="name">Service name *</label><input id="name" required placeholder="e.g. Netflix"></div>
+  <div class="formfield"><label for="category">Category</label><select id="category"><option>Entertainment</option><option>Software</option><option>Cloud & Storage</option><option>Shopping</option><option>Learning</option><option>Utilities</option><option>Health & Fitness</option><option>Other</option></select></div>
+  <div class="formfield"><label for="amount">Amount *</label><input id="amount" type="number" min="0" step="0.01" required placeholder="499"></div>
+  <div class="formfield"><label for="currency">Currency</label><select id="currency"><option value="INR">INR ₹</option><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option><option value="AED">AED د.إ</option><option value="SGD">SGD S$</option></select></div>
+  <div class="formfield"><label for="cycle">Billing cycle</label><select id="cycle"><option value="Monthly">Monthly</option><option value="Yearly">Yearly</option><option value="Weekly">Weekly</option><option value="Quarterly">Quarterly</option><option value="Half-yearly">Half-yearly</option><option value="One-time">One-time</option></select></div>
+  <div class="formfield"><label for="nextDate">Next renewal date</label><input id="nextDate" type="date"></div>
+  <div class="formfield"><label for="status">Status</label><select id="status"><option>Active</option><option>Paused</option><option>Cancelled</option></select></div>
+  <div class="formfield"><label for="payment">Payment method</label><input id="payment" placeholder="UPI, card, bank…"></div>
+  <div class="formfield"><label for="owner">Account owner</label><input id="owner" placeholder="Name (optional)"></div>
+  <div class="formfield full"><label for="notes">Notes / cancellation details</label><textarea id="notes" placeholder="Plan details, renewal reminder, cancellation URL…"></textarea></div>
+ </div><div class="dialogfoot"><button type="button" class="btn" id="cancelForm">Cancel</button><button class="btn primary" type="submit">Save subscription</button></div></form>
+ </div>
+</div>
+<div class="modal" id="tourModal" role="dialog" aria-modal="true" aria-labelledby="tourTitle"><div class="dialog"><div class="dialoghead"><h2 id="tourTitle">Welcome to your Subscription Manager</h2><button class="close" id="closeTour" aria-label="Close">×</button></div><div class="tourstep"><b>1. Add subscriptions</b><br><span class="muted">Record service, price, billing cycle, currency, renewal date and payment method.</span></div><div class="tourstep"><b>2. Monitor recurring spend</b><br><span class="muted">The summary converts weekly, monthly, quarterly, half-yearly and yearly charges into monthly and annual estimates. One-time items are excluded.</span></div><div class="tourstep"><b>3. Find renewals</b><br><span class="muted">Upcoming renewals appear in the right panel. Search and filter the main list to find an item quickly.</span></div><div class="tourstep"><b>4. Back up your data</b><br><span class="muted">Export creates a JSON backup. Import restores a backup and replaces the current list after confirmation.</span></div><p class="muted">Accessibility: keyboard-operable controls, labels, clear status text and responsive layout. This tool does not connect to providers or send automatic reminders.</p><div class="dialogfoot"><button class="btn primary" id="doneTour">Start tracking</button></div></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const KEY='subscription-manager-v1';
+let subs=[];
+const $=id=>document.getElementById(id);
+const money=(n,c)=>{try{return new Intl.NumberFormat('en-IN',{style:'currency',currency:c,maximumFractionDigits:2}).format(n)}catch{return c+' '+Number(n).toFixed(2)}};
+const parseDate=s=>s?new Date(s+'T00:00:00'):null;
+const dayDiff=d=>Math.ceil((d-new Date(new Date().toDateString()))/86400000);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function load(){try{subs=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(subs))subs=[]}catch{subs=[]}}
+function save(){localStorage.setItem(KEY,JSON.stringify(subs));render()}
+function monthly(s){let a=Number(s.amount)||0;return ({Weekly:a*52/12,Monthly:a,Quarterly:a/3,'Half-yearly':a/6,Yearly:a/12,'One-time':0})[s.cycle]??0}
+function annual(s){return monthly(s)*12}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2300)}
+function statusPill(s){if(s.status!=='Active')return '<span class="pill">'+esc(s.status)+'</span>';let d=parseDate(s.nextDate);if(d&&dayDiff(d)<0)return '<span class="pill overdue">Overdue</span>';if(d&&dayDiff(d)<=7)return '<span class="pill soon">Due soon</span>';return '<span class="pill active">Active</span>'}
+function render(){
+ const active=subs.filter(s=>s.status==='Active');
+ $('activeCount').textContent=active.length;
+ // Totals are grouped by currency; no misleading cross-currency conversion.
+ const totals={};active.forEach(s=>totals[s.currency]=(totals[s.currency]||0)+monthly(s));
+ const totalText=Object.entries(totals).map(([c,v])=>money(v,c)).join(' + ')||money(0,'INR');
+ $('monthlyTotal').textContent=totalText;$('annualTotal').textContent=Object.entries(totals).map(([c,v])=>money(v*12,c)).join(' + ')||money(0,'INR');
+ const today=new Date();const due=active.filter(s=>s.nextDate&&dayDiff(parseDate(s.nextDate))>=0&&dayDiff(parseDate(s.nextDate))<=30);
+ $('dueCount').textContent=due.length;
+ const q=$('search').value.toLowerCase(),cat=$('categoryFilter').value,st=$('statusFilter').value;
+ const filtered=subs.filter(s=>(!q||[s.name,s.category,s.notes,s.payment,s.owner].join(' ').toLowerCase().includes(q))&&(!cat||s.category===cat)&&(!st||s.status===st)).sort((a,b)=>(a.nextDate||'9999').localeCompare(b.nextDate||'9999'));
+ $('resultCount').textContent=filtered.length+' item'+(filtered.length===1?'':'s');
+ $('emptyState').style.display=filtered.length?'none':'block';
+ $('subRows').innerHTML=filtered.map(s=>`<tr><td><div class="service"><div class="sicon">${esc((s.name||'?').slice(0,1).toUpperCase())}</div><div>${esc(s.name)}<div class="muted">${esc(s.category||'Other')}${s.payment?' · '+esc(s.payment):''}</div></div></div></td><td><b>${money(s.amount,s.currency)}</b><div class="muted">${esc(s.currency)}</div></td><td>${esc(s.cycle)}</td><td>${s.nextDate?new Date(s.nextDate+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'<span class="muted">Not set</span>'}</td><td>${statusPill(s)}</td><td><div class="rowactions"><button class="iconbtn" title="Edit ${esc(s.name)}" aria-label="Edit ${esc(s.name)}" onclick="editSub('${s.id}')">✎</button><button class="iconbtn" title="Delete ${esc(s.name)}" aria-label="Delete ${esc(s.name)}" onclick="deleteSub('${s.id}')">⌫</button></div></td></tr>`).join('');
+ const upcoming=active.filter(s=>s.nextDate&&dayDiff(parseDate(s.nextDate))>=0).sort((a,b)=>a.nextDate.localeCompare(b.nextDate)).slice(0,6);
+ $('renewalList').innerHTML=upcoming.length?upcoming.map(s=>`<div class="renewal"><div><b>${esc(s.name)}</b><div class="muted">${new Date(s.nextDate+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short'})} · ${dayDiff(parseDate(s.nextDate))===0?'Today':'in '+dayDiff(parseDate(s.nextDate))+' days'}</div></div><b>${money(s.amount,s.currency)}</b></div>`).join(''):'<div class="empty">No upcoming renewals entered.</div>';
+ const cats={};active.forEach(s=>{if(s.cycle!=='One-time'){let k=s.category||'Other';(cats[k]??={})[s.currency]=((cats[k]||{})[s.currency]||0)+monthly(s)}});
+ const entries=Object.entries(cats).sort((a,b)=>Object.values(b[1]).reduce((x,y)=>x+y,0)-Object.values(a[1]).reduce((x,y)=>x+y,0));
+ const max=Math.max(1,...entries.map(([k,v])=>Object.values(v).reduce((x,y)=>x+y,0)));
+ $('categorySpend').innerHTML=entries.length?entries.map(([k,v])=>{let sum=Object.entries(v).map(([c,n])=>money(n,c)).join(' + '),raw=Object.values(v).reduce((x,y)=>x+y,0);return `<div style="margin:13px 0"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(k)}</b><span class="muted">${sum}</span></div><div class="bar"><span style="width:${raw/max*100}%"></span></div></div>`}).join(''):'<div class="empty">Add active plans to see category spending.</div>';
+}
+function openModal(s){$('subForm').reset();$('editId').value=s?.id||'';$('modalTitle').textContent=s?'Edit subscription':'Add subscription';if(s){for(let k of ['name','category','amount','currency','cycle','nextDate','status','payment','owner','notes'])$(k).value=s[k]??''}else{$('currency').value='INR';$('status').value='Active';$('category').value='Entertainment'}$('editModal').classList.add('open');$('name').focus()}
+function closeModal(){$('editModal').classList.remove('open')}
+function editSub(id){let s=subs.find(x=>x.id===id);if(s)openModal(s)}
+function deleteSub(id){let s=subs.find(x=>x.id===id);if(s&&confirm('Delete '+s.name+' from your tracker?')){subs=subs.filter(x=>x.id!==id);save();toast('Subscription deleted')}}
+$('addBtn').onclick=()=>openModal();$('closeModal').onclick=closeModal;$('cancelForm').onclick=closeModal;
+$('subForm').onsubmit=e=>{e.preventDefault();let id=$('editId').value||('sub_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));let s={id};for(let k of ['name','category','amount','currency','cycle','nextDate','status','payment','owner','notes'])s[k]=$(k).value;s.amount=Number(s.amount);let i=subs.findIndex(x=>x.id===id);if(i>=0)subs[i]=s;else subs.push(s);save();closeModal();toast('Subscription saved')};
+['search','categoryFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify({app:'Subscription Manager',version:1,exportedAt:new Date().toISOString(),subscriptions:subs},null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='subscriptions-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);toast('Backup exported')};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());let arr=Array.isArray(data)?data:data.subscriptions;if(!Array.isArray(arr)||!arr.every(x=>x&&x.name!==undefined&&x.amount!==undefined))throw Error('Invalid backup');if(confirm('Import '+arr.length+' subscriptions? This replaces the current list.')){subs=arr.map(x=>({...x,id:x.id||('sub_'+Date.now()+Math.random())}));save();toast('Backup imported')}}catch(err){alert('Could not import this file. Please select a valid Subscription Manager JSON backup.')}e.target.value=''};
+$('tourBtn').onclick=()=>$('tourModal').classList.add('open');$('closeTour').onclick=$('doneTour').onclick=()=>$('tourModal').classList.remove('open');
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('tourModal').classList.remove('open')}});
+load();render();
+</script>
+</body></html>

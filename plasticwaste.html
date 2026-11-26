@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plastic Waste Identification & Resin-Code Study</title>
+<style>
+:root{--ink:#172331;--muted:#5c6b78;--bg:#f3f6f8;--card:#fff;--line:#dce4ea;--blue:#155e9a;--green:#147d55;--orange:#a85b00;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+header{background:linear-gradient(125deg,#102a43,#155e75);color:#fff;padding:34px 22px}
+header .wrap,main{max-width:1180px;margin:auto}h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.1;margin:0 0 12px}header p{max-width:850px;margin:0;color:#e5f3f8}
+nav{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:5;display:flex;gap:8px;overflow:auto;padding:10px max(16px,calc((100% - 1180px)/2))}
+nav a{white-space:nowrap;text-decoration:none;color:var(--blue);font-weight:650;padding:7px 10px;border-radius:8px}nav a:hover{background:#eaf3f9}
+main{padding:22px 16px 60px}.notice{background:#fff7e6;border:1px solid #f1d59b;border-left:5px solid #c88719;padding:14px 16px;border-radius:10px;margin:18px 0}
+section{margin:30px 0;scroll-margin-top:70px}h2{font-size:1.55rem;margin:0 0 12px}h3{font-size:1.08rem;margin:0 0 8px}.lead{color:var(--muted);margin-top:-4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card,.photo-card{background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:0 2px 8px #1832470a}
+.card{padding:17px}.photo-card img{width:100%;height:280px;object-fit:contain;background:#e8edf0;display:block;cursor:zoom-in}.photo-card{position:relative}.photo-card .view-hint{display:block;color:var(--blue);font-size:.82rem;font-weight:700;margin-top:6px}.photo-card img:focus{outline:3px solid #155e9a;outline-offset:-3px}.card-body{padding:12px 14px}.card-body small{display:block;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.pill{display:inline-block;border-radius:999px;padding:3px 9px;font-size:.78rem;font-weight:700;background:#e9f2fa;color:#155e9a;margin:2px}
+table{border-collapse:collapse;width:100%;background:white;border:1px solid var(--line);border-radius:10px;overflow:hidden}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#eaf1f5}
+.code{font-weight:800;font-size:1.1rem}.c2{color:#147d55}.c4{color:#a85b00}.c5{color:#155e9a}.c6{color:#7846a8}
+.steps{counter-reset:step;display:grid;gap:10px}.step{background:white;border:1px solid var(--line);border-radius:10px;padding:13px 15px}.step b:before{counter-increment:step;content:counter(step) ". ";color:var(--blue)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.controls input,.controls select{padding:10px;border:1px solid #bdcbd5;border-radius:8px;font:inherit}
+.quiz-q{padding:14px;background:white;border:1px solid var(--line);border-radius:10px;margin:10px 0}.quiz-q label{display:block;padding:5px 0;cursor:pointer}.feedback{font-weight:700;margin-top:8px}
+footer{background:#102a43;color:#e5edf2;padding:24px;text-align:center}
+button{background:var(--blue);color:white;border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}button:hover{filter:brightness(1.1)}
+/* Full-screen image gallery */
+#imageModal{position:fixed;inset:0;z-index:1000;background:rgba(7,15,24,.94);display:none;flex-direction:column;color:#fff;padding:14px}
+#imageModal.open{display:flex}
+.modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.modal-title{font-weight:750;overflow-wrap:anywhere}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap}
+.modal-actions button,.modal-nav button{background:#263b50;border:1px solid #62788c}
+#modalStage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:auto;margin:10px 0;touch-action:pan-x pan-y}
+#modalImage{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;cursor:zoom-in;transition:transform .12s ease}
+#modalCaption{text-align:center;color:#dce7ef;font-size:.92rem;padding:4px}
+.modal-bottom{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.modal-nav{display:flex;gap:8px}
+#modalCounter{color:#dce7ef;font-variant-numeric:tabular-nums}
+body.modal-open{overflow:hidden}
+@media(max-width:600px){#imageModal{padding:8px}.modal-actions button,.modal-nav button{padding:9px 11px}#modalStage{margin:6px 0}}
+@media(max-width:600px){.photo-card img{height:220px}th,td{padding:8px;font-size:.92rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Plastic Waste Identification & Resin-Code Study</h1>
+<p>A practical visual learning guide using the uploaded litter photographs: identify visible objects, distinguish rigid plastics from films and multilayer wrappers, understand resin identification codes, and learn how to mark objects with square boxes and numbered tags.</p>
+</div></header>
+<nav>
+<a href="#method">Identification method</a><a href="#codes">Resin codes</a><a href="#objects">Object guide</a><a href="#before">Original photos</a><a href="#after">Tagged photos</a><a href="#workflow">Field workflow</a><a href="#quiz">Quiz</a>
+</nav>
+<main>
+<div class="notice"><b>Important limitation:</b> A photograph can show an object's shape, colour, flexibility clues and packaging type, but it generally cannot prove the polymer. PP (#5) and HDPE (#2) must not be assigned as confirmed solely from colour or appearance. Use “likely”, “possible” or “unconfirmed” until an embossed resin code, packaging specification or suitable material test confirms it.</div>
+
+<section id="method">
+<h2>1. What are we identifying?</h2>
+<div class="grid">
+<div class="card"><h3>Rigid plastic</h3><p>Items that keep their shape, such as caps, tubs, cups and hard fragments. Record the object type first; resin code second.</p><span class="pill">Caps</span><span class="pill">Containers</span><span class="pill">Rigid fragments</span></div>
+<div class="card"><h3>Flexible plastic</h3><p>Thin bags, films and wrappers that bend or fold easily. Many are PE films, but printed or laminated packs may be composite structures.</p><span class="pill">Carry bags</span><span class="pill">Film</span><span class="pill">Sachets</span></div>
+<div class="card"><h3>Multilayer / composite</h3><p>Printed snack and sachet packaging can combine plastic layers, aluminium and/or paper. Do not force these into one resin code based on appearance.</p><span class="pill">Snack wrappers</span><span class="pill">Laminates</span></div>
+<div class="card"><h3>Non-plastic materials</h3><p>Leaves, soil, stones, wood, paper and cardboard should be separated from plastic categories rather than given plastic resin codes.</p><span class="pill">Organic</span><span class="pill">Paper</span><span class="pill">Inert debris</span></div>
+</div>
+</section>
+
+<section id="codes">
+<h2>2. Resin identification codes (RIC)</h2>
+<p class="lead">These codes identify common resin families. The code is not a guarantee that an item is accepted by a local recycling programme.</p>
+<table>
+<thead><tr><th>Code</th><th>Polymer</th><th>Common examples</th><th>Visual sorting note</th></tr></thead>
+<tbody>
+<tr><td class="code c2">#2</td><td>HDPE – High-density polyethylene</td><td>Some bottle bodies, detergent containers, rigid household packaging and some caps</td><td>Look for the moulded “2” / HDPE mark. Appearance alone is not enough.</td></tr>
+<tr><td class="code c4">#4</td><td>LDPE – Low-density polyethylene</td><td>Many flexible films, bags and liners</td><td>Flexible film may be PE, but a printed laminate may be multilayer.</td></tr>
+<tr><td class="code c5">#5</td><td>PP – Polypropylene</td><td>Some caps, tubs, food containers and woven sacks</td><td>Rigid caps can be PP, but some are HDPE. Verify the moulded code.</td></tr>
+<tr><td class="code c6">#6</td><td>PS – Polystyrene</td><td>Some disposable cups, trays and foam packaging</td><td>Do not classify every white foam-like item as PS without confirmation.</td></tr>
+<tr><td>Other codes</td><td>PET #1, PVC #3, Other #7</td><td>Beverage bottles, pipes/blisters, mixed or specialty materials</td><td>Record “unknown / other” if the mark cannot be read.</td></tr>
+</tbody></table>
+</section>
+
+<section id="objects">
+<h2>3. How to tag visible objects in a photograph</h2>
+<div class="steps">
+<div class="step"><b>Locate the object.</b><br>Identify an individual cap, cup, bag, bottle, wrapper or fragment. Avoid drawing one box around an entire mixed-waste pile.</div>
+<div class="step"><b>Draw a tight square or rectangle.</b><br>Keep the box around the visible object, not the nearby soil, leaves or unrelated litter. If objects overlap, use separate boxes only when boundaries are visible.</div>
+<div class="step"><b>Add a numbered marker.</b><br>Use a clear number such as 01, 02, 03. Put the same number in a legend beside the image.</div>
+<div class="step"><b>Write the object name.</b><br>Example: “green rigid cap”, “clear flexible film”, “blue printed sachet”. Describe what is visible before guessing its material.</div>
+<div class="step"><b>Assign material confidence.</b><br>Use Confirmed (mark visible), Likely (shape/use suggests a polymer), Possible (weak visual clue), or Unknown.</div>
+<div class="step"><b>Record the resin code only when supported.</b><br>For uncertain objects write “PP/HDPE – verify” or “multilayer – no single code”, not a definitive code.</div>
+</div>
+</section>
+
+<section id="before">
+<h2>4. Original photographs — before tagging</h2>
+<p class="lead">These are the source photographs included in this study pack. Use them to practise spotting objects before looking at the annotated examples.</p>
+<div class="grid"><article class="photo-card"><img loading="lazy" src="images/1000107096.jpg" alt="Roadside mixed-waste dump"><div class="card-body"><b>Roadside mixed-waste dump</b><small>Original upload · 1000107096.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107097.jpg" alt="Forest-edge mixed-waste dump"><div class="card-body"><b>Forest-edge mixed-waste dump</b><small>Original upload · 1000107097.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107098.jpg" alt="Ground litter with visible caps and wrappers"><div class="card-body"><b>Ground litter with visible caps and wrappers</b><small>Original upload · 1000107098.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107100.jpg" alt="Littered soil and vegetation"><div class="card-body"><b>Littered soil and vegetation</b><small>Original upload · 1000107100.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107102.jpg" alt="Drain-side litter"><div class="card-body"><b>Drain-side litter</b><small>Original upload · 1000107102.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107103.jpg" alt="Soil, stones and scattered litter"><div class="card-body"><b>Soil, stones and scattered litter</b><small>Original upload · 1000107103.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107105.jpg" alt="Mixed waste near vegetation"><div class="card-body"><b>Mixed waste near vegetation</b><small>Original upload · 1000107105.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107106.jpg" alt="Wide view of mixed litter"><div class="card-body"><b>Wide view of mixed litter</b><small>Original upload · 1000107106.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107107.jpg" alt="Wide litter scene"><div class="card-body"><b>Wide litter scene</b><small>Original upload · 1000107107.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107108.jpg" alt="Wide mixed-waste scene"><div class="card-body"><b>Wide mixed-waste scene</b><small>Original upload · 1000107108.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107111.jpg" alt="Drain channel with scattered litter"><div class="card-body"><b>Drain channel with scattered litter</b><small>Original upload · 1000107111.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/1000107113.jpg" alt="Close view of mixed waste and packaging"><div class="card-body"><b>Close view of mixed waste and packaging</b><small>Original upload · 1000107113.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article></div>
+</section>
+
+<section id="after">
+<h2>5. Annotated photographs — after tagging</h2>
+<p class="lead">Annotated examples use boxes, callouts or numbered tags. Some are earlier visual callout versions; use the legend in each image and treat polymer assignments as provisional.</p>
+<div class="grid"><article class="photo-card"><img loading="lazy" src="images/pp_hdpe_tagged_1000107097.jpg" alt="Forest-edge photo — earlier object tags"><div class="card-body"><b>Forest-edge photo — earlier object tags</b><small>Annotated image · pp_hdpe_tagged_1000107097.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/a_tall_vertical_photo_same_as_the_uploaded_scene.png" alt="Forest-edge photo — annotated view"><div class="card-body"><b>Forest-edge photo — annotated view</b><small>Annotated image · a_tall_vertical_photo_same_as_the_uploaded_scene.png</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/a_wide_annotated_overhead_photo_of_litter_on_soil.png" alt="Wide litter scene — annotated view"><div class="card-body"><b>Wide litter scene — annotated view</b><small>Annotated image · a_wide_annotated_overhead_photo_of_litter_on_soil.png</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/tagged_waste_objects.jpg" alt="Roadside mixed-waste photo — callout tags"><div class="card-body"><b>Roadside mixed-waste photo — callout tags</b><small>Annotated image · tagged_waste_objects.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/tagged_waste_objects_2.jpg" alt="Caps and wrappers — callout tags"><div class="card-body"><b>Caps and wrappers — callout tags</b><small>Annotated image · tagged_waste_objects_2.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/waste_objects_squared_and_tagged.jpg" alt="Caps and wrappers — square boxes and numbered legend"><div class="card-body"><b>Caps and wrappers — square boxes and numbered legend</b><small>Annotated image · waste_objects_squared_and_tagged.jpg</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article>
+<article class="photo-card"><img loading="lazy" src="images/a_high_resolution_annotated_photo_of_litter_on_a_r.png" alt="Litter photo — annotated view"><div class="card-body"><b>Litter photo — annotated view</b><small>Annotated image · a_high_resolution_annotated_photo_of_litter_on_a_r.png</small><span class="view-hint">Tap image to zoom · Open gallery</span></div></article></div>
+</section>
+
+<section id="workflow">
+<h2>6. Field recording template</h2>
+<table>
+<thead><tr><th>Field</th><th>What to enter</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>Photo ID</td><td>Unique image reference</td><td>IMG-001</td></tr>
+<tr><td>Object ID</td><td>Number shown on the box</td><td>03</td></tr>
+<tr><td>Visible object</td><td>Plain-language description</td><td>Turquoise rigid cap</td></tr>
+<tr><td>Form</td><td>Rigid / flexible / foam / composite / non-plastic</td><td>Rigid</td></tr>
+<tr><td>Possible material</td><td>PP / HDPE / PE film / multilayer / unknown</td><td>PP or HDPE</td></tr>
+<tr><td>RIC code</td><td>Code only if confirmed; otherwise candidate</td><td>Candidate #5; verify</td></tr>
+<tr><td>Evidence</td><td>Embossed mark, label, product info or test</td><td>No visible mark</td></tr>
+<tr><td>Confidence</td><td>Confirmed / likely / possible / unknown</td><td>Possible</td></tr>
+<tr><td>Action</td><td>Separate / inspect / send for material check</td><td>Inspect underside</td></tr>
+</tbody></table>
+</section>
+
+<section id="quiz">
+<h2>7. Quick knowledge check</h2>
+<p class="lead">Choose an answer and check your understanding.</p>
+<div class="quiz-q" data-answer="b"><b>Q1. Can a green cap be confirmed as PP just because it is green?</b><label><input type="radio" name="q1" value="a"> Yes, colour identifies the polymer.</label><label><input type="radio" name="q1" value="b"> No, inspect the resin mark or verify the material.</label><div class="feedback"></div></div>
+<div class="quiz-q" data-answer="c"><b>Q2. How should a printed snack wrapper be classified when its layers are unknown?</b><label><input type="radio" name="q2" value="a"> Always PP #5.</label><label><input type="radio" name="q2" value="b"> Always HDPE #2.</label><label><input type="radio" name="q2" value="c"> Multilayer / composite; no single code confirmed.</label><div class="feedback"></div></div>
+<div class="quiz-q" data-answer="a"><b>Q3. What should a numbered square surround?</b><label><input type="radio" name="q3" value="a"> The individual visible object.</label><label><input type="radio" name="q3" value="b"> The whole dump site.</label><label><input type="radio" name="q3" value="c"> Any nearby group of leaves and stones.</label><div class="feedback"></div></div>
+<div class="quiz-q" data-answer="b"><b>Q4. Which code is associated with polypropylene?</b><label><input type="radio" name="q4" value="a"> #2</label><label><input type="radio" name="q4" value="b"> #5</label><label><input type="radio" name="q4" value="c"> #6</label><div class="feedback"></div></div>
+<button type="button" onclick="checkQuiz()">Check answers</button>
+<p id="score" aria-live="polite"></p>
+</section>
+
+<section>
+<h2>8. Practical checklist before submitting an annotated photo</h2>
+<div class="card">
+<label><input type="checkbox"> Every identified object has its own tight box.</label><br>
+<label><input type="checkbox"> Each box has a readable number.</label><br>
+<label><input type="checkbox"> Numbered legend matches the image markers.</label><br>
+<label><input type="checkbox"> Object description is separate from material guess.</label><br>
+<label><input type="checkbox"> Uncertain PP / HDPE items are marked “verify”.</label><br>
+<label><input type="checkbox"> Multilayer wrappers are not forced into one resin code.</label><br>
+<label><input type="checkbox"> Organic matter, paper and stones are not labelled as plastic.</label><br>
+<label><input type="checkbox"> Image is clear enough to distinguish overlapping objects.</label>
+</div>
+</section>
+
+<div class="notice"><b>Study takeaway:</b> First identify the object, then its physical form, then the likely material, and only then the resin code. A clear square and numbered legend improve traceability; honest uncertainty improves sorting quality.</div>
+</main>
+
+<div id="imageModal" role="dialog" aria-modal="true" aria-label="Image gallery viewer">
+  <div class="modal-top">
+    <div class="modal-title" id="modalTitle">Image gallery</div>
+    <div class="modal-actions">
+      <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
+      <button type="button" id="zoomReset">Fit</button>
+      <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+      <button type="button" id="closeModal" aria-label="Close image gallery">✕ Close</button>
+    </div>
+  </div>
+  <div id="modalStage"><img id="modalImage" alt=""></div>
+  <div id="modalCaption"></div>
+  <div class="modal-bottom">
+    <div class="modal-nav">
+      <button type="button" id="prevImage">← Previous</button>
+      <button type="button" id="nextImage">Next →</button>
+    </div>
+    <span id="modalCounter" aria-live="polite"></span>
+  </div>
+</div>
+
+<footer>Plastic Waste Identification Study Pack · Built from the photographs available in this conversation</footer>
+<script>
+function checkQuiz(){
+ let total=0, correct=0;
+ document.querySelectorAll('.quiz-q').forEach((q,i)=>{
+   total++;
+   const chosen=q.querySelector('input:checked');
+   const fb=q.querySelector('.feedback');
+   if(chosen && chosen.value===q.dataset.answer){correct++;fb.textContent='Correct';fb.style.color='#147d55'}
+   else{fb.textContent='Review this answer';fb.style.color='#b42318'}
+ });
+ document.getElementById('score').textContent=`Score: ${correct} / ${total}`;
+}
+
+// Click any study photograph to open a navigable, zoomable gallery.
+(() => {
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImage');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalCaption = document.getElementById('modalCaption');
+  const counter = document.getElementById('modalCounter');
+  const stage = document.getElementById('modalStage');
+  const images = [...document.querySelectorAll('.photo-card img')];
+  let activeIndex = 0, zoom = 1, lastFocus = null;
+
+  function setZoom(value) {
+    zoom = Math.max(1, Math.min(4, value));
+    modalImg.style.transform = `scale(${zoom})`;
+    modalImg.style.cursor = zoom > 1 ? 'zoom-out' : 'zoom-in';
+  }
+  function show(index) {
+    activeIndex = (index + images.length) % images.length;
+    const img = images[activeIndex];
+    const card = img.closest('.photo-card');
+    const title = card?.querySelector('.card-body b')?.textContent || img.alt || 'Study image';
+    const detail = card?.querySelector('small')?.textContent || '';
+    modalImg.src = img.currentSrc || img.src;
+    modalImg.alt = img.alt || title;
+    modalTitle.textContent = title;
+    modalCaption.textContent = detail;
+    counter.textContent = `${activeIndex + 1} / ${images.length}`;
+    stage.scrollTop = 0;
+    stage.scrollLeft = 0;
+    setZoom(1);
+    document.getElementById('prevImage').disabled = images.length < 2;
+    document.getElementById('nextImage').disabled = images.length < 2;
+  }
+  function open(index) {
+    lastFocus = document.activeElement;
+    show(index);
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+    document.getElementById('closeModal').focus();
+  }
+  function close() {
+    modal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+    modalImg.removeAttribute('src');
+    if (lastFocus?.focus) lastFocus.focus();
+  }
+  images.forEach((img, i) => {
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    img.setAttribute('aria-label', `Open image gallery: ${img.alt || 'study photograph'}`);
+    img.addEventListener('click', () => open(i));
+    img.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); }
+    });
+  });
+  document.getElementById('closeModal').addEventListener('click', close);
+  document.getElementById('prevImage').addEventListener('click', () => show(activeIndex - 1));
+  document.getElementById('nextImage').addEventListener('click', () => show(activeIndex + 1));
+  document.getElementById('zoomIn').addEventListener('click', () => setZoom(zoom + .25));
+  document.getElementById('zoomOut').addEventListener('click', () => setZoom(zoom - .25));
+  document.getElementById('zoomReset').addEventListener('click', () => setZoom(1));
+  modalImg.addEventListener('click', () => setZoom(zoom > 1 ? 1 : 2));
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  document.addEventListener('keydown', e => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(activeIndex - 1);
+    if (e.key === 'ArrowRight') show(activeIndex + 1);
+    if (e.key === '+' || e.key === '=') setZoom(zoom + .25);
+    if (e.key === '-') setZoom(zoom - .25);
+  });
+  // Pinch-like wheel zoom when using a mouse/trackpad over the image.
+  stage.addEventListener('wheel', e => {
+    if (!modal.classList.contains('open')) return;
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setZoom(zoom + (e.deltaY < 0 ? .15 : -.15));
+    }
+  }, {passive:false});
+})();
+
+</script>
+</body></html>
